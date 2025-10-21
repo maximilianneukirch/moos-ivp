@@ -41,6 +41,6 @@ TARGET_LINK_LIBRARIES(ffview
 # http://developer.apple.com/qa/qa2007/qa1567.html
 IF (${APPLE})
   SET_TARGET_PROPERTIES(ffview PROPERTIES	  
-    LINK_FLAGS "-framework OpenGL -framework AGL -framework Cocoa"
+    LINK_FLAGS "-framework OpenGL -framework Cocoa"
     )
 ENDIF (${APPLE})
