@@ -16,8 +16,7 @@ jobs:
         include:
           - os: ubuntu-24.04
             os-type: debian
-          # Mac OS 13 runs on intel
-          - os: macos-13
+          - os: macos-15-intel
             os-type: darwin
           # MacOS 26 runs on arm64
           - os: macos-26
