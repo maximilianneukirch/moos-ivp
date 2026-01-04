@@ -18,6 +18,8 @@ ADD_EXECUTABLE(alogsplit ${SRC})
    
 TARGET_LINK_LIBRARIES(alogsplit
   logutils
+  contacts
+  geometry
   mbutil
   ${SYSTEM_LIBS})
 
