@@ -1,0 +1,38 @@
+//-------------------------------------------------
+// NAME: M. Neukirch, UNI KN
+// FILE: test.moos
+//-------------------------------------------------
+
+ServerHost   = localhost
+ServerPort   = 9000
+Community    = alpha
+MOOSTimeWarp = 1
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB        @ NewConsole = false
+  //Run = pHelmIvP      @ NewConsole = false
+
+  // PYTHON Scripts from pymoos
+  Run = /home/stux/PROJECT/python-moos/Documentation/examples/start_simplecomms.sh @NewConsole = flase
+}
+
+//------------------------------------------
+// pHelmIvP config block
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  behaviors  = alpha.bhv
+  domain     = course:0:359:360
+  domain     = speed:0:4:41
+}
+
+//------------------------------------------
+// pNodeReporter config block

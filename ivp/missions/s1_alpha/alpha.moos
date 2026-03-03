@@ -31,6 +31,7 @@ ProcessConfig = ANTLER
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
   Run = pRealm	      @ NewConsole = false
+  //Run = /home/stux/PROJECT/python-moos/Documentation/examples/simplecomms.py @ NewConsole = true
 }
 
 //------------------------------------------
@@ -84,8 +85,13 @@ ProcessConfig = uSimMarineV22
   start_pos     = x=0, y=-20, heading=180, speed=0
   prefix        = NAV
   turn_rate     = 95
-  thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
+  //thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
+  thrust_map    = 0:0, 20:0, 40:0, 60:0, 80:0, 100:0
 	turn_spd_loss = 0.4
+  wind_conditions = spd=3.3, dir=180                            
+  polar_plot = 0,0: 20,40: 45,65: 90,80: 110,90: 135,83: 150,83: 165,60: 180,50
+  //polar_plot = 0,100: 20,100: 45,100: 90,100: 110,100: 135,100: 150,100: 165,100: 180,100
+  //polar_plot = 0,0: 20,0: 45,0: 90,0: 110,0: 135,0: 150,0: 160,0: 180,0
 }
 
 //------------------------------------------
