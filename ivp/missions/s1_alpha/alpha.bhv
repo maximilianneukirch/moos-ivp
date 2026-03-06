@@ -41,7 +41,9 @@ Behavior = BHV_Waypoint
       capture_radius = 5.0
          slip_radius = 15.0
 	efficiency_measure = all
-	           polygon = 60,-40:60,-160:150,-160:180,-100:150,-40
+	           polygon = 60,-40: 180,-40: 180,50: 120,80: 60,50   // Rotated waypoints by 90° around WP 1
+             //60,-40: 60,-160: 150,-160: 180,-100: 150,-40     // Original route
+             //0,0: 120,0: 120,90: 60,120: 0,90
 
                order = normal
              repeat  = 0

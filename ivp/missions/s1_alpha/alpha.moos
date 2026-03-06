@@ -8,9 +8,13 @@ ServerPort   = 9000
 Community    = alpha
 MOOSTimeWarp = 1
 
+// Lake of Constance
+ LatOrigin   = 47.696170
+ LongOrigin   = 9.195229
+
 // Forest Lake
-LatOrigin  = 43.825300 
-LongOrigin = -70.330400 
+//LatOrigin  = 43.825300 
+//LongOrigin = -70.330400 
 
 // MIT Sailing Pavilion (use this one)
 // LatOrigin  = 42.358456 
@@ -24,7 +28,7 @@ ProcessConfig = ANTLER
 
   Run = MOOSDB        @ NewConsole = false
   Run = pLogger       @ NewConsole = false
-  Run = uSimMarineV22 @ NewConsole = false
+  Run = uSimMarineV23 @ NewConsole = false
   Run = pMarinePIDV22 @ NewConsole = false
   Run = pHelmIvP      @ NewConsole = false
   Run = pMarineViewer	@ NewConsole = false
@@ -77,7 +81,7 @@ ProcessConfig = uProcessWatch
 //------------------------------------------
 // uSimMarineV22 config block
 
-ProcessConfig = uSimMarineV22
+ProcessConfig = uSimMarineV23
 {
   AppTick  	= 4
   CommsTick	= 4
@@ -86,12 +90,13 @@ ProcessConfig = uSimMarineV22
   prefix        = NAV
   turn_rate     = 95
   //thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
-  thrust_map    = 0:0, 20:0, 40:0, 60:0, 80:0, 100:0
+  //thrust_map    = 0:0, 20:0, 40:0, 60:0, 80:0, 100:0
+  thrust_map    = 0:0, 50:2, 100:4
 	turn_spd_loss = 0.4
-  wind_conditions = spd=3.3, dir=180                            
-  polar_plot = 0,0: 20,40: 45,65: 90,80: 110,90: 135,83: 150,83: 165,60: 180,50
+  wind_conditions = spd=4, dir=090                            
+  //polar_plot = 0,0: 20,40: 45,65: 90,80: 110,90: 135,83: 150,83: 165,60: 180,50
   //polar_plot = 0,100: 20,100: 45,100: 90,100: 110,100: 135,100: 150,100: 165,100: 180,100
-  //polar_plot = 0,0: 20,0: 45,0: 90,0: 110,0: 135,0: 150,0: 160,0: 180,0
+  polar_plot = 0,25: 20,25: 45,25: 90,100: 110,100: 135,25: 150,25: 160,25: 180,25
 }
 
 //------------------------------------------
@@ -149,8 +154,10 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  tiff_file            = forrest19.tif
+  //tiff_file            = forrest19.tif
 	//tiff_file            = MIT_SP.tif
+  tiff_file            = Satellite_Lake_of_Constance.tif
+  tiff_file            = Map_Lake_of_Constance.tif
 
   set_pan_x            = -90
   set_pan_y            = -280

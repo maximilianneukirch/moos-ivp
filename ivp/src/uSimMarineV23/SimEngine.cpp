@@ -214,7 +214,7 @@ void SimEngine::propagateSpeedSailing(NodeRecord& record,
   double fan_speed  = tmap_fan.getSpeedValue(thrust_fan);
 
   
-  if((max_sail_spd > 0) && (next_speed > max_sail_spd))
+  if((max_sail_spd > 0) && (next_speed > max_sail_spd)) /*max_sail_spd >= 0 -> BUG??*/
     next_speed = max_sail_spd;
 
   next_speed += fan_speed;
