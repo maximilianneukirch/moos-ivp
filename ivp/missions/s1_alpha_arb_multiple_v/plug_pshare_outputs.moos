@@ -1,0 +1,30 @@
+  // Routes for Vehicle 1 (Port 9201)
+  Output = src_name=DEPLOY_ALL, dest_name=DEPLOY, route=localhost:9201
+  Output = src_name=RETURN_ALL, dest_name=RETURN, route=localhost:9201
+  Output = src_name=MOOS_MANUAL_OVERRIDE_ALL, dest_name=MOOS_MANUAL_OVERRIDE, route=localhost:9201
+  Output = src_name=APPCAST_REQ, route=localhost:9201
+
+  // Routes for Vehicle 2 (Port 9202)
+  Output = src_name=DEPLOY_ALL, dest_name=DEPLOY, route=localhost:9202
+  Output = src_name=RETURN_ALL, dest_name=RETURN, route=localhost:9202
+  Output = src_name=MOOS_MANUAL_OVERRIDE_ALL, dest_name=MOOS_MANUAL_OVERRIDE, route=localhost:9202
+  Output = src_name=APPCAST_REQ, route=localhost:9202
+
+  // Routes for Vehicle 3 (Port 9203)
+  Output = src_name=DEPLOY_ALL, dest_name=DEPLOY, route=localhost:9203
+  Output = src_name=RETURN_ALL, dest_name=RETURN, route=localhost:9203
+  Output = src_name=MOOS_MANUAL_OVERRIDE_ALL, dest_name=MOOS_MANUAL_OVERRIDE, route=localhost:9203
+  Output = src_name=APPCAST_REQ, route=localhost:9203
+
+  // Routes for Vehicle 4 (Port 9204)
+  Output = src_name=DEPLOY_ALL, dest_name=DEPLOY, route=localhost:9204
+  Output = src_name=RETURN_ALL, dest_name=RETURN, route=localhost:9204
+  Output = src_name=MOOS_MANUAL_OVERRIDE_ALL, dest_name=MOOS_MANUAL_OVERRIDE, route=localhost:9204
+  Output = src_name=APPCAST_REQ, route=localhost:9204
+
+  // Routes for Vehicle 5 (Port 9205)
+  Output = src_name=DEPLOY_ALL, dest_name=DEPLOY, route=localhost:9205
+  Output = src_name=RETURN_ALL, dest_name=RETURN, route=localhost:9205
+  Output = src_name=MOOS_MANUAL_OVERRIDE_ALL, dest_name=MOOS_MANUAL_OVERRIDE, route=localhost:9205
+  Output = src_name=APPCAST_REQ, route=localhost:9205
+

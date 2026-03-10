@@ -1,0 +1,154 @@
+//-------------------------------------------------
+// FILE: shoreside.moos
+//-------------------------------------------------
+ServerHost   = localhost
+ServerPort   = 9000
+Community    = shoreside
+MOOSTimeWarp = 1
+
+// Lake of Constance
+LatOrigin   = 47.696170
+LongOrigin  = 9.195229
+
+//------------------------------------------
+// Antler configuration  block
+
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+  Run = MOOSDB          @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
+  Run = pShare          @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldShoreBroker @ NewConsole = false
+  
+  Run = pLogger         @ NewConsole = false
+  Run = uProcessWatch   @ NewConsole = false
+}
+
+//------------------------------------------
+// pShare config block
+// Routes DEPLOY and RETURN to all simulated vehicles
+
+ProcessConfig = pShare
+{
+  AppTick    = 4
+  CommsTick  = 4
+  
+  Input = route = localhost:9200
+  
+  // This config part will be handeled by the broker (uFldShoreBroker)
+}
+
+//------------------------------------------
+// pHostInfo config block
+
+ProcessConfig = pHostInfo
+{
+  AppTick   = 1
+  CommsTick = 1
+  default_hostip = localhost
+}
+
+//------------------------------------------
+// uFldShoreBroker config block
+// The ShoreBroker listens for vehicle pings and builds the pShare bridges
+ProcessConfig = uFldShoreBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  // "qbridge" automatically routes variables specifically addressed to a vehicle
+  // e.g., APPCAST_REQ_ALPHA gets routed to Alpha as APPCAST_REQ
+  qbridge = APPCAST_REQ
+
+  // "bridge" tells the broker to route a broadcast variable to EVERY connected vehicle
+  bridge  = src=DEPLOY_ALL, alias=DEPLOY
+  bridge  = src=RETURN_ALL, alias=RETURN
+  bridge  = src=MOOS_MANUAL_OVERRIDE_ALL, alias=MOOS_MANUAL_OVERRIDE
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  tiff_file            = Satellite_Lake_of_Constance.tif
+  tiff_file            = Map_Lake_of_Constance.tif
+
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicle_shape_scale  = 1.5
+  hash_delta           = 50
+  hash_shade           = 0.22
+  hash_viewable        = true
+
+  trails_point_size    = 1
+
+  // Appcast configuration
+  appcast_height       = 75
+  appcast_width        = 30
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+  nodes_font_size      = xlarge
+  procs_font_size      = xlarge
+  appcast_font_size    = large
+
+  // Variable scope
+  scope = MOOS_MANUAL_OVERRIDE
+  scope = MOOS_MANUAL_OVERRIDE_ALL
+
+  // Use the _ALL suffixed variables for the multi-vehicle deployment
+  button_one = DEPLOY # DEPLOY_ALL=true # RETURN_ALL=false # MOOS_MANUAL_OVERRIDE_ALL=false
+  button_two = RETURN # RETURN_ALL=true
+  button_three = FASTER # WPT_UPDATE=speed=3.5
+
+  action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false # MOOS_MANUAL_OVERRIDE_ALL=false
+  action  = RETURN=true
+  action  = UPDATES_RETURN=speed=1.4
+}
+
+//------------------------------------------
+// pLogger config block
+
+ProcessConfig = pLogger
+{
+  AppTick   = 8
+  CommsTick = 8
+
+  AsyncLog = true
+
+  // For variables that are published in a bundle on their 
+  // first post, explicitly declare their logging request
+  Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
+  Log = REPORT @ 0 NOSYNC
+  Log = BHV_SETTINGS @ 0 NOSYNC
+  Log = SUMMARY @ 0 NOSYNC
+
+  LogAuxSrc = true
+  WildCardLogging = true
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
+  WildCardExclusionLog = true
+}
+
+//------------------------------------------
+// uProcessWatch config block
+
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  watch_all = true
+	nowatch   = uPokeDB*
+	nowatch   = uQueryDB*
+	nowatch   = uXMS*
+	nowatch   = uMAC*
+}

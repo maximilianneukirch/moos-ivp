@@ -1,0 +1,214 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% LOG FILE:       ./MOOSLog_10_3_2026_____13_44_54/MOOSLog_10_3_2026_____13_44_54._moos
+%% FILE OPENED ON  Thu Jan  1 01:00:00 1970
+%% LOGSTART           1773146694.157064
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//-------------------------------------------------
+// NAME: Maximilian v. Neukirch
+// FILE: follow_me.moos
+//-------------------------------------------------
+
+ServerHost   = localhost
+ServerPort   = 9000
+Community    = onshore
+MOOSTimeWarp = 1
+
+// Lake of Constance
+ LatOrigin   = 47.696170
+ LongOrigin   = 9.195229
+
+// Uni Sports
+// LatOrigin  = 47.695950
+// LongOrigin = 9.187634
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB        @ NewConsole = false
+  Run = pLogger       @ NewConsole = false
+  Run = uSimMarineV23 @ NewConsole = false
+  Run = pMarinePIDV22 @ NewConsole = false
+  Run = pHelmIvP      @ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = false
+  Run = uProcessWatch	@ NewConsole = false
+  Run = pNodeReporter	@ NewConsole = false
+  Run = pRealm	      @ NewConsole = false
+  //Run = /home/stux/PROJECT/python-moos/Documentation/examples/simplecomms.py @ NewConsole = true
+}
+
+//------------------------------------------
+// pLogger config block
+
+ProcessConfig = pLogger
+{
+  AppTick   = 8
+  CommsTick = 8
+
+  AsyncLog = true
+
+  // For variables that are published in a bundle on their 
+  // first post, explicitly declare their logging request
+  Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
+  Log = REPORT @ 0 NOSYNC
+  Log = BHV_SETTINGS @ 0 NOSYNC
+  Log = SUMMARY @ 0 NOSYNC
+
+  LogAuxSrc = true
+  WildCardLogging = true
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
+  WildCardExclusionLog = true
+}
+
+//------------------------------------------
+// uProcessWatch config block
+
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  watch_all = true
+	nowatch   = uPokeDB*
+	nowatch   = uQueryDB*
+	nowatch   = uXMS*
+	nowatch   = uMAC*
+}
+
+//------------------------------------------
+// uSimMarineV22 config block
+
+ProcessConfig = uSimMarineV23
+{
+  AppTick  	= 4
+  CommsTick	= 4
+
+  start_pos     = x=0, y=-20, heading=180, speed=0
+  prefix        = NAV
+  turn_rate     = 95
+  thrust_map    = 0:0, 50:2, 100:4
+	turn_spd_loss = 0.4
+  wind_conditions = spd=4, dir=090
+  polar_plot = 0,25: 20,25: 45,25: 90,100: 110,100: 135,25: 150,25: 160,25: 180,25
+}
+
+//------------------------------------------
+// pHelmIvP config block
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  behaviors  = follow_me.bhv
+  domain     = course:0:359:360
+  domain     = speed:0:4:41
+}
+
+//------------------------------------------
+// pMarinePID config block
+
+ProcessConfig = pMarinePIDV22
+{
+  AppTick    = 20
+  CommsTick  = 20
+
+  verbose       = true
+  depth_control = false
+
+  // SIM_INSTABILITY = 20
+
+  // Yaw PID controller
+  yaw_pid_kp		 = 0.9
+  yaw_pid_kd		 = 0.3
+  yaw_pid_ki		 = 0.3
+  yaw_pid_integral_limit = 0.07
+
+  // Speed PID controller
+  speed_pid_kp		 = 1.0
+  speed_pid_kd		 = 0.0
+  speed_pid_ki		 = 0.0
+  speed_pid_integral_limit = 0.07
+
+  //MAXIMUMS
+  maxrudder    = 35
+  maxthrust    = 100
+
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  speed_factor = 20
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  tiff_file            = Satellite_Lake_of_Constance.tif
+  tiff_file            = Map_Lake_of_Constance.tif
+
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicle_shape_scale  = 1.5
+  hash_delta           = 50
+  hash_shade           = 0.22
+  hash_viewable        = true
+
+  trails_point_size   = 1
+
+  // Appcast configuration
+  appcast_height       = 75
+  appcast_width        = 30
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+  nodes_font_size      = xlarge
+  procs_font_size      = xlarge
+  appcast_font_size    = large
+
+  right_context[return] = DEPLOY=true
+  right_context[return] = MOOS_MANUAL_OVERRIDE=false
+  right_context[return] = RETURN=false
+
+  scope  = SUMMARY
+  scope  = RETURN
+  scope  = WPT_STAT
+  scope  = VIEW_SEGLIST
+  scope  = VIEW_POINT
+  scope  = VIEW_POLYGON
+  scope  = MVIEWER_LCLICK
+  scope  = MVIEWER_RCLICK
+
+  button_one = DEPLOY # DEPLOY=true
+  button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
+  button_two = RETURN # RETURN=true
+  button_three = SLOWER # WPT_UPDATE=speed=1.5
+  button_four = FASTER # WPT_UPDATE=speed=3.5
+
+  action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false
+  action  = RETURN=true
+  action  = UPDATES_RETURN=speed=1.4
+}
+
+//------------------------------------------
+// pNodeReporter config block
+
+ProcessConfig = pNodeReporter
+{
+  AppTick    = 2
+  CommsTick	 = 2
+
+  platform_type   = boat
+  platform_color  = yellow
+  platform_length = 2
+}
+
+

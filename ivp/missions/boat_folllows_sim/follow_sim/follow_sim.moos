@@ -1,0 +1,55 @@
+//-------------------------------------------------
+// FILE: onboard/follow_sim.moos
+//-------------------------------------------------
+
+ServerHost   = localhost
+ServerPort   = 9000
+Community    = xbee_boat
+MOOSTimeWarp = 1
+
+// Must perfectly match the shoreside Lat/Long Origin!
+// Lake of Constance
+LatOrigin  = 47.696170
+LongOrigin = 9.195229
+
+// Uni Sports
+// LatOrigin  = 47.695950
+// LongOrigin = 9.187634
+
+//------------------------------------------
+// Antler configuration block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pHelmIvP        @ NewConsole = false
+  Run = pNodeReporter   @ NewConsole = false
+  
+  // Tells the Linux shell to sleep for 3 seconds, THEN run python script (to ensure MOOSDB has been started)
+  Run = sh              @ NewConsole = false, ExtraProcessArgs = -c "sleep 3 && python3 /home/stux/PROJECT/boatv1/boat_main.py"
+}
+
+//------------------------------------------
+// pHelmIvP config block
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  behaviors  = travel_2_target.bhv
+  domain     = course:0:359:360
+  domain     = speed:0:4:41
+}
+
+//------------------------------------------
+// pNodeReporter config block
+ProcessConfig = pNodeReporter
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  platform_type   = boat
+  platform_color  = blue
+  platform_length = 2
+}

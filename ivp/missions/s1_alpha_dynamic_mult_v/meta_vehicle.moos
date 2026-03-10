@@ -1,0 +1,142 @@
+//-------------------------------------------------
+// FILE: meta_vehicle.moos
+//-------------------------------------------------
+
+ServerHost   = localhost
+ServerPort   = $(MOOS_PORT)
+Community    = $(VNAME)
+MOOSTimeWarp = 1
+
+// Lake of Constance
+LatOrigin   = 47.696170
+LongOrigin  = 9.195229
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = uSimMarineV23   @ NewConsole = false
+  Run = pMarinePIDV22   @ NewConsole = false
+  Run = pHelmIvP        @ NewConsole = false
+  Run = pNodeReporter   @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
+  Run = pShare          @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldNodeBroker  @ NewConsole = false
+}
+
+//------------------------------------------
+// pShare config block - Sends vehicle data to Shoreside (Port 9000)
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  // pShare only listens, rest is handeled by the broker
+  Input = route = localhost:$(PSHARE_PORT)
+}
+
+//------------------------------------------
+// pHostInfo config block
+ProcessConfig = pHostInfo
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  default_hostip = localhost
+}
+
+//------------------------------------------
+// uFldNodeBroker config block
+// The NodeBroker pings the shoreside to establish the connection
+ProcessConfig = uFldNodeBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  // Point this to the Shoreside's listening port
+  TRY_SHORE_HOST = pshare_route=localhost:9200
+
+  // Tell the shoreside what variables we want to send it
+  BRIDGE = src=VIEW_POLYGON
+  BRIDGE = src=VIEW_POINT
+  BRIDGE = src=VIEW_SEGLIST
+  BRIDGE = src=APPCAST
+  BRIDGE = src=NODE_REPORT_LOCAL,  alias=NODE_REPORT
+}
+
+//------------------------------------------
+// uSimMarineV23 config block
+
+ProcessConfig = uSimMarineV23
+{
+  AppTick  	= 4
+  CommsTick	= 4
+
+  start_pos     = $(START_POS)
+  prefix        = NAV
+  turn_rate     = 95
+  thrust_map    = 0:0, 50:2, 100:4
+  turn_spd_loss = 0.4
+  wind_conditions = spd=4, dir=090                     
+  polar_plot = 0,25: 20,25: 45,25: 90,100: 110,100: 135,25: 150,25: 160,25: 180,25
+}
+
+//------------------------------------------
+// pHelmIvP config block
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+  behaviors  = targ_$(VNAME).bhv
+  domain     = course:0:359:360
+  domain     = speed:0:4:41
+}
+
+//------------------------------------------
+// pMarinePID config block
+
+ProcessConfig = pMarinePIDV22
+{
+  AppTick    = 20
+  CommsTick  = 20
+
+  verbose       = true
+  depth_control = false
+
+  // Yaw PID controller 
+  yaw_pid_kp		 = 0.9
+  yaw_pid_kd		 = 0.3
+  yaw_pid_ki		 = 0.3
+  yaw_pid_integral_limit = 0.07
+
+  // Speed PID controller
+  speed_pid_kp		 = 1.0
+  speed_pid_kd		 = 0.0
+  speed_pid_ki		 = 0.0
+  speed_pid_integral_limit = 0.07
+
+  //MAXIMA
+  maxrudder    = 100
+  maxthrust    = 100
+
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  speed_factor = 20
+}
+
+//------------------------------------------
+// pNodeReporter config block
+
+ProcessConfig = pNodeReporter
+{
+  AppTick    = 2
+  CommsTick	 = 2
+  platform_type   = kayak
+  platform_color  = yellow
+  platform_length = 4
+}
