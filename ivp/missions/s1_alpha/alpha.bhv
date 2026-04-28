@@ -91,3 +91,31 @@ Behavior=BHV_ConstantSpeed
 	
 }
 
+Behavior = BHV_OpRegionV24
+{
+  // General Behavior Parameters
+  // ---------------------------
+  name = opr24 // example
+  pwt = 300 // example
+  updates = OPREGION_UPDATES // example
+  // Params specific to this behavior
+  // --------------------------------
+  max_time = 0 // default (seconds)
+  max_depth = 0 // default (meters)
+  min_altitude = 0 // default (meters)
+  trigger_entry_time = 1 // default (seconds)
+  trigger_exit_time = 0.5 // default (seconds)
+  core_poly = pts={-80,-50:-30,-175:150,-100:95,25}
+  save_dist = 5
+  halt_dist = 15
+  breached_altitude_flag = SAY_MOOS = min altitude has been exceeded
+  breached_depth_flag = SAY_MOOS = max depth has been exceeded
+  breached_poly_flag = SAY_MOOS = halt region has been violated
+  breached_time_flag = SAY_MOOS = max mission time has been exceeded
+  save_flag = SAY_MOOS = save region has been violated
+  savex_flag = RECOVER_POSITION=$[OSX],$[OSY]
+  visual_hints = vertex_size = 0 // default
+  visual_hints = edge_color = aqua // default
+  visual_hints = edge_size = 1 // default
+}
+
