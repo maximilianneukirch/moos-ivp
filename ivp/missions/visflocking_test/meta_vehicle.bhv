@@ -1,0 +1,38 @@
+//--------    FILE: meta_vehicle.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+Behavior = BHV_VisFlocking
+{
+  name      = vision_swarm_$(VNAME)
+  pwt       = 300
+  condition = DEPLOY = true
+  condition = RETURN = false
+
+  vpf_variable = VPF
+  fov          = 175.0
+  resolution   = 320
+  
+  a0 = 1.25  
+  a1 = 1.25  
+  b0 = 1.75  
+  b1 = 1.75  
+}
+
+Behavior=BHV_Waypoint
+{
+  name      = waypt_return_$(VNAME)
+  pwt       = 100
+  condition = RETURN = true
+  condition = DEPLOY = true
+  perpetual = true
+  endflag   = RETURN = false
+  endflag   = DEPLOY = false
+  endflag   = MISSION = complete
+  
+  speed = 2.0
+  capture_radius = 2.0
+  slip_radius = 8.0
+  points = 0,-20
+ }

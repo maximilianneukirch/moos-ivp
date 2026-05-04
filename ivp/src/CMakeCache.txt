@@ -15,7 +15,7 @@
 ########################
 
 //Dependencies for the target
-BHV_VisFlocking_LIB_DEPENDS:STATIC=general;MOOS::MOOS;general;geometry;general;ivpbuild;general;ivpcore;general;mbutil;
+BHV_VisFlocking_LIB_DEPENDS:STATIC=general;-Wl,--start-group;general;helmivp;general;logic;general;behaviors;general;bhvutil;general;geometry;general;ivpbuild;general;ivpcore;general;mbutil;general;-Wl,--end-group;
 
 //Path to a program.
 CMAKE_ADDR2LINE:FILEPATH=/usr/bin/addr2line
@@ -260,9 +260,6 @@ behaviors-colregs_LIB_DEPENDS:STATIC=general;mbutil;general;helmivp;general;beha
 
 //Dependencies for the target
 behaviors-marine_LIB_DEPENDS:STATIC=general;mbutil;general;helmivp;general;behaviors;general;geometry;
-
-//Dependencies for the target
-behaviors-visflocking_LIB_DEPENDS:STATIC=general;MOOS::MOOS;general;geometry;general;ivpbuild;general;ivpcore;general;mbutil;
 
 //Dependencies for the target
 dep_behaviors_LIB_DEPENDS:STATIC=general;mbutil;general;helmivp;general;behaviors;general;geometry;

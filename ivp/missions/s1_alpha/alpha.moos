@@ -30,12 +30,11 @@ ProcessConfig = ANTLER
   Run = pLogger       @ NewConsole = false
   Run = uSimMarineV23 @ NewConsole = false
   Run = pMarinePIDV22 @ NewConsole = false
-  Run = pHelmIvP      @ NewConsole = true
+  //Run = pHelmIvP      @ NewConsole = false
   Run = pMarineViewer	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
   Run = pRealm	      @ NewConsole = false
-  //Run = /home/stux/PROJECT/python-moos/Documentation/examples/simplecomms.py @ NewConsole = true
   Run = pSimVisionServer @ NewConsole = false
 }
 
@@ -122,9 +121,13 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
+  ivp_behavior_dir = /home/mneu/PROJECT/moos-ivp/lib
+
   behaviors  = alpha.bhv
   domain     = course:0:359:360
   domain     = speed:0:4:41
+
+  verbose = verbose
 }
 
 //------------------------------------------

@@ -76,6 +76,14 @@ bool BHV_VisFlocking::setParam(string param, string val)
   return false;
 }
 
+void BHV_VisFlocking::onSetParamComplete() {}
+void BHV_VisFlocking::onCompleteState() {}
+void BHV_VisFlocking::onIdleState() {}
+void BHV_VisFlocking::onHelmStart() {}
+void BHV_VisFlocking::postConfigStatus() {}
+void BHV_VisFlocking::onRunToIdleState() {}
+void BHV_VisFlocking::onIdleToRunState() {}
+
 //---------------------------------------------------------------
 // Procedure: onRunState
 
@@ -171,8 +179,9 @@ IvPFunction *BHV_VisFlocking::onRunState()
   IvPFunction *ivp_function = coupler.couple(crs_ipf, spd_ipf, 50, 50);
 
   // Speicher freigeben
-  if(crs_ipf) delete(crs_ipf);
-  if(spd_ipf)   delete(spd_ipf);
+  //if(crs_ipf) delete(crs_ipf);
+  //if(spd_ipf)   delete(spd_ipf);
 
   return(ivp_function);
+  //postWMessage("LOOOOOL");
 }

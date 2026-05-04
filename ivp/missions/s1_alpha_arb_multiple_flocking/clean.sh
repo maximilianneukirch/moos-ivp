@@ -25,8 +25,17 @@ for ARGI; do
     fi
 done
 
+
 #-------------------------------------------------------
-#  Part 2: Do the cleaning!
+#  Part 2: Do the process cleaning!
+#-------------------------------------------------------
+echo "Killing all MOOS processes..."
+ktm
+killall -9 pAntler pLogger MOOSDB
+
+
+#-------------------------------------------------------
+#  Part 3: Do the file cleaning!
 #-------------------------------------------------------
 if [ "${VERBOSE}" = "-v" ]; then
     echo "Cleaning: $PWD"
@@ -35,3 +44,6 @@ rm -rf  $VERBOSE   MOOSLog_*  XLOG_* LOG_*
 rm -f   $VERBOSE   *~  *.moos++
 rm -f   $VERBOSE   targ_*
 rm -f   $VERBOSE   .LastOpenedMOOSLogDirectory
+
+echo "Clean!"
+

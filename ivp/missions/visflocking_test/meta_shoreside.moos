@@ -1,0 +1,71 @@
+//-------------------------------------------------
+// FILE: meta_shoreside.moos
+//-------------------------------------------------
+ServerHost   = localhost
+ServerPort   = $(SPORT)
+Community    = $(SNAME)
+MOOSTimeWarp = $(WARP)
+
+LatOrigin  = 47.696170
+LongOrigin = 9.195229
+
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+  Run = MOOSDB           @ NewConsole = false
+  Run = pMarineViewer    @ NewConsole = false
+  Run = pShare           @ NewConsole = false
+  Run = uFldShoreBroker  @ NewConsole = false
+  Run = uFldNodeComms    @ NewConsole = false
+  
+  // ADDED: The centralized vision server
+  Run = pSimVisionServer @ NewConsole = false 
+}
+
+ProcessConfig = pShare
+{
+  AppTick    = 4
+  CommsTick  = 4
+  RunToClients = true
+
+  Input = route=127.0.0.1:$(SHARE_LISTEN)
+}
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick   = 4
+  CommsTick = 4
+  comms_range = 500 // How far boats can "see" each other
+}
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick   = 4
+  CommsTick = 4
+  qbridge = DEPLOY, RETURN
+  
+  // NEW: Route the vehicle-specific VPF back to the vehicle.
+  // The $V macro dynamically resolves to the vehicle's name (e.g., "sailor1").
+  BRIDGE  = src=VPF_$upV, alias=VPF
+}
+
+ProcessConfig = pSimVisionServer
+{
+    AppTick     = 4
+    CommsTick   = 4
+    fov         = 360.0
+    resolution  = 320
+    boat_length = 5.0
+    boat_beam   = 2.0
+}
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+  tiff_file  = Satellite_Lake_of_Constance.tif
+  
+  // Send DEPLOY to ALL vehicles simultaneously
+  button_one   = DEPLOY_ALL # DEPLOY_ALL=true # MOOS_MANUAL_OVERRIDE_ALL=false
+  button_two   = RETURN_ALL # RETURN_ALL=true
+}

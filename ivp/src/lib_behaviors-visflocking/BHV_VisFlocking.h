@@ -46,4 +46,15 @@ protected:
   double m_last_time;
 };
 
+#ifdef WIN32
+	// Windows needs to explicitly specify functions to export from a dll
+   #define IVP_EXPORT_FUNCTION __declspec(dllexport) 
+#else
+   #define IVP_EXPORT_FUNCTION
+#endif
+
+extern "C" {
+  IVP_EXPORT_FUNCTION IvPBehavior * createBehavior(std::string name, IvPDomain domain) 
+  {return new BHV_VisFlocking(domain);}
+}
 #endif

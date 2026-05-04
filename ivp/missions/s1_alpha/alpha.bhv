@@ -12,7 +12,7 @@ Behavior = BHV_VisFlocking
   condition = RETURN = false
 
   // Parameter, die wir in setParam() definiert haben
-  vpf_variable = VISION_PROJECTION_FIELD
+  vpf_variable = VPF_ALPHA
   fov          = 175.0
   resolution   = 320
   
