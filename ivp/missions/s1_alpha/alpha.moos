@@ -30,17 +30,17 @@ ProcessConfig = ANTLER
   Run = pLogger       @ NewConsole = false
   Run = uSimMarineV23 @ NewConsole = false
   Run = pMarinePIDV22 @ NewConsole = false
-  Run = pHelmIvP      @ NewConsole = false
+  Run = pHelmIvP      @ NewConsole = true
   Run = pMarineViewer	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
   Run = pRealm	      @ NewConsole = false
   //Run = /home/stux/PROJECT/python-moos/Documentation/examples/simplecomms.py @ NewConsole = true
-  Run = pSimVisionServer @ NewConsole = true
+  Run = pSimVisionServer @ NewConsole = false
 }
 
 //------------------------------------------
-// pLogger config block
+// pSimVisionServer config block
 
 ProcessConfig = pSimVisionServer
 {

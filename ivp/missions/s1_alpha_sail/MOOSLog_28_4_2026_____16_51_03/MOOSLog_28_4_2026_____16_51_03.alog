@@ -1,0 +1,1064 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% LOG FILE:       ./MOOSLog_28_4_2026_____16_51_03/MOOSLog_28_4_2026_____16_51_03.alog
+%% FILE OPENED ON  Thu Jan  1 01:00:00 1970
+%% LOGSTART             1777387862.4411
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+0.65924         LOGGER_DIRECTORY     pLogger         ./MOOSLog_28_4_2026_____16_51_03 
+0.72055         DB_EVENT             MOOSDB_alpha    connected=pHelmIvP 
+0.72092         IVPHELM_REGISTER     pHelmIvP        NODE_REPORT_LOCAL 
+1.06740         DESIRED_RUDDER       pMarinePIDV22   0.00000      
+1.06740         DESIRED_THRUST       pMarinePIDV22   0.00000      
+1.10581         DB_EVENT             MOOSDB_alpha    connected=uProcessWatch 
+1.28080         IVPHELM_REGISTER     pHelmIvP        IVPHELM_STATE 
+1.28081         IVPHELM_REGISTER     pHelmIvP        DB_CLIENTS 
+1.28081         IVPHELM_REGISTER     pHelmIvP        MOOS_MANUAL_OVERIDE 
+1.28082         IVPHELM_REGISTER     pHelmIvP        MOOS_MANUAL_OVERRIDE 
+1.28082         IVPHELM_REGISTER     pHelmIvP        RESTART_HELM 
+1.28082         IVPHELM_REGISTER     pHelmIvP        IVPHELM_REJOURNAL 
+1.28082         IVPHELM_REGISTER     pHelmIvP        BHV_ABLE_FILTER 
+1.28083         IVPHELM_REGISTER     pHelmIvP        NAV_X 
+1.28083         IVPHELM_REGISTER     pHelmIvP        NAV_Y 
+1.28083         IVPHELM_REGISTER     pHelmIvP        NAV_SPEED 
+1.28083         IVPHELM_REGISTER     pHelmIvP        NAV_HEADING 
+1.28083         IVPHELM_REGISTER     pHelmIvP        NAV_DEPTH 
+1.28084         IVPHELM_REGISTER     pHelmIvP        HELM_MAP_CLEAR 
+1.28084         IVPHELM_REGISTER     pHelmIvP        AIS_REPORT 
+1.28084         IVPHELM_REGISTER     pHelmIvP        NODE_REPORT 
+1.28084         IVPHELM_REGISTER     pHelmIvP        AIS_REPORT_LOCAL 
+1.28084         IVPHELM_REGISTER     pHelmIvP        NODE_REPORT_LOCAL 
+1.28086         IVPHELM_REGISTER     pHelmIvP        RETURN 
+1.28086         IVPHELM_REGISTER     pHelmIvP        DEPLOY 
+1.28086         IVPHELM_REGISTER     pHelmIvP        NAV_X 
+1.28086         IVPHELM_REGISTER     pHelmIvP        NAV_Y 
+1.28086         IVPHELM_REGISTER     pHelmIvP        NAV_SPEED 
+1.28087         IVPHELM_REGISTER     pHelmIvP        WPT_UPDATE 
+1.28087         IVPHELM_REGISTER     pHelmIvP        RETURN_UPDATE 
+1.28087         IVPHELM_REGISTER     pHelmIvP        SPD 
+1.28087         IVPHELM_REGISTER     pHelmIvP        CONST_SPD_RESET 
+1.28087         IVPHELM_REGISTER     pHelmIvP        SPEED_UPDATE 
+1.28087         PLOGGER_CMD          pHelmIvP        COPY_FILE_REQUEST = alpha.bhv 
+1.31339         DB_EVENT             MOOSDB_alpha    connected=pNodeReporter 
+1.31777         NAV_X                uSimMarineV22   0.00000      
+1.31777         NAV_Y                uSimMarineV22   -20.00000    
+1.31777         NAV_HEADING          uSimMarineV22   180.00000    
+1.31777         NAV_SPEED            uSimMarineV22   0.00000      
+1.31777         NAV_DEPTH            uSimMarineV22   0.00000      
+1.31777         NAV_PITCH            uSimMarineV22   0.00000      
+1.31777         NAV_YAW              uSimMarineV22   -3.14159     
+1.42204         DB_EVENT             MOOSDB_alpha    connected=pMarineViewer 
+1.52419         DB_EVENT             MOOSDB_alpha    connected=pRealm 
+1.53204         MOOS_DEBUG           pHelmIvP        pHelmIvP AllStop: ManualOverride 
+1.53205         DESIRED_SPEED        pHelmIvP        0.00000      
+1.53205         DESIRED_HEADING      pHelmIvP        0.00000      
+1.78485         DB_TIME              MOOSDB_alpha    1777387864.22595 
+1.78486         DB_UPTIME            MOOSDB_alpha    2.00000      
+1.78488         DB_CLIENTS           MOOSDB_alpha    pRealm,pMarineViewer,pNodeReporter,uProcessWatch,pHelmIvP,pMarinePIDV22,uSimMarineV22,pLogger, 
+1.78576         DB_QOS               MOOSDB_alpha    pHelmIvP=0:0.662088:0.329971:0,pLogger=0:1.2641:0.247955:0,pMarinePIDV22=0:0.831127:0.645876:0,pMarineViewer=0:0.241995:0.241995:0,pNodeReporter=0:0.598192:0.598192:0,pRealm=0:0.483036:0.483036:0,uProcessWatch=0:0.864029:0.864029:0,uSimMarineV22=0:0.983:0.207901:0, 
+1.82003         NAV_X                uSimMarineV22   0.00000      
+1.82003         NAV_Y                uSimMarineV22   -20.00000    
+1.82003         NAV_HEADING          uSimMarineV22   180.00000    
+1.82003         NAV_SPEED            uSimMarineV22   0.00000      
+1.82003         NAV_DEPTH            uSimMarineV22   0.00000      
+1.82003         NAV_PITCH            uSimMarineV22   0.00000      
+1.82003         NAV_YAW              uSimMarineV22   -3.14159     
+0.65924         LOGGER_DIRECTORY     pLogger         ./MOOSLog_28_4_2026_____16_51_03 
+1.06722         USM_DRIFT_SUMMARY    uSimMarineV22   ang=0, mag=0, xmag=0, ymag=0 
+1.06740         DESIRED_RUDDER       pMarinePIDV22   0.00000      
+1.06740         DESIRED_THRUST       pMarinePIDV22   0.00000      
+1.27334         PHELMIVP_PID         pHelmIvP        656.00000    
+1.28076         DEPLOY               pHelmIvP:HELM_VAR_INIT false 
+1.28080         RETURN               pHelmIvP:HELM_VAR_INIT false 
+1.28087         IVPHELM_REGISTER     pHelmIvP        SPEED_UPDATE 
+1.28087         PLOGGER_CMD          pHelmIvP        COPY_FILE_REQUEST = alpha.bhv 
+1.28088         IVPHELM_DOMAIN       pHelmIvP        speed,0,4,41:course,0,359,360 
+1.28088         IVPHELM_MODESET      pHelmIvP         
+1.28088         IVPHELM_BHV_ACTIVE_CNT pHelmIvP        0.00000      
+1.28089         IVPHELM_BHV_IDLE_CNT pHelmIvP        0.00000      
+1.28089         IVPHELM_BHV_DISABLED_CNT pHelmIvP        0.00000      
+1.28089         IVPHELM_BHV_RUNNING_CNT pHelmIvP        0.00000      
+1.52419         DB_EVENT             MOOSDB_alpha    connected=pRealm 
+1.53204         MOOS_DEBUG           pHelmIvP        pHelmIvP AllStop: ManualOverride 
+1.53205         IVPHELM_ALLSTOP      pHelmIvP        ManualOverride 
+1.53205         DESIRED_SPEED        pHelmIvP        0.00000      
+1.53205         DESIRED_HEADING      pHelmIvP        0.00000      
+1.65913         PROC_WATCH_TIME_WARP uProcessWatch   1.00000      
+1.65951         PROC_WATCH_EVENT     uProcessWatch   Noted to be present: [pLogger] 
+1.78424         IVPHELM_CPU          pHelmIvP        1.11761      
+1.78430         IVPHELM_STATE        pHelmIvP        PARK 
+1.78433         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+1.78485         DB_TIME              MOOSDB_alpha    1777387864.22595 
+1.78486         DB_UPTIME            MOOSDB_alpha    2.00000      
+1.78488         DB_CLIENTS           MOOSDB_alpha    pRealm,pMarineViewer,pNodeReporter,uProcessWatch,pHelmIvP,pMarinePIDV22,uSimMarineV22,pLogger, 
+1.78576         DB_QOS               MOOSDB_alpha    pHelmIvP=0:0.662088:0.329971:0,pLogger=0:1.2641:0.247955:0,pMarinePIDV22=0:0.831127:0.645876:0,pMarineViewer=0:0.241995:0.241995:0,pNodeReporter=0:0.598192:0.598192:0,pRealm=0:0.483036:0.483036:0,uProcessWatch=0:0.864029:0.864029:0,uSimMarineV22=0:0.983:0.207901:0, 
+1.81589         PNODEREPORTER_PID    pNodeReporter   677.00000    
+1.82003         NAV_DEPTH            uSimMarineV22   0.00000      
+1.82003         NAV_HEADING          uSimMarineV22   180.00000    
+1.82003         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+1.82003         NAV_LAT              uSimMarineV22   43.82512     
+1.82003         NAV_LONG             uSimMarineV22   -70.33040    
+1.82003         NAV_PITCH            uSimMarineV22   0.00000      
+1.82003         NAV_SPEED            uSimMarineV22   0.00000      
+1.82003         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+1.82003         NAV_X                uSimMarineV22   0.00000      
+1.82003         NAV_Y                uSimMarineV22   -20.00000    
+1.82003         NAV_YAW              uSimMarineV22   -3.14159     
+1.82003         NAV_Z                uSimMarineV22   -0.00000     
+1.82003         SIMULATION_MODE      uSimMarineV22   TRUE 
+1.82003         TRUE_X               uSimMarineV22   0.00000      
+1.82003         TRUE_Y               uSimMarineV22   -20.00000    
+1.91015         PROC_WATCH_SUMMARY   uProcessWatch   All Present 
+1.91015         PROC_WATCH_ALL_OK    uProcessWatch   true 
+1.91017         PROC_WATCH_FULL_SUMMARY uProcessWatch   pRealm(1/0),pNodeReporter(1/0),pMarineViewer(1/0),pHelmIvP(1/0),pMarinePIDV22(1/0),uSimMarineV22(1/0),pLogger(1/0) 
+1.91067         APPCAST              uProcessWatch   proc=uProcessWatch!@#iter=1!@#node=alpha!@#iter=1!@#messages=Summary: All Present!@!@Antler List: pHelmIvP,pLogger,pMarinePIDV22,pMarineViewer!@             pNodeReporter,pRealm,uSimMarineV22!@!@                                        Current    Max!@ProcName        Watch Reason   Status   CPU Load   CPU Load!@-------------   ------------   ------   --------   --------!@pHelmIvP        ANT       DB   [7;32mOK[0m       1.43       1.43!@pLogger         ANT       DB   [7;32mOK[0m       0.74       0.74!@pMarinePIDV22   ANT       DB   [7;32mOK[0m       1.71       1.71!@pMarineViewer   ANT       DB   [7;32mOK[0m       0.00       0.00!@pNodeReporter   ANT       DB   [7;32mOK[0m       0.00       0.00!@pRealm          ANT       DB   [7;32mOK[0m       0.00       0.00!@uSimMarineV22   ANT       DB   [7;32mOK[0m       1.33       1.33!@!@#!@#events_total=7!@#events=[0.00]: Noted to be present: [pRealm]!@[0.00]: Noted to be present: [pNodeReporter]!@[0.00]: Noted to be present: [pMarineViewer]!@[0.00]: Noted to be present: [pHelmIvP]!@[0.00]: Noted to be present: [pMarinePIDV22]!@[0.00]: Noted to be present: [uSimMarineV22]!@[0.00]: Noted to be present: [pLogger]!@#run_warning_total=0!@# 
+2.03494         IVPHELM_CPU          pHelmIvP        1.11761      
+2.03497         IVPHELM_STATE        pHelmIvP        PARK 
+2.03499         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+2.22676         HELM_MAP_CLEAR       pMarineViewer   0.00000      
+2.22697         APPCAST_REQ          pMarineViewer   node=all,app=all,duration=0.1,key=pMarineViewerstartup,thresh=any 
+2.22701         APPCAST              pMarineViewer   proc=pMarineViewer!@#iter=1!@#node=alpha!@#iter=1!@#messages=Tiff File: forrest19.tif!@Tiff File (Current): forrest19.tif!@------------------ !@Total GeoShapes:   0!@Clear GeoShapes:   0!@NodeReports Recd:  0!@Node Rpt Rate(R):  0!@Node Rpt Rate(W):  0!@Node Report Vars:  NODE_REPORT_LOCAL,NODE_REPORT!@Mission Hash:      mhash=260428-1651X-PRIM-FRED,utc=1777387864.44!@Mission Hash Var:  MISSION_HASH!@Block Heartbeat:   false!@------------------ !@AC Iterations:     1!@PMV Iterations:    0!@------------------ !@RC Count:          0!@WC Count:          0!@Draw Count:       1!@Draw Count Rate:  4.01406!@Curr Time:        1777387864.67!@Stale report thresh: 60!@Stale remove thresh: 180!@Elapsed:          0.00000!@CmdFolio size:    0!@!@Visual Settings: !@  window pan_x:  -90.00!@  window pan_y:  -280.00!@  window  zoom:  0.65!@  vehicle zoom:  1.5!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+2.23079         MISSION_HASH         pMarineViewer   mhash=260428-1651X-PRIM-FRED,utc=1777387864.44 
+2.23081         APPCAST_REQ          pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alpha,thresh=any 
+2.23950         APPCAST              pMarinePIDV22   proc=pMarinePIDV22!@#iter=24!@#node=alpha!@#iter=24!@#messages=Frequency:19.610!@Speed Factor:    20!@PID has_control: false!@  PID override: true!@  PID stale:    false!@!@PID Settings: !@----------------------------!@Thrust Cap Enabled: false!@Thrust Cap: 100.00000!@YAW_PID_KP             = 0.9!@YAW_PID_KD             = 0.3!@YAW_PID_KI             = 0.3!@YAW_PID_INTEGRAL_LIMIT = 0.07!@Max rudder: 100!@----------------------------!@SPEED_PID_KP             = 1!@SPEED_PID_KD             = 0!@SPEED_PID_KI             = 0!@SPEED_PID_INTEGRAL_LIMIT = 0.07!@Max thrust: 100!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+2.27109         REALMCAST_CHANNELS   pRealm          node=alpha#channels=MOOSDB_alpha,pHelmIvP,pLogger,pMarinePIDV22,pMarineViewer,pNodeReporter,pRealm,uProcessWatch,uSimMarineV22, 
+2.27130         APPCAST              pRealm          proc=pRealm!@#iter=1!@#node=alpha!@#iter=1!@#messages=Configuration: !@--------------------------------------------!@  RelCast Interval: 0.80!@  Summary Interval: 5.00!@  Hist Variables:   !@  Wrap Length:  90!@  Trunc Length: 270!@  Max Msg Hist: 10!@!@MOOS Community State: !@--------------------------------------------!@  MOOSDB Name: MOOSDB_alpha!@   Known Apps: 9!@   Known Apps: MOOSDB_alpha,pHelmIvP,pLogger,pMarinePIDV22,!@               pMarineViewer,pNodeReporter,pRealm,!@               uProcessWatch,uSimMarineV22!@  Total SVars: 131!@  Total PVars: 44!@  Unique Vars: 146!@  UTC Time:    1777387864.71!@  Local Time:  0.20!@  Summaries:   1!@!@Recent RealmCasts or WatchCasts:!@--------------------------------------------!@  Total RealmCasts: 0!@  Total WatchCasts: 0!@--------------------------------------------!@Count  Time  Client  Content!@-----  ----  ------  -------!@Currently Active Clients:!@--------------------------------------------!@Client  Active  Content!@------  ------  -------!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+2.28552         IVPHELM_CPU          pHelmIvP        0.29174      
+2.28556         IVPHELM_STATE        pHelmIvP        PARK 
+2.28557         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+2.28570         APPCAST              pHelmIvP        proc=pHelmIvP!@#iter=4!@#node=alpha!@#iter=4!@#messages=  Comms Policy: open!@  Helm Iteration:  0!@  IvP Functions:   0!@  Pieces (Formed): 0!@  Pieces (Cached): 0!@  Mode(s):         !@  SolveTime:   0.00   (max=0.00)!@  CreateTime:  0.00   (max=0.00)!@  LoopTime:    0.00   (max=0.00)!@  Halted:         false   (0 warnings)!@  Active Goal:    false!@Helm Decision: []!@Behaviors Spawnable: --------- (0)!@Behaviors Active: ---------- (0)!@Behaviors Running: --------- (0)!@Behaviors Disabled: --------- (0)!@Behaviors Idle: ------------ (0)!@  !@Behaviors Completed: ------- (0)!@!@Hold-On-Apps: none!@!@!@Variable  Behavior  Time  Iter  Value!@--------  --------  ----  ----  -----!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+2.31706         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,YAW=-1.5707963,TIME=1777387864.76,LENGTH=4 
+2.31736         APPCAST              pNodeReporter   proc=pNodeReporter!@#iter=1!@#node=alpha!@#iter=1!@#messages=tr_interval:0.5!@extrap_enabled:    false!@extrap_pos_thresh: 0.25!@extrap_hdg_thresh: 1!@extrap_max_gap:    0.25!@Paused: false!@Vehicle Configuration:!@----------------------------!@     Vehicle name: alpha!@     Vehicle type: kayak!@   Vehicle length: 4.0!@    Vehicle group: !@!@CrossFill Policy:!@----------------------------!@ cross_fill_policy: literal!@!@Blackout Configuration:!@----------------------------!@Blackout interval: 0.00!@Blackout variance: 0.00!@!@AltNav Config and Status:!@----------------------------!@   alt_nav_prefix: !@     alt_nav_name: _GT!@    alt_nav_group: !@ alt_nav_postings: 0!@!@Node Report Summary:!@----------------------------!@Reports Posted: 1!@ Latest Report: NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,!@                LAT=43.82511993,LON=-70.33039599,TYPE=kayak,!@                COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,!@                YAW=-1.5707963,TIME=1777387864.76,LENGTH=4!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+2.32131         NAV_X                uSimMarineV22   0.00000      
+2.32131         NAV_Y                uSimMarineV22   -20.00000    
+2.32131         NAV_LAT              uSimMarineV22   43.82512     
+2.32131         NAV_LONG             uSimMarineV22   -70.33040    
+2.32131         NAV_HEADING          uSimMarineV22   180.00000    
+2.32131         NAV_SPEED            uSimMarineV22   0.00000      
+2.32131         NAV_DEPTH            uSimMarineV22   0.00000      
+2.32131         SIMULATION_MODE      uSimMarineV22   TRUE 
+2.32131         NAV_Z                uSimMarineV22   -0.00000     
+2.32131         NAV_PITCH            uSimMarineV22   0.00000      
+2.32131         NAV_YAW              uSimMarineV22   -3.14159     
+2.32131         TRUE_X               uSimMarineV22   0.00000      
+2.32131         TRUE_Y               uSimMarineV22   -20.00000    
+2.32131         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+2.32131         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+2.32218         APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=6!@#node=alpha!@#iter=6!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+2.41279         APPCAST              uProcessWatch   proc=uProcessWatch!@#iter=3!@#node=alpha!@#iter=3!@#messages=Summary: All Present!@!@Antler List: pHelmIvP,pLogger,pMarinePIDV22,pMarineViewer!@             pNodeReporter,pRealm,uSimMarineV22!@!@                                        Current    Max!@ProcName        Watch Reason   Status   CPU Load   CPU Load!@-------------   ------------   ------   --------   --------!@pHelmIvP        ANT       DB   [7;32mOK[0m       1.43       1.43!@pLogger         ANT       DB   [7;32mOK[0m       0.74       0.74!@pMarinePIDV22   ANT       DB   [7;32mOK[0m       1.71       1.71!@pMarineViewer   ANT       DB   [7;32mOK[0m       14.15      14.15!@pNodeReporter   ANT       DB   [7;32mOK[0m       0.62       0.62!@pRealm          ANT       DB   [7;32mOK[0m       1.52       1.52!@uSimMarineV22   ANT       DB   [7;32mOK[0m       1.33       1.33!@!@#!@#events_total=7!@#events=[0.00]: Noted to be present: [pRealm]!@[0.00]: Noted to be present: [pNodeReporter]!@[0.00]: Noted to be present: [pMarineViewer]!@[0.00]: Noted to be present: [pHelmIvP]!@[0.00]: Noted to be present: [pMarinePIDV22]!@[0.00]: Noted to be present: [uSimMarineV22]!@[0.00]: Noted to be present: [pLogger]!@#run_warning_total=0!@# 
+2.47863         APPCAST_REQ          pMarineViewer   node=all,app=all,duration=1.1,key=pMarineViewernewproc,thresh=any 
+2.47948         APPCAST_REQ          pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alpha,thresh=any 
+2.53608         IVPHELM_CPU          pHelmIvP        0.29174      
+2.53613         IVPHELM_STATE        pHelmIvP        PARK 
+2.53614         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+2.72855         APPCAST_REQ          pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alpha,thresh=any 
+2.72857         APPCAST              pMarineViewer   proc=pMarineViewer!@#iter=3!@#node=alpha!@#iter=3!@#messages=Tiff File: forrest19.tif!@Tiff File (Current): forrest19.tif!@------------------ !@Total GeoShapes:   0!@Clear GeoShapes:   0!@NodeReports Recd:  1!@Node Rpt Rate(R):  4!@Node Rpt Rate(W):  4!@Node Report Vars:  NODE_REPORT_LOCAL,NODE_REPORT!@Mission Hash:      mhash=260428-1651X-PRIM-FRED,utc=1777387864.44!@Mission Hash Var:  MISSION_HASH!@Block Heartbeat:   false!@------------------ !@AC Iterations:     3!@PMV Iterations:    2!@------------------ !@RC Count:          0!@WC Count:          0!@Draw Count:       3!@Draw Count Rate:  3.99666!@Curr Time:        1777387865.17!@Stale report thresh: 60!@Stale remove thresh: 180!@Elapsed:          0.25109!@CmdFolio size:    0!@!@Visual Settings: !@  window pan_x:  -90.00!@  window pan_y:  -280.00!@  window  zoom:  0.65!@  vehicle zoom:  1.5!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+2.74687         APPCAST              pMarinePIDV22   proc=pMarinePIDV22!@#iter=34!@#node=alpha!@#iter=34!@#messages=Frequency:19.640!@Speed Factor:    20!@PID has_control: false!@  PID override: true!@  PID stale:    false!@!@PID Settings: !@----------------------------!@Thrust Cap Enabled: false!@Thrust Cap: 100.00000!@YAW_PID_KP             = 0.9!@YAW_PID_KD             = 0.3!@YAW_PID_KI             = 0.3!@YAW_PID_INTEGRAL_LIMIT = 0.07!@Max rudder: 100!@----------------------------!@SPEED_PID_KP             = 1!@SPEED_PID_KD             = 0!@SPEED_PID_KI             = 0!@SPEED_PID_INTEGRAL_LIMIT = 0.07!@Max thrust: 100!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+2.78798         IVPHELM_CPU          pHelmIvP        0.32109      
+2.78806         IVPHELM_STATE        pHelmIvP        PARK 
+2.78807         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+2.78825         APPCAST              pHelmIvP        proc=pHelmIvP!@#iter=6!@#node=alpha!@#iter=6!@#messages=  Comms Policy: open!@  Helm Iteration:  0!@  IvP Functions:   0!@  Pieces (Formed): 0!@  Pieces (Cached): 0!@  Mode(s):         !@  SolveTime:   0.00   (max=0.00)!@  CreateTime:  0.00   (max=0.00)!@  LoopTime:    0.00   (max=0.00)!@  Halted:         false   (0 warnings)!@  Active Goal:    false!@Helm Decision: []!@Behaviors Spawnable: --------- (0)!@Behaviors Active: ---------- (0)!@Behaviors Running: --------- (0)!@Behaviors Disabled: --------- (0)!@Behaviors Idle: ------------ (0)!@  !@Behaviors Completed: ------- (0)!@!@Hold-On-Apps: none!@!@!@Variable  Behavior  Time  Iter  Value!@--------  --------  ----  ----  -----!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+2.81835         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=1,YAW=-1.5707963,TIME=1777387865.26,LENGTH=4 
+2.81871         APPCAST              pNodeReporter   proc=pNodeReporter!@#iter=2!@#node=alpha!@#iter=2!@#messages=tr_interval:0.5!@extrap_enabled:    false!@extrap_pos_thresh: 0.25!@extrap_hdg_thresh: 1!@extrap_max_gap:    0.25!@Paused: false!@Vehicle Configuration:!@----------------------------!@     Vehicle name: alpha!@     Vehicle type: kayak!@   Vehicle length: 4.0!@    Vehicle group: !@!@CrossFill Policy:!@----------------------------!@ cross_fill_policy: literal!@!@Blackout Configuration:!@----------------------------!@Blackout interval: 0.00!@Blackout variance: 0.00!@!@AltNav Config and Status:!@----------------------------!@   alt_nav_prefix: !@     alt_nav_name: _GT!@    alt_nav_group: !@ alt_nav_postings: 0!@!@Node Report Summary:!@----------------------------!@Reports Posted: 2!@ Latest Report: NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,!@                LAT=43.82511993,LON=-70.33039599,TYPE=kayak,!@                COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,!@                INDEX=1,YAW=-1.5707963,TIME=1777387865.26,LENGTH=4!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+2.82320         NAV_X                uSimMarineV22   0.00000      
+2.82320         NAV_Y                uSimMarineV22   -20.00000    
+2.82320         NAV_LAT              uSimMarineV22   43.82512     
+2.82320         NAV_LONG             uSimMarineV22   -70.33040    
+2.82320         NAV_HEADING          uSimMarineV22   180.00000    
+2.82320         NAV_SPEED            uSimMarineV22   0.00000      
+2.82320         NAV_DEPTH            uSimMarineV22   0.00000      
+2.82320         SIMULATION_MODE      uSimMarineV22   TRUE 
+2.82320         NAV_Z                uSimMarineV22   -0.00000     
+2.82320         NAV_PITCH            uSimMarineV22   0.00000      
+2.82320         NAV_YAW              uSimMarineV22   -3.14159     
+2.82320         TRUE_X               uSimMarineV22   0.00000      
+2.82320         TRUE_Y               uSimMarineV22   -20.00000    
+2.82320         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+2.82320         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+2.82410         APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=8!@#node=alpha!@#iter=8!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+2.87873         APPCAST              pRealm          proc=pRealm!@#iter=4!@#node=alpha!@#iter=4!@#messages=Configuration: !@--------------------------------------------!@  RelCast Interval: 0.80!@  Summary Interval: 5.00!@  Hist Variables:   !@  Wrap Length:  90!@  Trunc Length: 270!@  Max Msg Hist: 10!@!@MOOS Community State: !@--------------------------------------------!@  MOOSDB Name: MOOSDB_alpha!@   Known Apps: 9!@   Known Apps: MOOSDB_alpha,pHelmIvP,pLogger,pMarinePIDV22,!@               pMarineViewer,pNodeReporter,pRealm,!@               uProcessWatch,uSimMarineV22!@  Total SVars: 131!@  Total PVars: 44!@  Unique Vars: 146!@  UTC Time:    1777387865.32!@  Local Time:  0.81!@  Summaries:   1!@!@Recent RealmCasts or WatchCasts:!@--------------------------------------------!@  Total RealmCasts: 0!@  Total WatchCasts: 0!@--------------------------------------------!@Count  Time  Client  Content!@-----  ----  ------  -------!@Currently Active Clients:!@--------------------------------------------!@Client  Active  Content!@------  ------  -------!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+2.91515         APPCAST              uProcessWatch   proc=uProcessWatch!@#iter=5!@#node=alpha!@#iter=5!@#messages=Summary: All Present!@!@Antler List: pHelmIvP,pLogger,pMarinePIDV22,pMarineViewer!@             pNodeReporter,pRealm,uSimMarineV22!@!@                                        Current    Max!@ProcName        Watch Reason   Status   CPU Load   CPU Load!@-------------   ------------   ------   --------   --------!@pHelmIvP        ANT       DB   [7;32mOK[0m       1.43       1.43!@pLogger         ANT       DB   [7;32mOK[0m       0.99       0.99!@pMarinePIDV22   ANT       DB   [7;32mOK[0m       1.71       1.71!@pMarineViewer   ANT       DB   [7;32mOK[0m       14.15      14.15!@pNodeReporter   ANT       DB   [7;32mOK[0m       0.62       0.62!@pRealm          ANT       DB   [7;32mOK[0m       1.52       1.52!@uSimMarineV22   ANT       DB   [7;32mOK[0m       1.33       1.33!@!@#!@#events_total=7!@#events=[0.00]: Noted to be present: [pRealm]!@[0.00]: Noted to be present: [pNodeReporter]!@[0.00]: Noted to be present: [pMarineViewer]!@[0.00]: Noted to be present: [pHelmIvP]!@[0.00]: Noted to be present: [pMarinePIDV22]!@[0.00]: Noted to be present: [uSimMarineV22]!@[0.00]: Noted to be present: [pLogger]!@#run_warning_total=0!@# 
+2.98033         APPCAST_REQ          pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alpha,thresh=any 
+3.03916         IVPHELM_CPU          pHelmIvP        0.32109      
+3.03919         IVPHELM_STATE        pHelmIvP        PARK 
+3.03920         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+0.65924         LOGGER_DIRECTORY     pLogger         ./MOOSLog_28_4_2026_____16_51_03 
+1.06722         USM_DRIFT_SUMMARY    uSimMarineV22   ang=0, mag=0, xmag=0, ymag=0 
+1.06740         DESIRED_RUDDER       pMarinePIDV22   0.00000      
+1.06740         DESIRED_THRUST       pMarinePIDV22   0.00000      
+1.27334         PHELMIVP_PID         pHelmIvP        656.00000    
+1.28076         DEPLOY               pHelmIvP:HELM_VAR_INIT false 
+1.28080         RETURN               pHelmIvP:HELM_VAR_INIT false 
+1.28087         IVPHELM_REGISTER     pHelmIvP        SPEED_UPDATE 
+1.28087         PLOGGER_CMD          pHelmIvP        COPY_FILE_REQUEST = alpha.bhv 
+1.28088         IVPHELM_DOMAIN       pHelmIvP        speed,0,4,41:course,0,359,360 
+1.28088         IVPHELM_MODESET      pHelmIvP         
+1.28088         IVPHELM_BHV_ACTIVE_CNT pHelmIvP        0.00000      
+1.28089         IVPHELM_BHV_IDLE_CNT pHelmIvP        0.00000      
+1.28089         IVPHELM_BHV_DISABLED_CNT pHelmIvP        0.00000      
+1.28089         IVPHELM_BHV_RUNNING_CNT pHelmIvP        0.00000      
+1.52419         DB_EVENT             MOOSDB_alpha    connected=pRealm 
+1.53204         MOOS_DEBUG           pHelmIvP        pHelmIvP AllStop: ManualOverride 
+1.53205         IVPHELM_ALLSTOP      pHelmIvP        ManualOverride 
+1.53205         DESIRED_SPEED        pHelmIvP        0.00000      
+1.53205         DESIRED_HEADING      pHelmIvP        0.00000      
+1.65913         PROC_WATCH_TIME_WARP uProcessWatch   1.00000      
+1.65951         PROC_WATCH_EVENT     uProcessWatch   Noted to be present: [pLogger] 
+1.78485         DB_TIME              MOOSDB_alpha    1777387864.22595 
+1.78486         DB_UPTIME            MOOSDB_alpha    2.00000      
+1.78488         DB_CLIENTS           MOOSDB_alpha    pRealm,pMarineViewer,pNodeReporter,uProcessWatch,pHelmIvP,pMarinePIDV22,uSimMarineV22,pLogger, 
+1.78576         DB_QOS               MOOSDB_alpha    pHelmIvP=0:0.662088:0.329971:0,pLogger=0:1.2641:0.247955:0,pMarinePIDV22=0:0.831127:0.645876:0,pMarineViewer=0:0.241995:0.241995:0,pNodeReporter=0:0.598192:0.598192:0,pRealm=0:0.483036:0.483036:0,uProcessWatch=0:0.864029:0.864029:0,uSimMarineV22=0:0.983:0.207901:0, 
+1.81589         PNODEREPORTER_PID    pNodeReporter   677.00000    
+1.91015         PROC_WATCH_SUMMARY   uProcessWatch   All Present 
+1.91015         PROC_WATCH_ALL_OK    uProcessWatch   true 
+1.91017         PROC_WATCH_FULL_SUMMARY uProcessWatch   pRealm(1/0),pNodeReporter(1/0),pMarineViewer(1/0),pHelmIvP(1/0),pMarinePIDV22(1/0),uSimMarineV22(1/0),pLogger(1/0) 
+1.97539         PMARINEVIEWER_PID    pMarineViewer   666.00000    
+2.22676         HELM_MAP_CLEAR       pMarineViewer   0.00000      
+2.22677         PMV_CONNECT          pMarineViewer   0.00000      
+2.23079         MISSION_HASH         pMarineViewer   mhash=260428-1651X-PRIM-FRED,utc=1777387864.44 
+2.23079         MHASH                pMarineViewer   PRIM-FRED 
+2.27109         REALMCAST_CHANNELS   pRealm          node=alpha#channels=MOOSDB_alpha,pHelmIvP,pLogger,pMarinePIDV22,pMarineViewer,pNodeReporter,pRealm,uProcessWatch,uSimMarineV22, 
+2.31706         NODE_REPORT_LOCAL_FIRST pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,YAW=-1.5707963,TIME=1777387864.76,LENGTH=4 
+2.81835         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=1,YAW=-1.5707963,TIME=1777387865.26,LENGTH=4 
+2.81841         PNR_POST_GAP         pNodeReporter   0.50131      
+2.82320         NAV_DEPTH            uSimMarineV22   0.00000      
+2.82320         NAV_HEADING          uSimMarineV22   180.00000    
+2.82320         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+2.82320         NAV_LAT              uSimMarineV22   43.82512     
+2.82320         NAV_LONG             uSimMarineV22   -70.33040    
+2.82320         NAV_PITCH            uSimMarineV22   0.00000      
+2.82320         NAV_SPEED            uSimMarineV22   0.00000      
+2.82320         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+2.82320         NAV_X                uSimMarineV22   0.00000      
+2.82320         NAV_Y                uSimMarineV22   -20.00000    
+2.82320         NAV_YAW              uSimMarineV22   -3.14159     
+2.82320         NAV_Z                uSimMarineV22   -0.00000     
+2.82320         SIMULATION_MODE      uSimMarineV22   TRUE 
+2.82320         TRUE_X               uSimMarineV22   0.00000      
+2.82320         TRUE_Y               uSimMarineV22   -20.00000    
+2.91515         APPCAST              uProcessWatch   proc=uProcessWatch!@#iter=5!@#node=alpha!@#iter=5!@#messages=Summary: All Present!@!@Antler List: pHelmIvP,pLogger,pMarinePIDV22,pMarineViewer!@             pNodeReporter,pRealm,uSimMarineV22!@!@                                        Current    Max!@ProcName        Watch Reason   Status   CPU Load   CPU Load!@-------------   ------------   ------   --------   --------!@pHelmIvP        ANT       DB   [7;32mOK[0m       1.43       1.43!@pLogger         ANT       DB   [7;32mOK[0m       0.99       0.99!@pMarinePIDV22   ANT       DB   [7;32mOK[0m       1.71       1.71!@pMarineViewer   ANT       DB   [7;32mOK[0m       14.15      14.15!@pNodeReporter   ANT       DB   [7;32mOK[0m       0.62       0.62!@pRealm          ANT       DB   [7;32mOK[0m       1.52       1.52!@uSimMarineV22   ANT       DB   [7;32mOK[0m       1.33       1.33!@!@#!@#events_total=7!@#events=[0.00]: Noted to be present: [pRealm]!@[0.00]: Noted to be present: [pNodeReporter]!@[0.00]: Noted to be present: [pMarineViewer]!@[0.00]: Noted to be present: [pHelmIvP]!@[0.00]: Noted to be present: [pMarinePIDV22]!@[0.00]: Noted to be present: [uSimMarineV22]!@[0.00]: Noted to be present: [pLogger]!@#run_warning_total=0!@# 
+2.98026         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+2.98033         APPCAST_REQ          pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alpha,thresh=any 
+2.98033         APPCAST_REQ_ALL      pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alpha,thresh=any 
+3.03916         IVPHELM_CPU          pHelmIvP        0.32109      
+3.03919         IVPHELM_STATE        pHelmIvP        PARK 
+3.03920         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+3.23028         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+3.23035         APPCAST_REQ          pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alpha,thresh=any 
+3.23035         APPCAST_REQ_ALL      pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alpha,thresh=any 
+3.23042         APPCAST              pMarineViewer   proc=pMarineViewer!@#iter=5!@#node=alpha!@#iter=5!@#messages=Tiff File: forrest19.tif!@Tiff File (Current): forrest19.tif!@------------------ !@Total GeoShapes:   0!@Clear GeoShapes:   0!@NodeReports Recd:  2!@Node Rpt Rate(R):  2.7!@Node Rpt Rate(W):  2.7!@Node Report Vars:  NODE_REPORT_LOCAL,NODE_REPORT!@Mission Hash:      mhash=260428-1651X-PRIM-FRED,utc=1777387864.44!@Mission Hash Var:  MISSION_HASH!@Block Heartbeat:   false!@------------------ !@AC Iterations:     5!@PMV Iterations:    4!@------------------ !@RC Count:          0!@WC Count:          0!@Draw Count:       5!@Draw Count Rate:  3.99178!@Curr Time:        1777387865.67!@Stale report thresh: 60!@Stale remove thresh: 180!@Elapsed:          0.25139!@CmdFolio size:    0!@!@Visual Settings: !@  window pan_x:  -90.00!@  window pan_y:  -280.00!@  window  zoom:  0.65!@  vehicle zoom:  1.5!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+3.25682         APPCAST              pMarinePIDV22   proc=pMarinePIDV22!@#iter=44!@#node=alpha!@#iter=44!@#messages=Frequency:19.632!@Speed Factor:    20!@PID has_control: false!@  PID override: true!@  PID stale:    false!@!@PID Settings: !@----------------------------!@Thrust Cap Enabled: false!@Thrust Cap: 100.00000!@YAW_PID_KP             = 0.9!@YAW_PID_KD             = 0.3!@YAW_PID_KI             = 0.3!@YAW_PID_INTEGRAL_LIMIT = 0.07!@Max rudder: 100!@----------------------------!@SPEED_PID_KP             = 1!@SPEED_PID_KD             = 0!@SPEED_PID_KI             = 0!@SPEED_PID_INTEGRAL_LIMIT = 0.07!@Max thrust: 100!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+3.29080         IVPHELM_CPU          pHelmIvP        0.35237      
+3.29083         IVPHELM_STATE        pHelmIvP        PARK 
+3.29085         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+3.29098         APPCAST              pHelmIvP        proc=pHelmIvP!@#iter=8!@#node=alpha!@#iter=8!@#messages=  Comms Policy: open!@  Helm Iteration:  0!@  IvP Functions:   0!@  Pieces (Formed): 0!@  Pieces (Cached): 0!@  Mode(s):         !@  SolveTime:   0.00   (max=0.00)!@  CreateTime:  0.00   (max=0.00)!@  LoopTime:    0.00   (max=0.00)!@  Halted:         false   (0 warnings)!@  Active Goal:    false!@Helm Decision: []!@Behaviors Spawnable: --------- (0)!@Behaviors Active: ---------- (0)!@Behaviors Running: --------- (0)!@Behaviors Disabled: --------- (0)!@Behaviors Idle: ------------ (0)!@  !@Behaviors Completed: ------- (0)!@!@Hold-On-Apps: none!@!@!@Variable  Behavior  Time  Iter  Value!@--------  --------  ----  ----  -----!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+3.32004         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=2,YAW=-1.5707963,TIME=1777387865.76,LENGTH=4 
+3.32011         PNR_POST_GAP         pNodeReporter   0.50167      
+3.32054         APPCAST              pNodeReporter   proc=pNodeReporter!@#iter=3!@#node=alpha!@#iter=3!@#messages=tr_interval:0.5!@extrap_enabled:    false!@extrap_pos_thresh: 0.25!@extrap_hdg_thresh: 1!@extrap_max_gap:    0.25!@Paused: false!@Vehicle Configuration:!@----------------------------!@     Vehicle name: alpha!@     Vehicle type: kayak!@   Vehicle length: 4.0!@    Vehicle group: !@!@CrossFill Policy:!@----------------------------!@ cross_fill_policy: literal!@!@Blackout Configuration:!@----------------------------!@Blackout interval: 0.00!@Blackout variance: 0.00!@!@AltNav Config and Status:!@----------------------------!@   alt_nav_prefix: !@     alt_nav_name: _GT!@    alt_nav_group: !@ alt_nav_postings: 0!@!@Node Report Summary:!@----------------------------!@Reports Posted: 3!@ Latest Report: NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,!@                LAT=43.82511993,LON=-70.33039599,TYPE=kayak,!@                COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,!@                INDEX=2,YAW=-1.5707963,TIME=1777387865.76,LENGTH=4!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+3.32625         NAV_X                uSimMarineV22   0.00000      
+3.32625         NAV_Y                uSimMarineV22   -20.00000    
+3.32625         NAV_LAT              uSimMarineV22   43.82512     
+3.32625         NAV_LONG             uSimMarineV22   -70.33040    
+3.32625         NAV_HEADING          uSimMarineV22   180.00000    
+3.32625         NAV_SPEED            uSimMarineV22   0.00000      
+3.32625         NAV_DEPTH            uSimMarineV22   0.00000      
+3.32625         SIMULATION_MODE      uSimMarineV22   TRUE 
+3.32625         NAV_Z                uSimMarineV22   -0.00000     
+3.32625         NAV_PITCH            uSimMarineV22   0.00000      
+3.32625         NAV_YAW              uSimMarineV22   -3.14159     
+3.32625         TRUE_X               uSimMarineV22   0.00000      
+3.32625         TRUE_Y               uSimMarineV22   -20.00000    
+3.32625         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+3.32625         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+3.32723         APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=10!@#node=alpha!@#iter=10!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+3.41885         APPCAST              uProcessWatch   proc=uProcessWatch!@#iter=7!@#node=alpha!@#iter=7!@#messages=Summary: All Present!@!@Antler List: pHelmIvP,pLogger,pMarinePIDV22,pMarineViewer!@             pNodeReporter,pRealm,uSimMarineV22!@!@                                        Current    Max!@ProcName        Watch Reason   Status   CPU Load   CPU Load!@-------------   ------------   ------   --------   --------!@pHelmIvP        ANT       DB   [7;32mOK[0m       1.43       1.43!@pLogger         ANT       DB   [7;32mOK[0m       0.99       0.99!@pMarinePIDV22   ANT       DB   [7;32mOK[0m       0.59       1.71!@pMarineViewer   ANT       DB   [7;32mOK[0m       14.15      14.15!@pNodeReporter   ANT       DB   [7;32mOK[0m       0.62       0.62!@pRealm          ANT       DB   [7;32mOK[0m       1.52       1.52!@uSimMarineV22   ANT       DB   [7;32mOK[0m       0.53       1.33!@!@#!@#events_total=7!@#events=[0.00]: Noted to be present: [pRealm]!@[0.00]: Noted to be present: [pNodeReporter]!@[0.00]: Noted to be present: [pMarineViewer]!@[0.00]: Noted to be present: [pHelmIvP]!@[0.00]: Noted to be present: [pMarinePIDV22]!@[0.00]: Noted to be present: [uSimMarineV22]!@[0.00]: Noted to be present: [pLogger]!@#run_warning_total=0!@# 
+3.48311         APPCAST              pRealm          proc=pRealm!@#iter=7!@#node=alpha!@#iter=7!@#messages=Configuration: !@--------------------------------------------!@  RelCast Interval: 0.80!@  Summary Interval: 5.00!@  Hist Variables:   !@  Wrap Length:  90!@  Trunc Length: 270!@  Max Msg Hist: 10!@!@MOOS Community State: !@--------------------------------------------!@  MOOSDB Name: MOOSDB_alpha!@   Known Apps: 9!@   Known Apps: MOOSDB_alpha,pHelmIvP,pLogger,pMarinePIDV22,!@               pMarineViewer,pNodeReporter,pRealm,!@               uProcessWatch,uSimMarineV22!@  Total SVars: 131!@  Total PVars: 44!@  Unique Vars: 146!@  UTC Time:    1777387865.92!@  Local Time:  1.41!@  Summaries:   1!@!@Recent RealmCasts or WatchCasts:!@--------------------------------------------!@  Total RealmCasts: 0!@  Total WatchCasts: 0!@--------------------------------------------!@Count  Time  Client  Content!@-----  ----  ------  -------!@Currently Active Clients:!@--------------------------------------------!@Client  Active  Content!@------  ------  -------!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+3.48336         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+3.48350         APPCAST_REQ          pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alpha,thresh=any 
+3.48350         APPCAST_REQ_ALL      pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alpha,thresh=any 
+3.54203         IVPHELM_CPU          pHelmIvP        0.35237      
+3.54203         IVPHELM_STATE        pHelmIvP        PARK 
+3.54204         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+3.73247         APPCAST              pMarineViewer   proc=pMarineViewer!@#iter=7!@#node=alpha!@#iter=7!@#messages=Tiff File: forrest19.tif!@Tiff File (Current): forrest19.tif!@------------------ !@Total GeoShapes:   0!@Clear GeoShapes:   0!@NodeReports Recd:  3!@Node Rpt Rate(R):  2.4!@Node Rpt Rate(W):  2.4!@Node Report Vars:  NODE_REPORT_LOCAL,NODE_REPORT!@Mission Hash:      mhash=260428-1651X-PRIM-FRED,utc=1777387864.44!@Mission Hash Var:  MISSION_HASH!@Block Heartbeat:   false!@------------------ !@AC Iterations:     7!@PMV Iterations:    6!@------------------ !@RC Count:          0!@WC Count:          0!@Draw Count:       7!@Draw Count Rate:  3.9895!@Curr Time:        1777387865.92!@Stale report thresh: 60!@Stale remove thresh: 180!@Elapsed:          0.25156!@CmdFolio size:    0!@!@Visual Settings: !@  window pan_x:  -90.00!@  window pan_y:  -280.00!@  window  zoom:  0.65!@  vehicle zoom:  1.5!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+3.73262         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+3.73267         APPCAST_REQ          pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alpha,thresh=any 
+3.73268         APPCAST_REQ_ALL      pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alpha,thresh=any 
+3.76872         APPCAST              pMarinePIDV22   proc=pMarinePIDV22!@#iter=54!@#node=alpha!@#iter=54!@#messages=Frequency:19.614!@Speed Factor:    20!@PID has_control: false!@  PID override: true!@  PID stale:    true!@!@PID Settings: !@----------------------------!@Thrust Cap Enabled: false!@Thrust Cap: 100.00000!@YAW_PID_KP             = 0.9!@YAW_PID_KD             = 0.3!@YAW_PID_KI             = 0.3!@YAW_PID_INTEGRAL_LIMIT = 0.07!@Max rudder: 100!@----------------------------!@SPEED_PID_KP             = 1!@SPEED_PID_KD             = 0!@SPEED_PID_KI             = 0!@SPEED_PID_INTEGRAL_LIMIT = 0.07!@Max thrust: 100!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+3.79342         IVPHELM_CPU          pHelmIvP        0.36349      
+3.79351         IVPHELM_STATE        pHelmIvP        PARK 
+3.79353         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+3.79374         APPCAST              pHelmIvP        proc=pHelmIvP!@#iter=10!@#node=alpha!@#iter=10!@#messages=  Comms Policy: open!@  Helm Iteration:  0!@  IvP Functions:   0!@  Pieces (Formed): 0!@  Pieces (Cached): 0!@  Mode(s):         !@  SolveTime:   0.00   (max=0.00)!@  CreateTime:  0.00   (max=0.00)!@  LoopTime:    0.00   (max=0.00)!@  Halted:         false   (0 warnings)!@  Active Goal:    false!@Helm Decision: []!@Behaviors Spawnable: --------- (0)!@Behaviors Active: ---------- (0)!@Behaviors Running: --------- (0)!@Behaviors Disabled: --------- (0)!@Behaviors Idle: ------------ (0)!@  !@Behaviors Completed: ------- (0)!@!@Hold-On-Apps: none!@!@!@Variable  Behavior  Time  Iter  Value!@--------  --------  ----  ----  -----!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+3.79448         DB_TIME              MOOSDB_alpha    1777387866.23558 
+3.79450         DB_UPTIME            MOOSDB_alpha    4.00964      
+3.79453         DB_CLIENTS           MOOSDB_alpha    pRealm,pMarineViewer,pNodeReporter,uProcessWatch,pHelmIvP,pMarinePIDV22,uSimMarineV22,pLogger, 
+3.79701         DB_QOS               MOOSDB_alpha    pHelmIvP=0:0.67687:0.329971:0,pLogger=0:1.2641:0.247955:0,pMarinePIDV22=0:0.831127:0.328064:0,pMarineViewer=0:1.01995:0.241995:0,pNodeReporter=0:0.70405:0.363111:0,pRealm=0:0.483036:0.287056:0,uProcessWatch=0:0.864029:0.262022:0,uSimMarineV22=0:0.983:0.207901:0, 
+3.82100         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=3,YAW=-1.5707963,TIME=1777387866.26,LENGTH=4 
+3.82106         PNR_POST_GAP         pNodeReporter   0.50098      
+3.82137         APPCAST              pNodeReporter   proc=pNodeReporter!@#iter=4!@#node=alpha!@#iter=4!@#messages=tr_interval:0.5!@extrap_enabled:    false!@extrap_pos_thresh: 0.25!@extrap_hdg_thresh: 1!@extrap_max_gap:    0.25!@Paused: false!@Vehicle Configuration:!@----------------------------!@     Vehicle name: alpha!@     Vehicle type: kayak!@   Vehicle length: 4.0!@    Vehicle group: !@!@CrossFill Policy:!@----------------------------!@ cross_fill_policy: literal!@!@Blackout Configuration:!@----------------------------!@Blackout interval: 0.00!@Blackout variance: 0.00!@!@AltNav Config and Status:!@----------------------------!@   alt_nav_prefix: !@     alt_nav_name: _GT!@    alt_nav_group: !@ alt_nav_postings: 0!@!@Node Report Summary:!@----------------------------!@Reports Posted: 4!@ Latest Report: NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,!@                LAT=43.82511993,LON=-70.33039599,TYPE=kayak,!@                COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,!@                INDEX=3,YAW=-1.5707963,TIME=1777387866.26,LENGTH=4!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+3.82820         NAV_X                uSimMarineV22   0.00000      
+3.82820         NAV_Y                uSimMarineV22   -20.00000    
+3.82820         NAV_LAT              uSimMarineV22   43.82512     
+3.82820         NAV_LONG             uSimMarineV22   -70.33040    
+3.82820         NAV_HEADING          uSimMarineV22   180.00000    
+3.82820         NAV_SPEED            uSimMarineV22   0.00000      
+3.82820         NAV_DEPTH            uSimMarineV22   0.00000      
+3.82820         SIMULATION_MODE      uSimMarineV22   TRUE 
+3.82820         NAV_Z                uSimMarineV22   -0.00000     
+3.82820         NAV_PITCH            uSimMarineV22   0.00000      
+3.82820         NAV_YAW              uSimMarineV22   -3.14159     
+3.82820         TRUE_X               uSimMarineV22   0.00000      
+3.82820         TRUE_Y               uSimMarineV22   -20.00000    
+3.82820         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+3.82820         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+3.82951         APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=12!@#node=alpha!@#iter=12!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+3.92104         APPCAST              uProcessWatch   proc=uProcessWatch!@#iter=9!@#node=alpha!@#iter=9!@#messages=Summary: All Present!@!@Antler List: pHelmIvP,pLogger,pMarinePIDV22,pMarineViewer!@             pNodeReporter,pRealm,uSimMarineV22!@!@                                        Current    Max!@ProcName        Watch Reason   Status   CPU Load   CPU Load!@-------------   ------------   ------   --------   --------!@pHelmIvP        ANT       DB   [7;32mOK[0m       0.35       1.43!@pLogger         ANT       DB   [7;32mOK[0m       0.99       0.99!@pMarinePIDV22   ANT       DB   [7;32mOK[0m       0.59       1.71!@pMarineViewer   ANT       DB   [7;32mOK[0m       14.15      14.15!@pNodeReporter   ANT       DB   [7;32mOK[0m       0.62       0.62!@pRealm          ANT       DB   [7;32mOK[0m       1.52       1.52!@uSimMarineV22   ANT       DB   [7;32mOK[0m       0.53       1.33!@!@#!@#events_total=7!@#events=[0.00]: Noted to be present: [pRealm]!@[0.00]: Noted to be present: [pNodeReporter]!@[0.00]: Noted to be present: [pMarineViewer]!@[0.00]: Noted to be present: [pHelmIvP]!@[0.00]: Noted to be present: [pMarinePIDV22]!@[0.00]: Noted to be present: [uSimMarineV22]!@[0.00]: Noted to be present: [pLogger]!@#run_warning_total=0!@# 
+3.98392         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+3.98402         APPCAST_REQ          pMarineViewer   node=alpha,app=uSimMarineV22,duration=3.0,key=pMarineViewer:alphaapp,thresh=any 
+3.98403         APPCAST_REQ          pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alphagen,thresh=run_warning 
+3.98404         APPCAST_REQ_ALL      pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alphagen,thresh=run_warning 
+4.04478         IVPHELM_CPU          pHelmIvP        0.36349      
+4.04482         IVPHELM_STATE        pHelmIvP        PARK 
+4.04483         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+4.08999         APPCAST              pRealm          proc=pRealm!@#iter=10!@#node=alpha!@#iter=10!@#messages=Configuration: !@--------------------------------------------!@  RelCast Interval: 0.80!@  Summary Interval: 5.00!@  Hist Variables:   !@  Wrap Length:  90!@  Trunc Length: 270!@  Max Msg Hist: 10!@!@MOOS Community State: !@--------------------------------------------!@  MOOSDB Name: MOOSDB_alpha!@   Known Apps: 9!@   Known Apps: MOOSDB_alpha,pHelmIvP,pLogger,pMarinePIDV22,!@               pMarineViewer,pNodeReporter,pRealm,!@               uProcessWatch,uSimMarineV22!@  Total SVars: 161!@  Total PVars: 65!@  Unique Vars: 162!@  UTC Time:    1777387866.53!@  Local Time:  2.02!@  Summaries:   1!@!@Recent RealmCasts or WatchCasts:!@--------------------------------------------!@  Total RealmCasts: 0!@  Total WatchCasts: 0!@--------------------------------------------!@Count  Time  Client  Content!@-----  ----  ------  -------!@Currently Active Clients:!@--------------------------------------------!@Client  Active  Content!@------  ------  -------!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+0.65924         LOGGER_DIRECTORY     pLogger         ./MOOSLog_28_4_2026_____16_51_03 
+1.06722         USM_DRIFT_SUMMARY    uSimMarineV22   ang=0, mag=0, xmag=0, ymag=0 
+1.06740         DESIRED_RUDDER       pMarinePIDV22   0.00000      
+1.06740         DESIRED_THRUST       pMarinePIDV22   0.00000      
+1.27334         PHELMIVP_PID         pHelmIvP        656.00000    
+1.28076         DEPLOY               pHelmIvP:HELM_VAR_INIT false 
+1.28080         RETURN               pHelmIvP:HELM_VAR_INIT false 
+1.28087         IVPHELM_REGISTER     pHelmIvP        SPEED_UPDATE 
+1.28087         PLOGGER_CMD          pHelmIvP        COPY_FILE_REQUEST = alpha.bhv 
+1.28088         IVPHELM_DOMAIN       pHelmIvP        speed,0,4,41:course,0,359,360 
+1.28088         IVPHELM_MODESET      pHelmIvP         
+1.28088         IVPHELM_BHV_ACTIVE_CNT pHelmIvP        0.00000      
+1.28089         IVPHELM_BHV_IDLE_CNT pHelmIvP        0.00000      
+1.28089         IVPHELM_BHV_DISABLED_CNT pHelmIvP        0.00000      
+1.28089         IVPHELM_BHV_RUNNING_CNT pHelmIvP        0.00000      
+1.52419         DB_EVENT             MOOSDB_alpha    connected=pRealm 
+1.53204         MOOS_DEBUG           pHelmIvP        pHelmIvP AllStop: ManualOverride 
+1.53205         IVPHELM_ALLSTOP      pHelmIvP        ManualOverride 
+1.53205         DESIRED_SPEED        pHelmIvP        0.00000      
+1.53205         DESIRED_HEADING      pHelmIvP        0.00000      
+1.65913         PROC_WATCH_TIME_WARP uProcessWatch   1.00000      
+1.65951         PROC_WATCH_EVENT     uProcessWatch   Noted to be present: [pLogger] 
+1.81589         PNODEREPORTER_PID    pNodeReporter   677.00000    
+1.91015         PROC_WATCH_SUMMARY   uProcessWatch   All Present 
+1.91015         PROC_WATCH_ALL_OK    uProcessWatch   true 
+1.91017         PROC_WATCH_FULL_SUMMARY uProcessWatch   pRealm(1/0),pNodeReporter(1/0),pMarineViewer(1/0),pHelmIvP(1/0),pMarinePIDV22(1/0),uSimMarineV22(1/0),pLogger(1/0) 
+1.97539         PMARINEVIEWER_PID    pMarineViewer   666.00000    
+2.22676         HELM_MAP_CLEAR       pMarineViewer   0.00000      
+2.22677         PMV_CONNECT          pMarineViewer   0.00000      
+2.23079         MISSION_HASH         pMarineViewer   mhash=260428-1651X-PRIM-FRED,utc=1777387864.44 
+2.23079         MHASH                pMarineViewer   PRIM-FRED 
+2.27109         REALMCAST_CHANNELS   pRealm          node=alpha#channels=MOOSDB_alpha,pHelmIvP,pLogger,pMarinePIDV22,pMarineViewer,pNodeReporter,pRealm,uProcessWatch,uSimMarineV22, 
+2.31706         NODE_REPORT_LOCAL_FIRST pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,YAW=-1.5707963,TIME=1777387864.76,LENGTH=4 
+3.79448         DB_TIME              MOOSDB_alpha    1777387866.23558 
+3.79450         DB_UPTIME            MOOSDB_alpha    4.00964      
+3.79453         DB_CLIENTS           MOOSDB_alpha    pRealm,pMarineViewer,pNodeReporter,uProcessWatch,pHelmIvP,pMarinePIDV22,uSimMarineV22,pLogger, 
+3.79701         DB_QOS               MOOSDB_alpha    pHelmIvP=0:0.67687:0.329971:0,pLogger=0:1.2641:0.247955:0,pMarinePIDV22=0:0.831127:0.328064:0,pMarineViewer=0:1.01995:0.241995:0,pNodeReporter=0:0.70405:0.363111:0,pRealm=0:0.483036:0.287056:0,uProcessWatch=0:0.864029:0.262022:0,uSimMarineV22=0:0.983:0.207901:0, 
+3.82100         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=3,YAW=-1.5707963,TIME=1777387866.26,LENGTH=4 
+3.82106         PNR_POST_GAP         pNodeReporter   0.50098      
+3.82820         NAV_DEPTH            uSimMarineV22   0.00000      
+3.82820         NAV_HEADING          uSimMarineV22   180.00000    
+3.82820         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+3.82820         NAV_LAT              uSimMarineV22   43.82512     
+3.82820         NAV_LONG             uSimMarineV22   -70.33040    
+3.82820         NAV_PITCH            uSimMarineV22   0.00000      
+3.82820         NAV_SPEED            uSimMarineV22   0.00000      
+3.82820         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+3.82820         NAV_X                uSimMarineV22   0.00000      
+3.82820         NAV_Y                uSimMarineV22   -20.00000    
+3.82820         NAV_YAW              uSimMarineV22   -3.14159     
+3.82820         NAV_Z                uSimMarineV22   -0.00000     
+3.82820         SIMULATION_MODE      uSimMarineV22   TRUE 
+3.82820         TRUE_X               uSimMarineV22   0.00000      
+3.82820         TRUE_Y               uSimMarineV22   -20.00000    
+3.98403         APPCAST_REQ_ALPHA    pMarineViewer   node=alpha,app=uSimMarineV22,duration=3.0,key=pMarineViewer:alphaapp,thresh=any 
+3.98403         APPCAST_REQ          pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alphagen,thresh=run_warning 
+3.98404         APPCAST_REQ_ALL      pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alphagen,thresh=run_warning 
+4.04478         IVPHELM_CPU          pHelmIvP        0.36349      
+4.04482         IVPHELM_STATE        pHelmIvP        PARK 
+4.04483         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+4.23380         APPCAST              pMarineViewer   proc=pMarineViewer!@#iter=9!@#node=alpha!@#iter=9!@#messages=Tiff File: forrest19.tif!@Tiff File (Current): forrest19.tif!@------------------ !@Total GeoShapes:   0!@Clear GeoShapes:   0!@NodeReports Recd:  4!@Node Rpt Rate(R):  2.3!@Node Rpt Rate(W):  2.3!@Node Report Vars:  NODE_REPORT_LOCAL,NODE_REPORT!@Mission Hash:      mhash=260428-1651X-PRIM-FRED,utc=1777387864.44!@Mission Hash Var:  MISSION_HASH!@Block Heartbeat:   false!@------------------ !@AC Iterations:     9!@PMV Iterations:    8!@------------------ !@RC Count:          0!@WC Count:          0!@Draw Count:       9!@Draw Count Rate:  3.98939!@Curr Time:        1777387866.42!@Stale report thresh: 60!@Stale remove thresh: 180!@Elapsed:          0.25081!@CmdFolio size:    0!@!@Visual Settings: !@  window pan_x:  -90.00!@  window pan_y:  -280.00!@  window  zoom:  0.65!@  vehicle zoom:  1.5!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+4.23406         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+4.23406         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+4.27906         PID_STALE            pMarinePIDV22   Stale DesSpd:2.752 
+4.27918         APPCAST              pMarinePIDV22   proc=pMarinePIDV22!@#iter=64!@#node=alpha!@#iter=64!@#messages=Frequency:19.611!@Speed Factor:    20!@PID has_control: false!@  PID override: true!@  PID stale:    true!@!@PID Settings: !@----------------------------!@Thrust Cap Enabled: false!@Thrust Cap: 100.00000!@YAW_PID_KP             = 0.9!@YAW_PID_KD             = 0.3!@YAW_PID_KI             = 0.3!@YAW_PID_INTEGRAL_LIMIT = 0.07!@Max rudder: 100!@----------------------------!@SPEED_PID_KP             = 1!@SPEED_PID_KD             = 0!@SPEED_PID_KI             = 0!@SPEED_PID_INTEGRAL_LIMIT = 0.07!@Max thrust: 100!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+4.27918         APPCAST              pMarinePIDV22   proc=pMarinePIDV22!@#iter=64!@#node=alpha!@#iter=64!@#messages=Frequency:19.611!@Speed Factor:    20!@PID has_control: false!@  PID override: true!@  PID stale:    true!@!@PID Settings: !@----------------------------!@Thrust Cap Enabled: false!@Thrust Cap: 100.00000!@YAW_PID_KP             = 0.9!@YAW_PID_KD             = 0.3!@YAW_PID_KI             = 0.3!@YAW_PID_INTEGRAL_LIMIT = 0.07!@Max rudder: 100!@----------------------------!@SPEED_PID_KP             = 1!@SPEED_PID_KD             = 0!@SPEED_PID_KI             = 0!@SPEED_PID_INTEGRAL_LIMIT = 0.07!@Max thrust: 100!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+4.29523         IVPHELM_CPU          pHelmIvP        0.46927      
+4.29528         IVPHELM_STATE        pHelmIvP        PARK 
+4.29530         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+4.29548         APPCAST              pHelmIvP        proc=pHelmIvP!@#iter=12!@#node=alpha!@#iter=12!@#messages=  Comms Policy: open!@  Helm Iteration:  0!@  IvP Functions:   0!@  Pieces (Formed): 0!@  Pieces (Cached): 0!@  Mode(s):         !@  SolveTime:   0.00   (max=0.00)!@  CreateTime:  0.00   (max=0.00)!@  LoopTime:    0.00   (max=0.00)!@  Halted:         false   (0 warnings)!@  Active Goal:    false!@Helm Decision: []!@Behaviors Spawnable: --------- (0)!@Behaviors Active: ---------- (0)!@Behaviors Running: --------- (0)!@Behaviors Disabled: --------- (0)!@Behaviors Idle: ------------ (0)!@  !@Behaviors Completed: ------- (0)!@!@Hold-On-Apps: none!@!@!@Variable  Behavior  Time  Iter  Value!@--------  --------  ----  ----  -----!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+4.32281         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=4,YAW=-1.5707963,TIME=1777387866.76,LENGTH=4 
+4.32281         PNR_POST_GAP         pNodeReporter   0.50180      
+4.32313         APPCAST              pNodeReporter   proc=pNodeReporter!@#iter=5!@#node=alpha!@#iter=5!@#messages=tr_interval:0.5!@extrap_enabled:    false!@extrap_pos_thresh: 0.25!@extrap_hdg_thresh: 1!@extrap_max_gap:    0.25!@Paused: false!@Vehicle Configuration:!@----------------------------!@     Vehicle name: alpha!@     Vehicle type: kayak!@   Vehicle length: 4.0!@    Vehicle group: !@!@CrossFill Policy:!@----------------------------!@ cross_fill_policy: literal!@!@Blackout Configuration:!@----------------------------!@Blackout interval: 0.00!@Blackout variance: 0.00!@!@AltNav Config and Status:!@----------------------------!@   alt_nav_prefix: !@     alt_nav_name: _GT!@    alt_nav_group: !@ alt_nav_postings: 0!@!@Node Report Summary:!@----------------------------!@Reports Posted: 5!@ Latest Report: NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,!@                LAT=43.82511993,LON=-70.33039599,TYPE=kayak,!@                COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,!@                INDEX=4,YAW=-1.5707963,TIME=1777387866.76,LENGTH=4!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+4.32937         PID_STALE            pMarinePIDV22   Stale DesHdg:2.802 
+4.32942         PID_STALE            pMarinePIDV22   Stale DesSpd:2.802 
+4.33054         NAV_X                uSimMarineV22   0.00000      
+4.33054         NAV_Y                uSimMarineV22   -20.00000    
+4.33054         NAV_LAT              uSimMarineV22   43.82512     
+4.33054         NAV_LONG             uSimMarineV22   -70.33040    
+4.33054         NAV_HEADING          uSimMarineV22   180.00000    
+4.33054         NAV_SPEED            uSimMarineV22   0.00000      
+4.33054         NAV_DEPTH            uSimMarineV22   0.00000      
+4.33054         SIMULATION_MODE      uSimMarineV22   TRUE 
+4.33054         NAV_Z                uSimMarineV22   -0.00000     
+4.33054         NAV_PITCH            uSimMarineV22   0.00000      
+4.33054         NAV_YAW              uSimMarineV22   -3.14159     
+4.33054         TRUE_X               uSimMarineV22   0.00000      
+4.33054         TRUE_Y               uSimMarineV22   -20.00000    
+4.33054         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+4.33054         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+4.33130         APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=14!@#node=alpha!@#iter=14!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+4.38142         PID_STALE            pMarinePIDV22   Stale DesHdg:2.854 
+4.38153         PID_STALE            pMarinePIDV22   Stale DesSpd:2.854 
+4.42519         APPCAST              uProcessWatch   proc=uProcessWatch!@#iter=11!@#node=alpha!@#iter=11!@#messages=Summary: All Present!@!@Antler List: pHelmIvP,pLogger,pMarinePIDV22,pMarineViewer!@             pNodeReporter,pRealm,uSimMarineV22!@!@                                        Current    Max!@ProcName        Watch Reason   Status   CPU Load   CPU Load!@-------------   ------------   ------   --------   --------!@pHelmIvP        ANT       DB   [7;32mOK[0m       0.35       1.43!@pLogger         ANT       DB   [7;32mOK[0m       0.99       0.99!@pMarinePIDV22   ANT       DB   [7;32mOK[0m       0.59       1.71!@pMarineViewer   ANT       DB   [7;32mOK[0m       8.22       14.15!@pNodeReporter   ANT       DB   [7;32mOK[0m       0.33       0.62!@pRealm          ANT       DB   [7;32mOK[0m       1.30       1.52!@uSimMarineV22   ANT       DB   [7;32mOK[0m       0.53       1.33!@!@#!@#events_total=7!@#events=[0.00]: Noted to be present: [pRealm]!@[0.00]: Noted to be present: [pNodeReporter]!@[0.00]: Noted to be present: [pMarineViewer]!@[0.00]: Noted to be present: [pHelmIvP]!@[0.00]: Noted to be present: [pMarinePIDV22]!@[0.00]: Noted to be present: [uSimMarineV22]!@[0.00]: Noted to be present: [pLogger]!@#run_warning_total=0!@# 
+4.43237         PID_STALE            pMarinePIDV22   Stale DesHdg:2.905 
+4.43256         PID_STALE            pMarinePIDV22   Stale DesSpd:2.905 
+4.48472         PID_STALE            pMarinePIDV22   Stale DesHdg:2.958 
+4.48475         PID_STALE            pMarinePIDV22   Stale DesSpd:2.958 
+4.48587         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+4.53540         PID_STALE            pMarinePIDV22   Stale DesHdg:3.008 
+4.53544         PID_STALE            pMarinePIDV22   Stale DesSpd:3.008 
+4.54601         IVPHELM_CPU          pHelmIvP        0.46927      
+4.54608         IVPHELM_STATE        pHelmIvP        PARK 
+4.54609         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+4.58668         PID_STALE            pMarinePIDV22   Stale DesHdg:3.06 
+4.58675         PID_STALE            pMarinePIDV22   Stale DesSpd:3.06 
+4.63782         PID_STALE            pMarinePIDV22   Stale DesHdg:3.111 
+4.63794         PID_STALE            pMarinePIDV22   Stale DesSpd:3.111 
+4.68887         PID_STALE            pMarinePIDV22   Stale DesHdg:3.162 
+4.68897         PID_STALE            pMarinePIDV22   Stale DesSpd:3.162 
+4.69514         APPCAST              pRealm          proc=pRealm!@#iter=13!@#node=alpha!@#iter=13!@#messages=Configuration: !@--------------------------------------------!@  RelCast Interval: 0.80!@  Summary Interval: 5.00!@  Hist Variables:   !@  Wrap Length:  90!@  Trunc Length: 270!@  Max Msg Hist: 10!@!@MOOS Community State: !@--------------------------------------------!@  MOOSDB Name: MOOSDB_alpha!@   Known Apps: 9!@   Known Apps: MOOSDB_alpha,pHelmIvP,pLogger,pMarinePIDV22,!@               pMarineViewer,pNodeReporter,pRealm,!@               uProcessWatch,uSimMarineV22!@  Total SVars: 161!@  Total PVars: 65!@  Unique Vars: 162!@  UTC Time:    1777387867.14!@  Local Time:  2.63!@  Summaries:   1!@!@Recent RealmCasts or WatchCasts:!@--------------------------------------------!@  Total RealmCasts: 0!@  Total WatchCasts: 0!@--------------------------------------------!@Count  Time  Client  Content!@-----  ----  ------  -------!@Currently Active Clients:!@--------------------------------------------!@Client  Active  Content!@------  ------  -------!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+4.73546         APPCAST              pMarineViewer   proc=pMarineViewer!@#iter=11!@#node=alpha!@#iter=11!@#messages=Tiff File: forrest19.tif!@Tiff File (Current): forrest19.tif!@------------------ !@Total GeoShapes:   0!@Clear GeoShapes:   0!@NodeReports Recd:  5!@Node Rpt Rate(R):  2.2!@Node Rpt Rate(W):  2.2!@Node Report Vars:  NODE_REPORT_LOCAL,NODE_REPORT!@Mission Hash:      mhash=260428-1651X-PRIM-FRED,utc=1777387864.44!@Mission Hash Var:  MISSION_HASH!@Block Heartbeat:   false!@------------------ !@AC Iterations:     11!@PMV Iterations:    10!@------------------ !@RC Count:          0!@WC Count:          0!@Draw Count:       11!@Draw Count Rate:  3.98897!@Curr Time:        1777387866.93!@Stale report thresh: 60!@Stale remove thresh: 180!@Elapsed:          0.25107!@CmdFolio size:    0!@!@Visual Settings: !@  window pan_x:  -90.00!@  window pan_y:  -280.00!@  window  zoom:  0.65!@  vehicle zoom:  1.5!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+4.73578         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+4.74130         PID_STALE            pMarinePIDV22   Stale DesHdg:3.214 
+4.74140         PID_STALE            pMarinePIDV22   Stale DesSpd:3.214 
+4.79344         PID_STALE            pMarinePIDV22   Stale DesHdg:3.266 
+4.79350         PID_STALE            pMarinePIDV22   Stale DesSpd:3.266 
+4.79369         APPCAST              pMarinePIDV22   proc=pMarinePIDV22!@#iter=74!@#node=alpha!@#iter=74!@#messages=Frequency:19.587!@Speed Factor:    20!@PID has_control: false!@  PID override: true!@  PID stale:    true!@!@PID Settings: !@----------------------------!@Thrust Cap Enabled: false!@Thrust Cap: 100.00000!@YAW_PID_KP             = 0.9!@YAW_PID_KD             = 0.3!@YAW_PID_KI             = 0.3!@YAW_PID_INTEGRAL_LIMIT = 0.07!@Max rudder: 100!@----------------------------!@SPEED_PID_KP             = 1!@SPEED_PID_KD             = 0!@SPEED_PID_KI             = 0!@SPEED_PID_INTEGRAL_LIMIT = 0.07!@Max thrust: 100!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+4.79652         IVPHELM_CPU          pHelmIvP        0.34556      
+4.79657         IVPHELM_STATE        pHelmIvP        PARK 
+4.79658         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+4.79671         APPCAST              pHelmIvP        proc=pHelmIvP!@#iter=14!@#node=alpha!@#iter=14!@#messages=  Comms Policy: open!@  Helm Iteration:  0!@  IvP Functions:   0!@  Pieces (Formed): 0!@  Pieces (Cached): 0!@  Mode(s):         !@  SolveTime:   0.00   (max=0.00)!@  CreateTime:  0.00   (max=0.00)!@  LoopTime:    0.00   (max=0.00)!@  Halted:         false   (0 warnings)!@  Active Goal:    false!@Helm Decision: []!@Behaviors Spawnable: --------- (0)!@Behaviors Active: ---------- (0)!@Behaviors Running: --------- (0)!@Behaviors Disabled: --------- (0)!@Behaviors Idle: ------------ (0)!@  !@Behaviors Completed: ------- (0)!@!@Hold-On-Apps: none!@!@!@Variable  Behavior  Time  Iter  Value!@--------  --------  ----  ----  -----!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+4.82373         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=5,YAW=-1.5707963,TIME=1777387867.26,LENGTH=4 
+4.82379         PNR_POST_GAP         pNodeReporter   0.50093      
+4.82405         APPCAST              pNodeReporter   proc=pNodeReporter!@#iter=6!@#node=alpha!@#iter=6!@#messages=tr_interval:0.5!@extrap_enabled:    false!@extrap_pos_thresh: 0.25!@extrap_hdg_thresh: 1!@extrap_max_gap:    0.25!@Paused: false!@Vehicle Configuration:!@----------------------------!@     Vehicle name: alpha!@     Vehicle type: kayak!@   Vehicle length: 4.0!@    Vehicle group: !@!@CrossFill Policy:!@----------------------------!@ cross_fill_policy: literal!@!@Blackout Configuration:!@----------------------------!@Blackout interval: 0.00!@Blackout variance: 0.00!@!@AltNav Config and Status:!@----------------------------!@   alt_nav_prefix: !@     alt_nav_name: _GT!@    alt_nav_group: !@ alt_nav_postings: 0!@!@Node Report Summary:!@----------------------------!@Reports Posted: 6!@ Latest Report: NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,!@                LAT=43.82511993,LON=-70.33039599,TYPE=kayak,!@                COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,!@                INDEX=5,YAW=-1.5707963,TIME=1777387867.26,LENGTH=4!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+4.83363         NAV_X                uSimMarineV22   0.00000      
+4.83363         NAV_Y                uSimMarineV22   -20.00000    
+4.83363         NAV_LAT              uSimMarineV22   43.82512     
+4.83363         NAV_LONG             uSimMarineV22   -70.33040    
+4.83363         NAV_HEADING          uSimMarineV22   180.00000    
+4.83363         NAV_SPEED            uSimMarineV22   0.00000      
+4.83363         NAV_DEPTH            uSimMarineV22   0.00000      
+4.83363         SIMULATION_MODE      uSimMarineV22   TRUE 
+4.83363         NAV_Z                uSimMarineV22   -0.00000     
+4.83363         NAV_PITCH            uSimMarineV22   0.00000      
+4.83363         NAV_YAW              uSimMarineV22   -3.14159     
+4.83363         TRUE_X               uSimMarineV22   0.00000      
+4.83363         TRUE_Y               uSimMarineV22   -20.00000    
+4.83363         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+4.83363         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+4.83454         APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=16!@#node=alpha!@#iter=16!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+4.84430         PID_STALE            pMarinePIDV22   Stale DesHdg:3.317 
+4.84446         PID_STALE            pMarinePIDV22   Stale DesSpd:3.317 
+4.89665         PID_STALE            pMarinePIDV22   Stale DesHdg:3.37 
+4.89670         PID_STALE            pMarinePIDV22   Stale DesSpd:3.37 
+4.92845         APPCAST              uProcessWatch   proc=uProcessWatch!@#iter=13!@#node=alpha!@#iter=13!@#messages=Summary: All Present!@!@Antler List: pHelmIvP,pLogger,pMarinePIDV22,pMarineViewer!@             pNodeReporter,pRealm,uSimMarineV22!@!@                                        Current    Max!@ProcName        Watch Reason   Status   CPU Load   CPU Load!@-------------   ------------   ------   --------   --------!@pHelmIvP        ANT       DB   [7;32mOK[0m       0.35       1.43!@pLogger         ANT       DB   [7;32mOK[0m       1.21       1.21!@pMarinePIDV22   ANT       DB   [7;32mOK[0m       0.59       1.71!@pMarineViewer   ANT       DB   [7;32mOK[0m       8.22       14.15!@pNodeReporter   ANT       DB   [7;32mOK[0m       0.33       0.62!@pRealm          ANT       DB   [7;32mOK[0m       1.30       1.52!@uSimMarineV22   ANT       DB   [7;32mOK[0m       0.53       1.33!@!@#!@#events_total=7!@#events=[0.00]: Noted to be present: [pRealm]!@[0.00]: Noted to be present: [pNodeReporter]!@[0.00]: Noted to be present: [pMarineViewer]!@[0.00]: Noted to be present: [pHelmIvP]!@[0.00]: Noted to be present: [pMarinePIDV22]!@[0.00]: Noted to be present: [uSimMarineV22]!@[0.00]: Noted to be present: [pLogger]!@#run_warning_total=0!@# 
+4.94746         PID_STALE            pMarinePIDV22   Stale DesHdg:3.42 
+4.94752         PID_STALE            pMarinePIDV22   Stale DesSpd:3.42 
+4.98779         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+4.99789         PID_STALE            pMarinePIDV22   Stale DesHdg:3.471 
+4.99793         PID_STALE            pMarinePIDV22   Stale DesSpd:3.471 
+5.04752         IVPHELM_CPU          pHelmIvP        0.34556      
+5.04759         IVPHELM_STATE        pHelmIvP        PARK 
+5.04760         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+5.04864         PID_STALE            pMarinePIDV22   Stale DesHdg:3.522 
+5.04869         PID_STALE            pMarinePIDV22   Stale DesSpd:3.522 
+5.09947         PID_STALE            pMarinePIDV22   Stale DesHdg:3.572 
+5.09957         PID_STALE            pMarinePIDV22   Stale DesSpd:3.572 
+5.14996         PID_STALE            pMarinePIDV22   Stale DesHdg:3.623 
+5.14996         PID_STALE            pMarinePIDV22   Stale DesSpd:3.623 
+5.20219         PID_STALE            pMarinePIDV22   Stale DesHdg:3.675 
+5.20227         PID_STALE            pMarinePIDV22   Stale DesSpd:3.675 
+5.23797         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+5.23798         APPCAST              pMarineViewer   proc=pMarineViewer!@#iter=13!@#node=alpha!@#iter=13!@#messages=Tiff File: forrest19.tif!@Tiff File (Current): forrest19.tif!@------------------ !@Total GeoShapes:   0!@Clear GeoShapes:   0!@NodeReports Recd:  6!@Node Rpt Rate(R):  2.2!@Node Rpt Rate(W):  2.2!@Node Report Vars:  NODE_REPORT_LOCAL,NODE_REPORT!@Mission Hash:      mhash=260428-1651X-PRIM-FRED,utc=1777387864.44!@Mission Hash Var:  MISSION_HASH!@Block Heartbeat:   false!@------------------ !@AC Iterations:     13!@PMV Iterations:    12!@------------------ !@RC Count:          0!@WC Count:          0!@Draw Count:       13!@Draw Count Rate:  3.98777!@Curr Time:        1777387867.43!@Stale report thresh: 60!@Stale remove thresh: 180!@Elapsed:          0.25200!@CmdFolio size:    0!@!@Visual Settings: !@  window pan_x:  -90.00!@  window pan_y:  -280.00!@  window  zoom:  0.65!@  vehicle zoom:  1.5!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+5.25285         PID_STALE            pMarinePIDV22   Stale DesHdg:3.726 
+5.25293         PID_STALE            pMarinePIDV22   Stale DesSpd:3.726 
+5.29791         IVPHELM_CPU          pHelmIvP        0.31849      
+5.29796         IVPHELM_STATE        pHelmIvP        PARK 
+5.29798         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+5.29832         APPCAST              pHelmIvP        proc=pHelmIvP!@#iter=16!@#node=alpha!@#iter=16!@#messages=  Comms Policy: open!@  Helm Iteration:  0!@  IvP Functions:   0!@  Pieces (Formed): 0!@  Pieces (Cached): 0!@  Mode(s):         !@  SolveTime:   0.00   (max=0.00)!@  CreateTime:  0.00   (max=0.00)!@  LoopTime:    0.00   (max=0.00)!@  Halted:         false   (0 warnings)!@  Active Goal:    false!@Helm Decision: []!@Behaviors Spawnable: --------- (0)!@Behaviors Active: ---------- (0)!@Behaviors Running: --------- (0)!@Behaviors Disabled: --------- (0)!@Behaviors Idle: ------------ (0)!@  !@Behaviors Completed: ------- (0)!@!@Hold-On-Apps: none!@!@!@Variable  Behavior  Time  Iter  Value!@--------  --------  ----  ----  -----!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+5.29838         APPCAST              pRealm          proc=pRealm!@#iter=16!@#node=alpha!@#iter=16!@#messages=Configuration: !@--------------------------------------------!@  RelCast Interval: 0.80!@  Summary Interval: 5.00!@  Hist Variables:   !@  Wrap Length:  90!@  Trunc Length: 270!@  Max Msg Hist: 10!@!@MOOS Community State: !@--------------------------------------------!@  MOOSDB Name: MOOSDB_alpha!@   Known Apps: 9!@   Known Apps: MOOSDB_alpha,pHelmIvP,pLogger,pMarinePIDV22,!@               pMarineViewer,pNodeReporter,pRealm,!@               uProcessWatch,uSimMarineV22!@  Total SVars: 161!@  Total PVars: 65!@  Unique Vars: 162!@  UTC Time:    1777387867.74!@  Local Time:  3.23!@  Summaries:   1!@!@Recent RealmCasts or WatchCasts:!@--------------------------------------------!@  Total RealmCasts: 0!@  Total WatchCasts: 0!@--------------------------------------------!@Count  Time  Client  Content!@-----  ----  ------  -------!@Currently Active Clients:!@--------------------------------------------!@Client  Active  Content!@------  ------  -------!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+5.30369         PID_STALE            pMarinePIDV22   Stale DesHdg:3.777 
+5.30378         PID_STALE            pMarinePIDV22   Stale DesSpd:3.777 
+5.30391         APPCAST              pMarinePIDV22   proc=pMarinePIDV22!@#iter=84!@#node=alpha!@#iter=84!@#messages=Frequency:19.589!@Speed Factor:    20!@PID has_control: false!@  PID override: true!@  PID stale:    true!@!@PID Settings: !@----------------------------!@Thrust Cap Enabled: false!@Thrust Cap: 100.00000!@YAW_PID_KP             = 0.9!@YAW_PID_KD             = 0.3!@YAW_PID_KI             = 0.3!@YAW_PID_INTEGRAL_LIMIT = 0.07!@Max rudder: 100!@----------------------------!@SPEED_PID_KP             = 1!@SPEED_PID_KD             = 0!@SPEED_PID_KI             = 0!@SPEED_PID_INTEGRAL_LIMIT = 0.07!@Max thrust: 100!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+5.32465         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=6,YAW=-1.5707963,TIME=1777387867.77,LENGTH=4 
+5.32469         PNR_POST_GAP         pNodeReporter   0.50087      
+5.32493         APPCAST              pNodeReporter   proc=pNodeReporter!@#iter=7!@#node=alpha!@#iter=7!@#messages=tr_interval:0.5!@extrap_enabled:    false!@extrap_pos_thresh: 0.25!@extrap_hdg_thresh: 1!@extrap_max_gap:    0.25!@Paused: false!@Vehicle Configuration:!@----------------------------!@     Vehicle name: alpha!@     Vehicle type: kayak!@   Vehicle length: 4.0!@    Vehicle group: !@!@CrossFill Policy:!@----------------------------!@ cross_fill_policy: literal!@!@Blackout Configuration:!@----------------------------!@Blackout interval: 0.00!@Blackout variance: 0.00!@!@AltNav Config and Status:!@----------------------------!@   alt_nav_prefix: !@     alt_nav_name: _GT!@    alt_nav_group: !@ alt_nav_postings: 0!@!@Node Report Summary:!@----------------------------!@Reports Posted: 7!@ Latest Report: NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,!@                LAT=43.82511993,LON=-70.33039599,TYPE=kayak,!@                COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,!@                INDEX=6,YAW=-1.5707963,TIME=1777387867.77,LENGTH=4!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+5.33723         NAV_X                uSimMarineV22   0.00000      
+5.33723         NAV_Y                uSimMarineV22   -20.00000    
+5.33723         NAV_LAT              uSimMarineV22   43.82512     
+5.33723         NAV_LONG             uSimMarineV22   -70.33040    
+5.33723         NAV_HEADING          uSimMarineV22   180.00000    
+5.33723         NAV_SPEED            uSimMarineV22   0.00000      
+5.33723         NAV_DEPTH            uSimMarineV22   0.00000      
+5.33723         SIMULATION_MODE      uSimMarineV22   TRUE 
+5.33723         NAV_Z                uSimMarineV22   -0.00000     
+5.33723         NAV_PITCH            uSimMarineV22   0.00000      
+5.33723         NAV_YAW              uSimMarineV22   -3.14159     
+5.33723         TRUE_X               uSimMarineV22   0.00000      
+5.33723         TRUE_Y               uSimMarineV22   -20.00000    
+5.33723         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+5.33723         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+5.33812         APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=18!@#node=alpha!@#iter=18!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+5.35468         PID_STALE            pMarinePIDV22   Stale DesHdg:3.828 
+5.35476         PID_STALE            pMarinePIDV22   Stale DesSpd:3.828 
+5.40614         PID_STALE            pMarinePIDV22   Stale DesHdg:3.879 
+5.40623         PID_STALE            pMarinePIDV22   Stale DesSpd:3.879 
+5.43070         APPCAST              uProcessWatch   proc=uProcessWatch!@#iter=15!@#node=alpha!@#iter=15!@#messages=Summary: All Present!@!@Antler List: pHelmIvP,pLogger,pMarinePIDV22,pMarineViewer!@             pNodeReporter,pRealm,uSimMarineV22!@!@                                        Current    Max!@ProcName        Watch Reason   Status   CPU Load   CPU Load!@-------------   ------------   ------   --------   --------!@pHelmIvP        ANT       DB   [7;32mOK[0m       0.35       1.43!@pLogger         ANT       DB   [7;32mOK[0m       1.21       1.21!@pMarinePIDV22   ANT       DB   [7;32mOK[0m       1.19       1.71!@pMarineViewer   ANT       DB   [7;32mOK[0m       8.22       14.15!@pNodeReporter   ANT       DB   [7;32mOK[0m       0.33       0.62!@pRealm          ANT       DB   [7;32mOK[0m       1.30       1.52!@uSimMarineV22   ANT       DB   [7;32mOK[0m       0.46       1.33!@!@#!@#events_total=7!@#events=[0.00]: Noted to be present: [pRealm]!@[0.00]: Noted to be present: [pNodeReporter]!@[0.00]: Noted to be present: [pMarineViewer]!@[0.00]: Noted to be present: [pHelmIvP]!@[0.00]: Noted to be present: [pMarinePIDV22]!@[0.00]: Noted to be present: [uSimMarineV22]!@[0.00]: Noted to be present: [pLogger]!@#run_warning_total=0!@# 
+5.45727         PID_STALE            pMarinePIDV22   Stale DesHdg:3.93 
+5.45734         PID_STALE            pMarinePIDV22   Stale DesSpd:3.93 
+5.49068         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+5.50794         PID_STALE            pMarinePIDV22   Stale DesHdg:3.981 
+5.50800         PID_STALE            pMarinePIDV22   Stale DesSpd:3.981 
+5.54933         IVPHELM_CPU          pHelmIvP        0.31849      
+5.54933         IVPHELM_STATE        pHelmIvP        PARK 
+5.54934         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+5.55874         PID_STALE            pMarinePIDV22   Stale DesHdg:4.032 
+5.55880         PID_STALE            pMarinePIDV22   Stale DesSpd:4.032 
+5.61099         PID_STALE            pMarinePIDV22   Stale DesHdg:4.084 
+5.61105         PID_STALE            pMarinePIDV22   Stale DesSpd:4.084 
+5.66238         PID_STALE            pMarinePIDV22   Stale DesHdg:4.135 
+5.66245         PID_STALE            pMarinePIDV22   Stale DesSpd:4.135 
+5.71453         PID_STALE            pMarinePIDV22   Stale DesHdg:4.187 
+5.71458         PID_STALE            pMarinePIDV22   Stale DesSpd:4.187 
+5.74065         APPCAST              pMarineViewer   proc=pMarineViewer!@#iter=15!@#node=alpha!@#iter=15!@#messages=Tiff File: forrest19.tif!@Tiff File (Current): forrest19.tif!@------------------ !@Total GeoShapes:   0!@Clear GeoShapes:   0!@NodeReports Recd:  7!@Node Rpt Rate(R):  2.1!@Node Rpt Rate(W):  2.1!@Node Report Vars:  NODE_REPORT_LOCAL,NODE_REPORT!@Mission Hash:      mhash=260428-1651X-PRIM-FRED,utc=1777387864.44!@Mission Hash Var:  MISSION_HASH!@Block Heartbeat:   false!@------------------ !@AC Iterations:     15!@PMV Iterations:    14!@------------------ !@RC Count:          0!@WC Count:          0!@Draw Count:       15!@Draw Count Rate:  3.98638!@Curr Time:        1777387867.93!@Stale report thresh: 60!@Stale remove thresh: 180!@Elapsed:          0.25240!@CmdFolio size:    0!@!@Visual Settings: !@  window pan_x:  -90.00!@  window pan_y:  -280.00!@  window  zoom:  0.65!@  vehicle zoom:  1.5!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+5.74074         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+5.76543         PID_STALE            pMarinePIDV22   Stale DesHdg:4.238 
+5.76548         PID_STALE            pMarinePIDV22   Stale DesSpd:4.238 
+5.79985         IVPHELM_CPU          pHelmIvP        0.46664      
+5.79992         IVPHELM_STATE        pHelmIvP        PARK 
+5.79994         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+5.80020         APPCAST              pHelmIvP        proc=pHelmIvP!@#iter=18!@#node=alpha!@#iter=18!@#messages=  Comms Policy: open!@  Helm Iteration:  0!@  IvP Functions:   0!@  Pieces (Formed): 0!@  Pieces (Cached): 0!@  Mode(s):         !@  SolveTime:   0.00   (max=0.00)!@  CreateTime:  0.00   (max=0.00)!@  LoopTime:    0.00   (max=0.00)!@  Halted:         false   (0 warnings)!@  Active Goal:    false!@Helm Decision: []!@Behaviors Spawnable: --------- (0)!@Behaviors Active: ---------- (0)!@Behaviors Running: --------- (0)!@Behaviors Disabled: --------- (0)!@Behaviors Idle: ------------ (0)!@  !@Behaviors Completed: ------- (0)!@!@Hold-On-Apps: none!@!@!@Variable  Behavior  Time  Iter  Value!@--------  --------  ----  ----  -----!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+5.80066         DB_TIME              MOOSDB_alpha    1777387868.24176 
+5.80067         DB_UPTIME            MOOSDB_alpha    6.01581      
+5.80073         DB_CLIENTS           MOOSDB_alpha    pRealm,pMarineViewer,pNodeReporter,uProcessWatch,pHelmIvP,pMarinePIDV22,uSimMarineV22,pLogger, 
+5.80161         DB_QOS               MOOSDB_alpha    pHelmIvP=0.549078:0.67687:0.22006:0.524235,pLogger=0.624895:1.2641:0.247955:0.590611,pMarinePIDV22=0.46587:0.831127:0.328064:0.530577,pMarineViewer=0.329971:1.01995:0.241995:0.446367,pNodeReporter=0.458002:0.70405:0.363111:0.528669,pRealm=0:0.812054:0.287056:0,uProcessWatch=0.352859:0.864029:0.262022:0.491142,uSimMarineV22=0.364065:0.983:0.207901:0.470352, 
+5.81633         PID_STALE            pMarinePIDV22   Stale DesHdg:4.289 
+5.81668         PID_STALE            pMarinePIDV22   Stale DesSpd:4.289 
+5.81707         APPCAST              pMarinePIDV22   proc=pMarinePIDV22!@#iter=94!@#node=alpha!@#iter=94!@#messages=Frequency:19.580!@Speed Factor:    20!@PID has_control: false!@  PID override: true!@  PID stale:    true!@!@PID Settings: !@----------------------------!@Thrust Cap Enabled: false!@Thrust Cap: 100.00000!@YAW_PID_KP             = 0.9!@YAW_PID_KD             = 0.3!@YAW_PID_KI             = 0.3!@YAW_PID_INTEGRAL_LIMIT = 0.07!@Max rudder: 100!@----------------------------!@SPEED_PID_KP             = 1!@SPEED_PID_KD             = 0!@SPEED_PID_KI             = 0!@SPEED_PID_INTEGRAL_LIMIT = 0.07!@Max thrust: 100!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+5.82550         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=7,YAW=-1.5707963,TIME=1777387868.27,LENGTH=4 
+5.82556         PNR_POST_GAP         pNodeReporter   0.50090      
+5.82572         APPCAST              pNodeReporter   proc=pNodeReporter!@#iter=8!@#node=alpha!@#iter=8!@#messages=tr_interval:0.5!@extrap_enabled:    false!@extrap_pos_thresh: 0.25!@extrap_hdg_thresh: 1!@extrap_max_gap:    0.25!@Paused: false!@Vehicle Configuration:!@----------------------------!@     Vehicle name: alpha!@     Vehicle type: kayak!@   Vehicle length: 4.0!@    Vehicle group: !@!@CrossFill Policy:!@----------------------------!@ cross_fill_policy: literal!@!@Blackout Configuration:!@----------------------------!@Blackout interval: 0.00!@Blackout variance: 0.00!@!@AltNav Config and Status:!@----------------------------!@   alt_nav_prefix: !@     alt_nav_name: _GT!@    alt_nav_group: !@ alt_nav_postings: 0!@!@Node Report Summary:!@----------------------------!@Reports Posted: 8!@ Latest Report: NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,!@                LAT=43.82511993,LON=-70.33039599,TYPE=kayak,!@                COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,!@                INDEX=7,YAW=-1.5707963,TIME=1777387868.27,LENGTH=4!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+5.84036         NAV_X                uSimMarineV22   0.00000      
+5.84036         NAV_Y                uSimMarineV22   -20.00000    
+5.84036         NAV_LAT              uSimMarineV22   43.82512     
+5.84036         NAV_LONG             uSimMarineV22   -70.33040    
+5.84036         NAV_HEADING          uSimMarineV22   180.00000    
+5.84036         NAV_SPEED            uSimMarineV22   0.00000      
+5.84036         NAV_DEPTH            uSimMarineV22   0.00000      
+5.84036         SIMULATION_MODE      uSimMarineV22   TRUE 
+5.84036         NAV_Z                uSimMarineV22   -0.00000     
+5.84036         NAV_PITCH            uSimMarineV22   0.00000      
+5.84036         NAV_YAW              uSimMarineV22   -3.14159     
+5.84036         TRUE_X               uSimMarineV22   0.00000      
+5.84036         TRUE_Y               uSimMarineV22   -20.00000    
+5.84036         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+5.84036         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+5.84150         APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=20!@#node=alpha!@#iter=20!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+5.86740         PID_STALE            pMarinePIDV22   Stale DesHdg:4.34 
+5.86744         PID_STALE            pMarinePIDV22   Stale DesSpd:4.34 
+5.90149         APPCAST              pRealm          proc=pRealm!@#iter=19!@#node=alpha!@#iter=19!@#messages=Configuration: !@--------------------------------------------!@  RelCast Interval: 0.80!@  Summary Interval: 5.00!@  Hist Variables:   !@  Wrap Length:  90!@  Trunc Length: 270!@  Max Msg Hist: 10!@!@MOOS Community State: !@--------------------------------------------!@  MOOSDB Name: MOOSDB_alpha!@   Known Apps: 9!@   Known Apps: MOOSDB_alpha,pHelmIvP,pLogger,pMarinePIDV22,!@               pMarineViewer,pNodeReporter,pRealm,!@               uProcessWatch,uSimMarineV22!@  Total SVars: 163!@  Total PVars: 66!@  Unique Vars: 163!@  UTC Time:    1777387868.34!@  Local Time:  3.83!@  Summaries:   1!@!@Recent RealmCasts or WatchCasts:!@--------------------------------------------!@  Total RealmCasts: 0!@  Total WatchCasts: 0!@--------------------------------------------!@Count  Time  Client  Content!@-----  ----  ------  -------!@Currently Active Clients:!@--------------------------------------------!@Client  Active  Content!@------  ------  -------!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+5.91773         PID_STALE            pMarinePIDV22   Stale DesHdg:4.391 
+5.91781         PID_STALE            pMarinePIDV22   Stale DesSpd:4.391 
+5.93234         APPCAST              uProcessWatch   proc=uProcessWatch!@#iter=17!@#node=alpha!@#iter=17!@#messages=Summary: All Present!@!@Antler List: pHelmIvP,pLogger,pMarinePIDV22,pMarineViewer!@             pNodeReporter,pRealm,uSimMarineV22!@!@                                        Current    Max!@ProcName        Watch Reason   Status   CPU Load   CPU Load!@-------------   ------------   ------   --------   --------!@pHelmIvP        ANT       DB   [7;32mOK[0m       0.32       1.43!@pLogger         ANT       DB   [7;32mOK[0m       1.21       1.21!@pMarinePIDV22   ANT       DB   [7;32mOK[0m       1.19       1.71!@pMarineViewer   ANT       DB   [7;32mOK[0m       8.22       14.15!@pNodeReporter   ANT       DB   [7;32mOK[0m       0.33       0.62!@pRealm          ANT       DB   [7;32mOK[0m       1.30       1.52!@uSimMarineV22   ANT       DB   [7;32mOK[0m       0.46       1.33!@!@#!@#events_total=7!@#events=[0.00]: Noted to be present: [pRealm]!@[0.00]: Noted to be present: [pNodeReporter]!@[0.00]: Noted to be present: [pMarineViewer]!@[0.00]: Noted to be present: [pHelmIvP]!@[0.00]: Noted to be present: [pMarinePIDV22]!@[0.00]: Noted to be present: [uSimMarineV22]!@[0.00]: Noted to be present: [pLogger]!@#run_warning_total=0!@# 
+5.96828         PID_STALE            pMarinePIDV22   Stale DesHdg:4.441 
+5.96836         PID_STALE            pMarinePIDV22   Stale DesSpd:4.441 
+5.99176         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+5.99183         APPCAST_REQ          pMarineViewer   node=alpha,app=uSimMarineV22,duration=3.0,key=pMarineViewer:alphaapp,thresh=any 
+5.99183         APPCAST_REQ_ALPHA    pMarineViewer   node=alpha,app=uSimMarineV22,duration=3.0,key=pMarineViewer:alphaapp,thresh=any 
+5.99183         APPCAST_REQ          pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alphagen,thresh=run_warning 
+5.99183         APPCAST_REQ_ALL      pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alphagen,thresh=run_warning 
+6.01879         PID_STALE            pMarinePIDV22   Stale DesHdg:4.492 
+6.01882         PID_STALE            pMarinePIDV22   Stale DesSpd:4.492 
+6.05070         IVPHELM_CPU          pHelmIvP        0.46664      
+6.05073         IVPHELM_STATE        pHelmIvP        PARK 
+6.05074         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+6.06903         PID_STALE            pMarinePIDV22   Stale DesHdg:4.542 
+6.06909         PID_STALE            pMarinePIDV22   Stale DesSpd:4.542 
+6.11937         PID_STALE            pMarinePIDV22   Stale DesHdg:4.592 
+6.11946         PID_STALE            pMarinePIDV22   Stale DesSpd:4.592 
+6.16998         PID_STALE            pMarinePIDV22   Stale DesHdg:4.643 
+6.17007         PID_STALE            pMarinePIDV22   Stale DesSpd:4.643 
+6.22067         PID_STALE            pMarinePIDV22   Stale DesHdg:4.694 
+6.22077         PID_STALE            pMarinePIDV22   Stale DesSpd:4.694 
+6.24163         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+6.24170         APPCAST              pMarineViewer   proc=pMarineViewer!@#iter=17!@#node=alpha!@#iter=17!@#messages=Tiff File: forrest19.tif!@Tiff File (Current): forrest19.tif!@------------------ !@Total GeoShapes:   0!@Clear GeoShapes:   0!@NodeReports Recd:  8!@Node Rpt Rate(R):  2.1!@Node Rpt Rate(W):  2.1!@Node Report Vars:  NODE_REPORT_LOCAL,NODE_REPORT!@Mission Hash:      mhash=260428-1651X-PRIM-FRED,utc=1777387864.44!@Mission Hash Var:  MISSION_HASH!@Block Heartbeat:   false!@------------------ !@AC Iterations:     17!@PMV Iterations:    16!@------------------ !@RC Count:          0!@WC Count:          0!@Draw Count:       19!@Draw Count Rate:  4.45599!@Curr Time:        1777387868.43!@Stale report thresh: 60!@Stale remove thresh: 180!@Elapsed:          0.25067!@CmdFolio size:    0!@!@Visual Settings: !@  window pan_x:  -90.00!@  window pan_y:  -280.00!@  window  zoom:  0.56!@  vehicle zoom:  1.5!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+6.27114         PID_STALE            pMarinePIDV22   Stale DesHdg:4.744 
+6.27118         PID_STALE            pMarinePIDV22   Stale DesSpd:4.744 
+6.30092         IVPHELM_CPU          pHelmIvP        0.37203      
+6.30096         IVPHELM_STATE        pHelmIvP        PARK 
+6.30098         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+6.30113         APPCAST              pHelmIvP        proc=pHelmIvP!@#iter=20!@#node=alpha!@#iter=20!@#messages=  Comms Policy: open!@  Helm Iteration:  0!@  IvP Functions:   0!@  Pieces (Formed): 0!@  Pieces (Cached): 0!@  Mode(s):         !@  SolveTime:   0.00   (max=0.00)!@  CreateTime:  0.00   (max=0.00)!@  LoopTime:    0.00   (max=0.00)!@  Halted:         false   (0 warnings)!@  Active Goal:    false!@Helm Decision: []!@Behaviors Spawnable: --------- (0)!@Behaviors Active: ---------- (0)!@Behaviors Running: --------- (0)!@Behaviors Disabled: --------- (0)!@Behaviors Idle: ------------ (0)!@  !@Behaviors Completed: ------- (0)!@!@Hold-On-Apps: none!@!@!@Variable  Behavior  Time  Iter  Value!@--------  --------  ----  ----  -----!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+6.32180         PID_STALE            pMarinePIDV22   Stale DesHdg:4.795 
+6.32188         PID_STALE            pMarinePIDV22   Stale DesSpd:4.795 
+6.32213         APPCAST              pMarinePIDV22   proc=pMarinePIDV22!@#iter=104!@#node=alpha!@#iter=104!@#messages=Frequency:19.599!@Speed Factor:    20!@PID has_control: false!@  PID override: true!@  PID stale:    true!@!@PID Settings: !@----------------------------!@Thrust Cap Enabled: false!@Thrust Cap: 100.00000!@YAW_PID_KP             = 0.9!@YAW_PID_KD             = 0.3!@YAW_PID_KI             = 0.3!@YAW_PID_INTEGRAL_LIMIT = 0.07!@Max rudder: 100!@----------------------------!@SPEED_PID_KP             = 1!@SPEED_PID_KD             = 0!@SPEED_PID_KI             = 0!@SPEED_PID_INTEGRAL_LIMIT = 0.07!@Max thrust: 100!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+6.32617         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=8,YAW=-1.5707963,TIME=1777387868.77,LENGTH=4 
+6.32617         PNR_POST_GAP         pNodeReporter   0.50068      
+6.32640         APPCAST              pNodeReporter   proc=pNodeReporter!@#iter=9!@#node=alpha!@#iter=9!@#messages=tr_interval:0.5!@extrap_enabled:    false!@extrap_pos_thresh: 0.25!@extrap_hdg_thresh: 1!@extrap_max_gap:    0.25!@Paused: false!@Vehicle Configuration:!@----------------------------!@     Vehicle name: alpha!@     Vehicle type: kayak!@   Vehicle length: 4.0!@    Vehicle group: !@!@CrossFill Policy:!@----------------------------!@ cross_fill_policy: literal!@!@Blackout Configuration:!@----------------------------!@Blackout interval: 0.00!@Blackout variance: 0.00!@!@AltNav Config and Status:!@----------------------------!@   alt_nav_prefix: !@     alt_nav_name: _GT!@    alt_nav_group: !@ alt_nav_postings: 0!@!@Node Report Summary:!@----------------------------!@Reports Posted: 9!@ Latest Report: NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,!@                LAT=43.82511993,LON=-70.33039599,TYPE=kayak,!@                COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,!@                INDEX=8,YAW=-1.5707963,TIME=1777387868.77,LENGTH=4!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+6.34161         NAV_X                uSimMarineV22   0.00000      
+6.34161         NAV_Y                uSimMarineV22   -20.00000    
+6.34161         NAV_LAT              uSimMarineV22   43.82512     
+6.34161         NAV_LONG             uSimMarineV22   -70.33040    
+6.34161         NAV_HEADING          uSimMarineV22   180.00000    
+6.34161         NAV_SPEED            uSimMarineV22   0.00000      
+6.34161         NAV_DEPTH            uSimMarineV22   0.00000      
+6.34161         SIMULATION_MODE      uSimMarineV22   TRUE 
+6.34161         NAV_Z                uSimMarineV22   -0.00000     
+6.34161         NAV_PITCH            uSimMarineV22   0.00000      
+6.34161         NAV_YAW              uSimMarineV22   -3.14159     
+6.34161         TRUE_X               uSimMarineV22   0.00000      
+6.34161         TRUE_Y               uSimMarineV22   -20.00000    
+6.34161         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+6.34161         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+6.34242         APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=22!@#node=alpha!@#iter=22!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+6.37265         PID_STALE            pMarinePIDV22   Stale DesHdg:4.846 
+6.37273         PID_STALE            pMarinePIDV22   Stale DesSpd:4.846 
+6.42315         PID_STALE            pMarinePIDV22   Stale DesHdg:4.896 
+6.42319         PID_STALE            pMarinePIDV22   Stale DesSpd:4.896 
+6.43341         APPCAST              uProcessWatch   proc=uProcessWatch!@#iter=19!@#node=alpha!@#iter=19!@#messages=Summary: All Present!@!@Antler List: pHelmIvP,pLogger,pMarinePIDV22,pMarineViewer!@             pNodeReporter,pRealm,uSimMarineV22!@!@                                        Current    Max!@ProcName        Watch Reason   Status   CPU Load   CPU Load!@-------------   ------------   ------   --------   --------!@pHelmIvP        ANT       DB   [7;32mOK[0m       0.32       1.43!@pLogger         ANT       DB   [7;32mOK[0m       1.21       1.21!@pMarinePIDV22   ANT       DB   [7;32mOK[0m       1.19       1.71!@pMarineViewer   ANT       DB   [7;32mOK[0m       7.36       14.15!@pNodeReporter   ANT       DB   [7;32mOK[0m       0.23       0.62!@pRealm          ANT       DB   [7;32mOK[0m       0.58       1.52!@uSimMarineV22   ANT       DB   [7;32mOK[0m       0.46       1.33!@!@#!@#events_total=7!@#events=[0.00]: Noted to be present: [pRealm]!@[0.00]: Noted to be present: [pNodeReporter]!@[0.00]: Noted to be present: [pMarineViewer]!@[0.00]: Noted to be present: [pHelmIvP]!@[0.00]: Noted to be present: [pMarinePIDV22]!@[0.00]: Noted to be present: [uSimMarineV22]!@[0.00]: Noted to be present: [pLogger]!@#run_warning_total=0!@# 
+6.47357         PID_STALE            pMarinePIDV22   Stale DesHdg:4.947 
+6.47363         PID_STALE            pMarinePIDV22   Stale DesSpd:4.947 
+6.49391         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+6.50264         APPCAST              pRealm          proc=pRealm!@#iter=22!@#node=alpha!@#iter=22!@#messages=Configuration: !@--------------------------------------------!@  RelCast Interval: 0.80!@  Summary Interval: 5.00!@  Hist Variables:   !@  Wrap Length:  90!@  Trunc Length: 270!@  Max Msg Hist: 10!@!@MOOS Community State: !@--------------------------------------------!@  MOOSDB Name: MOOSDB_alpha!@   Known Apps: 9!@   Known Apps: MOOSDB_alpha,pHelmIvP,pLogger,pMarinePIDV22,!@               pMarineViewer,pNodeReporter,pRealm,!@               uProcessWatch,uSimMarineV22!@  Total SVars: 163!@  Total PVars: 66!@  Unique Vars: 163!@  UTC Time:    1777387868.94!@  Local Time:  4.43!@  Summaries:   1!@!@Recent RealmCasts or WatchCasts:!@--------------------------------------------!@  Total RealmCasts: 0!@  Total WatchCasts: 0!@--------------------------------------------!@Count  Time  Client  Content!@-----  ----  ------  -------!@Currently Active Clients:!@--------------------------------------------!@Client  Active  Content!@------  ------  -------!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+6.52395         PID_STALE            pMarinePIDV22   Stale DesHdg:4.997 
+6.52400         PID_STALE            pMarinePIDV22   Stale DesSpd:4.997 
+6.55152         IVPHELM_CPU          pHelmIvP        0.37203      
+6.55157         IVPHELM_STATE        pHelmIvP        PARK 
+6.55158         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+6.57469         PID_STALE            pMarinePIDV22   Stale DesHdg:5.048 
+6.57480         PID_STALE            pMarinePIDV22   Stale DesSpd:5.048 
+6.62537         PID_STALE            pMarinePIDV22   Stale DesHdg:5.098 
+6.62544         PID_STALE            pMarinePIDV22   Stale DesSpd:5.098 
+6.67597         PID_STALE            pMarinePIDV22   Stale DesHdg:5.149 
+6.67607         PID_STALE            pMarinePIDV22   Stale DesSpd:5.149 
+6.72630         PID_STALE            pMarinePIDV22   Stale DesHdg:5.199 
+6.72633         PID_STALE            pMarinePIDV22   Stale DesSpd:5.199 
+6.74269         APPCAST              pMarineViewer   proc=pMarineViewer!@#iter=19!@#node=alpha!@#iter=19!@#messages=Tiff File: forrest19.tif!@Tiff File (Current): forrest19.tif!@------------------ !@Total GeoShapes:   0!@Clear GeoShapes:   0!@NodeReports Recd:  9!@Node Rpt Rate(R):  2.1!@Node Rpt Rate(W):  2.1!@Node Report Vars:  NODE_REPORT_LOCAL,NODE_REPORT!@Mission Hash:      mhash=260428-1651X-PRIM-FRED,utc=1777387864.44!@Mission Hash Var:  MISSION_HASH!@Block Heartbeat:   false!@------------------ !@AC Iterations:     19!@PMV Iterations:    18!@------------------ !@RC Count:          0!@WC Count:          0!@Draw Count:       25!@Draw Count Rate:  5.24676!@Curr Time:        1777387868.93!@Stale report thresh: 60!@Stale remove thresh: 180!@Elapsed:          0.00000!@CmdFolio size:    0!@!@Visual Settings: !@  window pan_x:  -90.00!@  window pan_y:  -280.00!@  window  zoom:  0.55!@  vehicle zoom:  1.5!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+6.74356         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+6.77662         PID_STALE            pMarinePIDV22   Stale DesHdg:5.25 
+6.77670         PID_STALE            pMarinePIDV22   Stale DesSpd:5.25 
+6.80181         IVPHELM_CPU          pHelmIvP        0.30558      
+6.80186         IVPHELM_STATE        pHelmIvP        PARK 
+6.80188         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+6.82660         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=9,YAW=-1.5707963,TIME=1777387869.27,LENGTH=4 
+6.82664         PNR_POST_GAP         pNodeReporter   0.50042      
+6.82693         PID_STALE            pMarinePIDV22   Stale DesHdg:5.3 
+6.82696         PID_STALE            pMarinePIDV22   Stale DesSpd:5.3 
+6.84317         NAV_X                uSimMarineV22   0.00000      
+6.84317         NAV_Y                uSimMarineV22   -20.00000    
+6.84317         NAV_LAT              uSimMarineV22   43.82512     
+6.84317         NAV_LONG             uSimMarineV22   -70.33040    
+6.84317         NAV_HEADING          uSimMarineV22   180.00000    
+6.84317         NAV_SPEED            uSimMarineV22   0.00000      
+6.84317         NAV_DEPTH            uSimMarineV22   0.00000      
+6.84317         SIMULATION_MODE      uSimMarineV22   TRUE 
+6.84317         NAV_Z                uSimMarineV22   -0.00000     
+6.84317         NAV_PITCH            uSimMarineV22   0.00000      
+6.84317         NAV_YAW              uSimMarineV22   -3.14159     
+6.84317         TRUE_X               uSimMarineV22   0.00000      
+6.84317         TRUE_Y               uSimMarineV22   -20.00000    
+6.84317         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+6.84317         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+6.84352         APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=24!@#node=alpha!@#iter=24!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+6.87733         PID_STALE            pMarinePIDV22   Stale DesHdg:5.35 
+6.87737         PID_STALE            pMarinePIDV22   Stale DesSpd:5.35 
+6.92765         PID_STALE            pMarinePIDV22   Stale DesHdg:5.401 
+6.92768         PID_STALE            pMarinePIDV22   Stale DesSpd:5.401 
+6.97811         PID_STALE            pMarinePIDV22   Stale DesHdg:5.451 
+6.97822         PID_STALE            pMarinePIDV22   Stale DesSpd:5.451 
+6.99396         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+7.02862         PID_STALE            pMarinePIDV22   Stale DesHdg:5.502 
+7.02866         PID_STALE            pMarinePIDV22   Stale DesSpd:5.502 
+7.05273         IVPHELM_CPU          pHelmIvP        0.30558      
+7.05281         IVPHELM_STATE        pHelmIvP        PARK 
+7.05282         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+7.07914         PID_STALE            pMarinePIDV22   Stale DesHdg:5.552 
+7.07923         PID_STALE            pMarinePIDV22   Stale DesSpd:5.552 
+7.12973         PID_STALE            pMarinePIDV22   Stale DesHdg:5.603 
+7.12991         PID_STALE            pMarinePIDV22   Stale DesSpd:5.603 
+7.18036         PID_STALE            pMarinePIDV22   Stale DesHdg:5.653 
+7.18037         PID_STALE            pMarinePIDV22   Stale DesSpd:5.653 
+7.23070         PID_STALE            pMarinePIDV22   Stale DesHdg:5.704 
+7.23074         PID_STALE            pMarinePIDV22   Stale DesSpd:5.704 
+7.24355         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+7.28116         PID_STALE            pMarinePIDV22   Stale DesHdg:5.754 
+7.28123         PID_STALE            pMarinePIDV22   Stale DesSpd:5.754 
+7.30310         IVPHELM_CPU          pHelmIvP        0.35737      
+7.30313         IVPHELM_STATE        pHelmIvP        PARK 
+7.30315         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+7.30383         REALMCAST_CHANNELS   pRealm          node=alpha#channels=MOOSDB_alpha,pHelmIvP,pLogger,pMarinePIDV22,pMarineViewer,pNodeReporter,pRealm,uProcessWatch,uSimMarineV22, 
+7.32729         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=10,YAW=-1.5707963,TIME=1777387869.77,LENGTH=4 
+7.32736         PNR_POST_GAP         pNodeReporter   0.50068      
+7.33177         PID_STALE            pMarinePIDV22   Stale DesHdg:5.805 
+7.33184         PID_STALE            pMarinePIDV22   Stale DesSpd:5.805 
+7.34475         NAV_X                uSimMarineV22   0.00000      
+7.34475         NAV_Y                uSimMarineV22   -20.00000    
+7.34475         NAV_LAT              uSimMarineV22   43.82512     
+7.34475         NAV_LONG             uSimMarineV22   -70.33040    
+7.34475         NAV_HEADING          uSimMarineV22   180.00000    
+7.34475         NAV_SPEED            uSimMarineV22   0.00000      
+7.34475         NAV_DEPTH            uSimMarineV22   0.00000      
+7.34475         SIMULATION_MODE      uSimMarineV22   TRUE 
+7.34475         NAV_Z                uSimMarineV22   -0.00000     
+7.34475         NAV_PITCH            uSimMarineV22   0.00000      
+7.34475         NAV_YAW              uSimMarineV22   -3.14159     
+7.34475         TRUE_X               uSimMarineV22   0.00000      
+7.34475         TRUE_Y               uSimMarineV22   -20.00000    
+7.34475         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+7.34475         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+7.34544         APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=26!@#node=alpha!@#iter=26!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+7.38296         PID_STALE            pMarinePIDV22   Stale DesHdg:5.856 
+7.38304         PID_STALE            pMarinePIDV22   Stale DesSpd:5.856 
+7.43368         PID_STALE            pMarinePIDV22   Stale DesHdg:5.907 
+7.43379         PID_STALE            pMarinePIDV22   Stale DesSpd:5.907 
+7.48494         PID_STALE            pMarinePIDV22   Stale DesHdg:5.958 
+7.48505         PID_STALE            pMarinePIDV22   Stale DesSpd:5.958 
+7.49517         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+7.53536         PID_STALE            pMarinePIDV22   Stale DesHdg:6.008 
+7.53540         PID_STALE            pMarinePIDV22   Stale DesSpd:6.008 
+7.55384         IVPHELM_CPU          pHelmIvP        0.35737      
+7.55385         IVPHELM_STATE        pHelmIvP        PARK 
+7.55386         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+7.58613         PID_STALE            pMarinePIDV22   Stale DesHdg:6.059 
+7.58619         PID_STALE            pMarinePIDV22   Stale DesSpd:6.059 
+7.63669         PID_STALE            pMarinePIDV22   Stale DesHdg:6.11 
+7.63674         PID_STALE            pMarinePIDV22   Stale DesSpd:6.11 
+7.68772         PID_STALE            pMarinePIDV22   Stale DesHdg:6.161 
+7.68779         PID_STALE            pMarinePIDV22   Stale DesSpd:6.161 
+7.73809         PID_STALE            pMarinePIDV22   Stale DesHdg:6.211 
+7.73813         PID_STALE            pMarinePIDV22   Stale DesSpd:6.211 
+7.74471         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+7.78913         PID_STALE            pMarinePIDV22   Stale DesHdg:6.262 
+7.78919         PID_STALE            pMarinePIDV22   Stale DesSpd:6.262 
+7.80435         IVPHELM_CPU          pHelmIvP        0.32095      
+7.80448         IVPHELM_STATE        pHelmIvP        PARK 
+7.80453         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+7.80483         DB_TIME              MOOSDB_alpha    1777387870.24593 
+7.80483         DB_UPTIME            MOOSDB_alpha    8.01997      
+7.80484         DB_CLIENTS           MOOSDB_alpha    pRealm,pMarineViewer,pNodeReporter,uProcessWatch,pHelmIvP,pMarinePIDV22,uSimMarineV22,pLogger, 
+7.80548         DB_QOS               MOOSDB_alpha    pHelmIvP=0.18096:0.67687:0.18096:0.450611,pLogger=0.408888:1.2641:0.247955:0.547409,pMarinePIDV22=0.58198:0.831127:0.328064:0.553799,pMarineViewer=0.404119:1.01995:0.241995:0.461197,pNodeReporter=0.488997:0.70405:0.353098:0.534868,pRealm=0.115871:0.812054:0.115871:0.472021,uProcessWatch=0.808001:0.864029:0.262022:0.58217,uSimMarineV22=0.615835:0.983:0.207901:0.520706, 
+7.82819         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=11,YAW=-1.5707963,TIME=1777387870.27,LENGTH=4 
+7.82823         PNR_POST_GAP         pNodeReporter   0.50092      
+7.83965         PID_STALE            pMarinePIDV22   Stale DesHdg:6.313 
+7.83970         PID_STALE            pMarinePIDV22   Stale DesSpd:6.313 
+7.84652         NAV_X                uSimMarineV22   0.00000      
+7.84652         NAV_Y                uSimMarineV22   -20.00000    
+7.84652         NAV_LAT              uSimMarineV22   43.82512     
+7.84652         NAV_LONG             uSimMarineV22   -70.33040    
+7.84652         NAV_HEADING          uSimMarineV22   180.00000    
+7.84652         NAV_SPEED            uSimMarineV22   0.00000      
+7.84652         NAV_DEPTH            uSimMarineV22   0.00000      
+7.84652         SIMULATION_MODE      uSimMarineV22   TRUE 
+7.84652         NAV_Z                uSimMarineV22   -0.00000     
+7.84652         NAV_PITCH            uSimMarineV22   0.00000      
+7.84652         NAV_YAW              uSimMarineV22   -3.14159     
+7.84652         TRUE_X               uSimMarineV22   0.00000      
+7.84652         TRUE_Y               uSimMarineV22   -20.00000    
+7.84652         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+7.84652         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+7.84708         APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=28!@#node=alpha!@#iter=28!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+7.89029         PID_STALE            pMarinePIDV22   Stale DesHdg:6.363 
+7.89035         PID_STALE            pMarinePIDV22   Stale DesSpd:6.363 
+7.94072         PID_STALE            pMarinePIDV22   Stale DesHdg:6.414 
+7.94076         PID_STALE            pMarinePIDV22   Stale DesSpd:6.414 
+7.99180         PID_STALE            pMarinePIDV22   Stale DesHdg:6.465 
+7.99190         PID_STALE            pMarinePIDV22   Stale DesSpd:6.465 
+7.99597         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+7.99605         APPCAST_REQ          pMarineViewer   node=alpha,app=uSimMarineV22,duration=3.0,key=pMarineViewer:alphaapp,thresh=any 
+7.99606         APPCAST_REQ_ALPHA    pMarineViewer   node=alpha,app=uSimMarineV22,duration=3.0,key=pMarineViewer:alphaapp,thresh=any 
+7.99606         APPCAST_REQ          pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alphagen,thresh=run_warning 
+7.99607         APPCAST_REQ_ALL      pMarineViewer   node=all,app=all,duration=3.0,key=pMarineViewer:alphagen,thresh=run_warning 
+8.04250         PID_STALE            pMarinePIDV22   Stale DesHdg:6.515 
+8.04253         PID_STALE            pMarinePIDV22   Stale DesSpd:6.515 
+8.05519         IVPHELM_CPU          pHelmIvP        0.32095      
+8.05525         IVPHELM_STATE        pHelmIvP        PARK 
+8.05526         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+8.09363         PID_STALE            pMarinePIDV22   Stale DesHdg:6.567 
+8.09368         PID_STALE            pMarinePIDV22   Stale DesSpd:6.567 
+8.14541         PID_STALE            pMarinePIDV22   Stale DesHdg:6.618 
+8.14552         PID_STALE            pMarinePIDV22   Stale DesSpd:6.618 
+8.19627         PID_STALE            pMarinePIDV22   Stale DesHdg:6.669 
+8.19633         PID_STALE            pMarinePIDV22   Stale DesSpd:6.669 
+8.24658         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+8.24684         PID_STALE            pMarinePIDV22   Stale DesHdg:6.72 
+8.24689         PID_STALE            pMarinePIDV22   Stale DesSpd:6.72 
+8.29818         PID_STALE            pMarinePIDV22   Stale DesHdg:6.771 
+8.29821         PID_STALE            pMarinePIDV22   Stale DesSpd:6.771 
+8.30559         IVPHELM_CPU          pHelmIvP        0.34090      
+8.30562         IVPHELM_STATE        pHelmIvP        PARK 
+8.30563         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+8.32919         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=12,YAW=-1.5707963,TIME=1777387870.77,LENGTH=4 
+8.32919         PNR_POST_GAP         pNodeReporter   0.50099      
+8.34799         NAV_X                uSimMarineV22   0.00000      
+8.34799         NAV_Y                uSimMarineV22   -20.00000    
+8.34799         NAV_LAT              uSimMarineV22   43.82512     
+8.34799         NAV_LONG             uSimMarineV22   -70.33040    
+8.34799         NAV_HEADING          uSimMarineV22   180.00000    
+8.34799         NAV_SPEED            uSimMarineV22   0.00000      
+8.34799         NAV_DEPTH            uSimMarineV22   0.00000      
+8.34799         SIMULATION_MODE      uSimMarineV22   TRUE 
+8.34799         NAV_Z                uSimMarineV22   -0.00000     
+8.34799         NAV_PITCH            uSimMarineV22   0.00000      
+8.34799         NAV_YAW              uSimMarineV22   -3.14159     
+8.34799         TRUE_X               uSimMarineV22   0.00000      
+8.34799         TRUE_Y               uSimMarineV22   -20.00000    
+8.34799         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+8.34799         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+8.34874         APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=30!@#node=alpha!@#iter=30!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+8.34887         PID_STALE            pMarinePIDV22   Stale DesHdg:6.822 
+8.34891         PID_STALE            pMarinePIDV22   Stale DesSpd:6.822 
+8.40034         PID_STALE            pMarinePIDV22   Stale DesHdg:6.873 
+8.40038         PID_STALE            pMarinePIDV22   Stale DesSpd:6.873 
+8.45112         PID_STALE            pMarinePIDV22   Stale DesHdg:6.924 
+8.45117         PID_STALE            pMarinePIDV22   Stale DesSpd:6.924 
+8.49791         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+8.50182         PID_STALE            pMarinePIDV22   Stale DesHdg:6.975 
+8.50185         PID_STALE            pMarinePIDV22   Stale DesSpd:6.975 
+8.55249         PID_STALE            pMarinePIDV22   Stale DesHdg:7.025 
+8.55252         PID_STALE            pMarinePIDV22   Stale DesSpd:7.025 
+8.55604         IVPHELM_CPU          pHelmIvP        0.34090      
+8.55607         IVPHELM_STATE        pHelmIvP        PARK 
+8.55608         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+8.60391         PID_STALE            pMarinePIDV22   Stale DesHdg:7.077 
+8.60394         PID_STALE            pMarinePIDV22   Stale DesSpd:7.077 
+8.65431         PID_STALE            pMarinePIDV22   Stale DesHdg:7.127 
+8.65436         PID_STALE            pMarinePIDV22   Stale DesSpd:7.127 
+8.70493         PID_STALE            pMarinePIDV22   Stale DesHdg:7.178 
+8.70503         PID_STALE            pMarinePIDV22   Stale DesSpd:7.178 
+8.74881         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+8.75530         PID_STALE            pMarinePIDV22   Stale DesHdg:7.228 
+8.75534         PID_STALE            pMarinePIDV22   Stale DesSpd:7.228 
+8.80583         PID_STALE            pMarinePIDV22   Stale DesHdg:7.279 
+8.80587         PID_STALE            pMarinePIDV22   Stale DesSpd:7.279 
+8.80640         IVPHELM_CPU          pHelmIvP        0.23529      
+8.80645         IVPHELM_STATE        pHelmIvP        PARK 
+8.80647         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+8.83033         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=13,YAW=-1.5707963,TIME=1777387871.27,LENGTH=4 
+8.83043         PNR_POST_GAP         pNodeReporter   0.50109      
+8.85045         NAV_X                uSimMarineV22   0.00000      
+8.85045         NAV_Y                uSimMarineV22   -20.00000    
+8.85045         NAV_LAT              uSimMarineV22   43.82512     
+8.85045         NAV_LONG             uSimMarineV22   -70.33040    
+8.85045         NAV_HEADING          uSimMarineV22   180.00000    
+8.85045         NAV_SPEED            uSimMarineV22   0.00000      
+8.85045         NAV_DEPTH            uSimMarineV22   0.00000      
+8.85045         SIMULATION_MODE      uSimMarineV22   TRUE 
+8.85045         NAV_Z                uSimMarineV22   -0.00000     
+8.85045         NAV_PITCH            uSimMarineV22   0.00000      
+8.85045         NAV_YAW              uSimMarineV22   -3.14159     
+8.85045         TRUE_X               uSimMarineV22   0.00000      
+8.85045         TRUE_Y               uSimMarineV22   -20.00000    
+8.85045         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+8.85045         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+8.85123         APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=32!@#node=alpha!@#iter=32!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+8.85647         PID_STALE            pMarinePIDV22   Stale DesHdg:7.329 
+8.85652         PID_STALE            pMarinePIDV22   Stale DesSpd:7.329 
+8.90738         PID_STALE            pMarinePIDV22   Stale DesHdg:7.38 
+8.90742         PID_STALE            pMarinePIDV22   Stale DesSpd:7.38 
+8.95808         PID_STALE            pMarinePIDV22   Stale DesHdg:7.431 
+8.95814         PID_STALE            pMarinePIDV22   Stale DesSpd:7.431 
+9.00030         REGION_INFO          pMarineViewer   lat_datum=43.8253, lon_datum=-70.3304, img_file=forrest19.tif, zoom=0.65, pan_x=-90, pan_y=-280 
+9.00860         PID_STALE            pMarinePIDV22   Stale DesHdg:7.482 
+9.00874         PID_STALE            pMarinePIDV22   Stale DesSpd:7.482 
+9.05687         IVPHELM_CPU          pHelmIvP        0.23529      
+9.05690         IVPHELM_STATE        pHelmIvP        PARK 
+9.05691         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+9.05938         PID_STALE            pMarinePIDV22   Stale DesHdg:7.532 
+9.05944         PID_STALE            pMarinePIDV22   Stale DesSpd:7.532 
+9.10999         PID_STALE            pMarinePIDV22   Stale DesHdg:7.583 
+9.11006         PID_STALE            pMarinePIDV22   Stale DesSpd:7.583 
+9.16067         PID_STALE            pMarinePIDV22   Stale DesHdg:7.634 
+9.16071         PID_STALE            pMarinePIDV22   Stale DesSpd:7.634 
+9.21226         PID_STALE            pMarinePIDV22   Stale DesHdg:7.685 
+9.21227         PID_STALE            pMarinePIDV22   Stale DesSpd:7.685 
+9.26253         PID_STALE            pMarinePIDV22   Stale DesHdg:7.735 
+9.26257         PID_STALE            pMarinePIDV22   Stale DesSpd:7.735 
+9.30715         IVPHELM_CPU          pHelmIvP        0.29623      
+9.30718         IVPHELM_STATE        pHelmIvP        PARK 
+9.30719         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+9.31285         PID_STALE            pMarinePIDV22   Stale DesHdg:7.786 
+9.31290         PID_STALE            pMarinePIDV22   Stale DesSpd:7.786 
+9.33155         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=14,YAW=-1.5707963,TIME=1777387871.77,LENGTH=4 
+9.33163         PNR_POST_GAP         pNodeReporter   0.50125      
+9.34109         DB_EVENT             MOOSDB_alpha    disconnected=pMarineViewer 
+9.35335         NAV_X                uSimMarineV22   0.00000      
+9.35335         NAV_Y                uSimMarineV22   -20.00000    
+9.35335         NAV_LAT              uSimMarineV22   43.82512     
+9.35335         NAV_LONG             uSimMarineV22   -70.33040    
+9.35335         NAV_HEADING          uSimMarineV22   180.00000    
+9.35335         NAV_SPEED            uSimMarineV22   0.00000      
+9.35335         NAV_DEPTH            uSimMarineV22   0.00000      
+9.35335         SIMULATION_MODE      uSimMarineV22   TRUE 
+9.35335         NAV_Z                uSimMarineV22   -0.00000     
+9.35335         NAV_PITCH            uSimMarineV22   0.00000      
+9.35335         NAV_YAW              uSimMarineV22   -3.14159     
+9.35335         TRUE_X               uSimMarineV22   0.00000      
+9.35335         TRUE_Y               uSimMarineV22   -20.00000    
+9.35335         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+9.35335         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+9.35410         APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=34!@#node=alpha!@#iter=34!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+9.36324         PID_STALE            pMarinePIDV22   Stale DesHdg:7.836 
+9.36334         PID_STALE            pMarinePIDV22   Stale DesSpd:7.836 
+9.41474         PID_STALE            pMarinePIDV22   Stale DesHdg:7.888 
+9.41480         PID_STALE            pMarinePIDV22   Stale DesSpd:7.888 
+9.46540         PID_STALE            pMarinePIDV22   Stale DesHdg:7.938 
+9.46545         PID_STALE            pMarinePIDV22   Stale DesSpd:7.938 
+9.51586         PID_STALE            pMarinePIDV22   Stale DesHdg:7.989 
+9.51591         PID_STALE            pMarinePIDV22   Stale DesSpd:7.989 
+9.55785         IVPHELM_CPU          pHelmIvP        0.29623      
+9.55785         IVPHELM_STATE        pHelmIvP        PARK 
+9.55786         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+9.56653         PID_STALE            pMarinePIDV22   Stale DesHdg:8.039 
+9.56664         PID_STALE            pMarinePIDV22   Stale DesSpd:8.039 
+9.61737         PID_STALE            pMarinePIDV22   Stale DesHdg:8.09 
+9.61743         PID_STALE            pMarinePIDV22   Stale DesSpd:8.09 
+9.66791         PID_STALE            pMarinePIDV22   Stale DesHdg:8.141 
+9.66794         PID_STALE            pMarinePIDV22   Stale DesSpd:8.141 
+9.71835         PID_STALE            pMarinePIDV22   Stale DesHdg:8.191 
+9.71840         PID_STALE            pMarinePIDV22   Stale DesSpd:8.191 
+9.76891         PID_STALE            pMarinePIDV22   Stale DesHdg:8.242 
+9.76899         PID_STALE            pMarinePIDV22   Stale DesSpd:8.242 
+9.80848         IVPHELM_CPU          pHelmIvP        0.29132      
+9.80853         IVPHELM_STATE        pHelmIvP        PARK 
+9.80856         IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+9.80915         DB_TIME              MOOSDB_alpha    1777387872.25025 
+9.80916         DB_UPTIME            MOOSDB_alpha    10.02430     
+9.80917         DB_CLIENTS           MOOSDB_alpha    pRealm,pNodeReporter,uProcessWatch,pHelmIvP,pMarinePIDV22,uSimMarineV22,pLogger, 
+9.81035         DB_QOS               MOOSDB_alpha    pHelmIvP=0.540972:0.67687:0.18096:0.522614,pLogger=0.564098:1.2641:0.247955:0.578451,pMarinePIDV22=0.3829:0.831127:0.302076:0.513983,pNodeReporter=0.296831:0.70405:0.296831:0.496435,pRealm=0.198841:0.812054:0.115871:0.488615,uProcessWatch=0.354052:0.864029:0.262022:0.491381,uSimMarineV22=0.262022:0.983:0.207901:0.449944, 
+9.81961         PID_STALE            pMarinePIDV22   Stale DesHdg:8.293 
+9.81970         PID_STALE            pMarinePIDV22   Stale DesSpd:8.293 
+9.83269         NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=15,YAW=-1.5707963,TIME=1777387872.27,LENGTH=4 
+9.83273         PNR_POST_GAP         pNodeReporter   0.50115      
+9.85575         NAV_X                uSimMarineV22   0.00000      
+9.85575         NAV_Y                uSimMarineV22   -20.00000    
+9.85575         NAV_LAT              uSimMarineV22   43.82512     
+9.85575         NAV_LONG             uSimMarineV22   -70.33040    
+9.85575         NAV_HEADING          uSimMarineV22   180.00000    
+9.85575         NAV_SPEED            uSimMarineV22   0.00000      
+9.85575         NAV_DEPTH            uSimMarineV22   0.00000      
+9.85575         SIMULATION_MODE      uSimMarineV22   TRUE 
+9.85575         NAV_Z                uSimMarineV22   -0.00000     
+9.85575         NAV_PITCH            uSimMarineV22   0.00000      
+9.85575         NAV_YAW              uSimMarineV22   -3.14159     
+9.85575         TRUE_X               uSimMarineV22   0.00000      
+9.85575         TRUE_Y               uSimMarineV22   -20.00000    
+9.85575         NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+9.85575         NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+9.85667         APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=36!@#node=alpha!@#iter=36!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+9.87019         PID_STALE            pMarinePIDV22   Stale DesHdg:8.343 
+9.87027         PID_STALE            pMarinePIDV22   Stale DesSpd:8.343 
+9.92087         PID_STALE            pMarinePIDV22   Stale DesHdg:8.394 
+9.92097         PID_STALE            pMarinePIDV22   Stale DesSpd:8.394 
+9.97147         PID_STALE            pMarinePIDV22   Stale DesHdg:8.444 
+9.97151         PID_STALE            pMarinePIDV22   Stale DesSpd:8.444 
+10.02212        PID_STALE            pMarinePIDV22   Stale DesHdg:8.495 
+10.02218        PID_STALE            pMarinePIDV22   Stale DesSpd:8.495 
+10.05909        IVPHELM_CPU          pHelmIvP        0.29132      
+10.05914        IVPHELM_STATE        pHelmIvP        PARK 
+10.05916        IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+10.07298        PID_STALE            pMarinePIDV22   Stale DesHdg:8.546 
+10.07306        PID_STALE            pMarinePIDV22   Stale DesSpd:8.546 
+10.09891        LOGGER_DIRECTORY     pLogger         ./MOOSLog_28_4_2026_____16_51_03 
+10.12356        PID_STALE            pMarinePIDV22   Stale DesHdg:8.597 
+10.12363        PID_STALE            pMarinePIDV22   Stale DesSpd:8.597 
+10.17425        PID_STALE            pMarinePIDV22   Stale DesHdg:8.647 
+10.17435        PID_STALE            pMarinePIDV22   Stale DesSpd:8.647 
+10.22585        PID_STALE            pMarinePIDV22   Stale DesHdg:8.699 
+10.22595        PID_STALE            pMarinePIDV22   Stale DesSpd:8.699 
+10.27630        PID_STALE            pMarinePIDV22   Stale DesHdg:8.749 
+10.27636        PID_STALE            pMarinePIDV22   Stale DesSpd:8.749 
+10.30946        IVPHELM_CPU          pHelmIvP        0.37225      
+10.30954        IVPHELM_STATE        pHelmIvP        PARK 
+10.30956        IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+10.32671        PID_STALE            pMarinePIDV22   Stale DesHdg:8.8 
+10.32678        PID_STALE            pMarinePIDV22   Stale DesSpd:8.8 
+10.33332        NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=16,YAW=-1.5707963,TIME=1777387872.77,LENGTH=4 
+10.33332        PNR_POST_GAP         pNodeReporter   0.50064      
+10.35851        NAV_X                uSimMarineV22   0.00000      
+10.35851        NAV_Y                uSimMarineV22   -20.00000    
+10.35851        NAV_LAT              uSimMarineV22   43.82512     
+10.35851        NAV_LONG             uSimMarineV22   -70.33040    
+10.35851        NAV_HEADING          uSimMarineV22   180.00000    
+10.35851        NAV_SPEED            uSimMarineV22   0.00000      
+10.35851        NAV_DEPTH            uSimMarineV22   0.00000      
+10.35851        SIMULATION_MODE      uSimMarineV22   TRUE 
+10.35851        NAV_Z                uSimMarineV22   -0.00000     
+10.35851        NAV_PITCH            uSimMarineV22   0.00000      
+10.35851        NAV_YAW              uSimMarineV22   -3.14159     
+10.35851        TRUE_X               uSimMarineV22   0.00000      
+10.35851        TRUE_Y               uSimMarineV22   -20.00000    
+10.35851        NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+10.35851        NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+10.35898        APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=38!@#node=alpha!@#iter=38!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+10.37717        PID_STALE            pMarinePIDV22   Stale DesHdg:8.85 
+10.37719        PID_STALE            pMarinePIDV22   Stale DesSpd:8.85 
+10.42763        PID_STALE            pMarinePIDV22   Stale DesHdg:8.901 
+10.42768        PID_STALE            pMarinePIDV22   Stale DesSpd:8.901 
+10.47872        PID_STALE            pMarinePIDV22   Stale DesHdg:8.952 
+10.47881        PID_STALE            pMarinePIDV22   Stale DesSpd:8.952 
+10.52910        PID_STALE            pMarinePIDV22   Stale DesHdg:9.002 
+10.52919        PID_STALE            pMarinePIDV22   Stale DesSpd:9.002 
+10.56032        IVPHELM_CPU          pHelmIvP        0.37225      
+10.56057        IVPHELM_STATE        pHelmIvP        PARK 
+10.56060        IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+10.58002        PID_STALE            pMarinePIDV22   Stale DesHdg:9.053 
+10.58009        PID_STALE            pMarinePIDV22   Stale DesSpd:9.053 
+10.63082        PID_STALE            pMarinePIDV22   Stale DesHdg:9.104 
+10.63087        PID_STALE            pMarinePIDV22   Stale DesSpd:9.104 
+10.68171        PID_STALE            pMarinePIDV22   Stale DesHdg:9.155 
+10.68181        PID_STALE            pMarinePIDV22   Stale DesSpd:9.155 
+10.73257        PID_STALE            pMarinePIDV22   Stale DesHdg:9.205 
+10.73265        PID_STALE            pMarinePIDV22   Stale DesSpd:9.205 
+10.78359        PID_STALE            pMarinePIDV22   Stale DesHdg:9.257 
+10.78364        PID_STALE            pMarinePIDV22   Stale DesSpd:9.257 
+10.81101        IVPHELM_CPU          pHelmIvP        0.41715      
+10.81107        IVPHELM_STATE        pHelmIvP        PARK 
+10.81109        IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+10.83413        NODE_REPORT_LOCAL    pNodeReporter   NAME=alpha,X=0,Y=-20,SPD=0,HDG=180,DEP=0,LAT=43.82511993,LON=-70.33039599,TYPE=kayak,COLOR=yellow,MODE=PARK,ALLSTOP=ManualOverride,INDEX=17,YAW=-1.5707963,TIME=1777387873.28,LENGTH=4 
+10.83419        PNR_POST_GAP         pNodeReporter   0.50081      
+10.83449        PID_STALE            pMarinePIDV22   Stale DesHdg:9.307 
+10.83454        PID_STALE            pMarinePIDV22   Stale DesSpd:9.307 
+10.86080        NAV_X                uSimMarineV22   0.00000      
+10.86080        NAV_Y                uSimMarineV22   -20.00000    
+10.86080        NAV_LAT              uSimMarineV22   43.82512     
+10.86080        NAV_LONG             uSimMarineV22   -70.33040    
+10.86080        NAV_HEADING          uSimMarineV22   180.00000    
+10.86080        NAV_SPEED            uSimMarineV22   0.00000      
+10.86080        NAV_DEPTH            uSimMarineV22   0.00000      
+10.86080        SIMULATION_MODE      uSimMarineV22   TRUE 
+10.86080        NAV_Z                uSimMarineV22   -0.00000     
+10.86080        NAV_PITCH            uSimMarineV22   0.00000      
+10.86080        NAV_YAW              uSimMarineV22   -3.14159     
+10.86080        TRUE_X               uSimMarineV22   0.00000      
+10.86080        TRUE_Y               uSimMarineV22   -20.00000    
+10.86080        NAV_HEADING_OVER_GROUND uSimMarineV22   0.00000      
+10.86080        NAV_SPEED_OVER_GROUND uSimMarineV22   0.00000      
+10.86124        APPCAST              uSimMarineV22   proc=uSimMarineV22!@#iter=40!@#node=alpha!@#iter=40!@#messages=Enabled:  true!@TurnRate: 95!@Datum: 43.8253,-70.3304!@Sailing:!@  WindModel: spd=3.3, dir=180!@  PolarPlot: 0,0:20,40:45,65:90,80:110,90!@  Enabled:   true!@!@!@  Start Pose    Current Pose (NAV)     Current Pose (GT)!@------- -----   ------- ------------   ------- ---------!@Headng: 180     Headng: 180             (same) -!@ Speed: 0        Speed: 0                      -!@ Depth: 0        Depth: 0                      -!@   Alt: 0          Alt: 0                      -!@ (X,Y): 0,-20    (X,Y): 0,-20                  -!@   Lat: 0          Lat: 43.82511993            -!@   Lon: 0          Lon: -70.33039599           -!@!@Present Buoyancy rate: 0.025!@        Starting rate: 0.025!@!@Ext Drift  X   Y   |  Mag  Ang  |  Rot.  |  Source(s)!@---------  --  --  |  ---  ---  |  ----  |  -----------!@ Starting  0   0   |  0    0    |  0     |  init_config!@  Present  0   0   |  0    0    |  0     |  n/a!@!@Velocity Information: !@--------------------- !@     DESIRED_THRUST=0 ==> SPEED=0!@     Using Thrust_Factor: false!@           Using Sailing: true!@    PID Coupled: false!@     Positive Thrust Map: 20,0, 40,0, 60,0, 80,0, 100,0!@     Negative Thrust Map: n/a!@        Max Accereration: 0!@        Max Decereration: 0.5!@!@             Thrust Mode: normal!@     Thrust Mode Reverse: false!@        DESIRED_THRUST_L: n/a!@        DESIRED_THRUST_R: n/a!@!@Depth Information: !@------------------ !@           Max Depth Rate: 0.5!@     Max Depth Rate Speed: 2!@              Water Depth: 0!@!@#!@#events_total=0!@#!@#run_warning_total=0!@# 
+10.88521        PID_STALE            pMarinePIDV22   Stale DesHdg:9.358 
+10.88525        PID_STALE            pMarinePIDV22   Stale DesSpd:9.358 
+10.93580        PID_STALE            pMarinePIDV22   Stale DesHdg:9.409 
+10.93589        PID_STALE            pMarinePIDV22   Stale DesSpd:9.409 
+10.98634        PID_STALE            pMarinePIDV22   Stale DesHdg:9.459 
+10.98641        PID_STALE            pMarinePIDV22   Stale DesSpd:9.459 
+11.03701        PID_STALE            pMarinePIDV22   Stale DesHdg:9.51 
+11.03710        PID_STALE            pMarinePIDV22   Stale DesSpd:9.51 
+11.06183        IVPHELM_CPU          pHelmIvP        0.41715      
+11.06193        IVPHELM_STATE        pHelmIvP        PARK 
+11.06195        IVPHELM_LEDGER_SUMMARY pHelmIvP        now:0, reps:0, who: 
+11.08790        PID_STALE            pMarinePIDV22   Stale DesHdg:9.561 
+11.08798        PID_STALE            pMarinePIDV22   Stale DesSpd:9.561 
+11.13865        PID_STALE            pMarinePIDV22   Stale DesHdg:9.612 
+11.13871        PID_STALE            pMarinePIDV22   Stale DesSpd:9.612 
+11.18971        PID_STALE            pMarinePIDV22   Stale DesHdg:9.663 
+11.18979        PID_STALE            pMarinePIDV22   Stale DesSpd:9.663 

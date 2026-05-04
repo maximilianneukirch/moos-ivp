@@ -1,0 +1,121 @@
+//--------    FILE: alpha.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+	
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  endflag   = RETURN = true
+
+	endflag   = SUMMARY=speed=$[SPEED],time=$[DUR_RUN_TIME]
+	
+	configflag = CRUISE_SPD = $[SPEED]
+
+	activeflag = INFO=$[OWNSHIP]
+	activeflag = INFO=$[BHVNAME]
+	activeflag = INFO=$[BHVTYPE]
+
+	cycleflag = CINFO=$[OSX],$[OSY]
+
+	wptflag = PREV=$(PX),$(PY)
+	wptflag = NEXT=$(NX),$(NY)
+	wptflag = TEST=$(X),$(Y)
+	wptflag = OSPOS=$(OSX),$(OSY)
+	wptflag_on_start = true
+
+  updates    = WPT_UPDATE
+  perpetual  = true
+
+	         speed_alt = 1.2
+       use_alt_speed = true
+                lead = 8
+         lead_damper = 1
+       lead_to_start = true
+               speed = 3   // meters per second
+        capture_line = true
+      capture_radius = 5.0
+         slip_radius = 15.0
+	efficiency_measure = all
+	           polygon = 60,-40: 180,-40: 180,50: 120,80: 60,50   // Rotated waypoints by 90° around WP 1
+             //60,-40: 60,-160: 150,-160: 180,-100: 150,-40     // Original route
+             //0,0: 120,0: 120,90: 60,120: 0,90
+
+               order = normal
+             repeat  = 0
+
+    visual_hints = nextpt_color=yellow
+    visual_hints = nextpt_vertex_size=8
+    visual_hints = nextpt_lcolor=gray70
+    visual_hints = vertex_color=dodger_blue, edge_color=white
+    visual_hints = vertex_size=5, edge_size=1
+}
+
+//----------------------------------------------
+Behavior=BHV_Waypoint
+{
+  name      = waypt_return
+  pwt       = 100
+  condition = RETURN = true
+  condition = DEPLOY = true
+  perpetual = true
+  updates   = RETURN_UPDATE
+  endflag   = RETURN = false
+  endflag   = DEPLOY = false
+  endflag   = MISSION = complete
+	
+           speed = 2.0
+  capture_radius = 2.0
+     slip_radius = 8.0
+          points = 0,-20
+ }
+
+//----------------------------------------------
+Behavior=BHV_ConstantSpeed
+{
+  name      = const_speed
+  pwt       = 200
+  condition = SPD=true
+  condition = DEPLOY = true
+  perpetual = true
+  updates   = SPEED_UPDATE
+  endflag   = SPD = false
+
+           speed = 0.5
+		    duration = 10
+	duration_reset = CONST_SPD_RESET=true
+	
+}
+
+Behavior = BHV_OpRegionV24
+{
+  // General Behavior Parameters
+  // ---------------------------
+  name = opr24 // example
+  pwt = 300 // example
+  updates = OPREGION_UPDATES // example
+  // Params specific to this behavior
+  // --------------------------------
+  max_time = 0 // default (seconds)
+  max_depth = 0 // default (meters)
+  min_altitude = 0 // default (meters)
+  trigger_entry_time = 1 // default (seconds)
+  trigger_exit_time = 0.5 // default (seconds)
+  core_poly = pts={-80,-50:-30,-175:150,-100:95,25}
+  save_dist = 5
+  halt_dist = 15
+  breached_altitude_flag = SAY_MOOS = min altitude has been exceeded
+  breached_depth_flag = SAY_MOOS = max depth has been exceeded
+  breached_poly_flag = SAY_MOOS = halt region has been violated
+  breached_time_flag = SAY_MOOS = max mission time has been exceeded
+  save_flag = SAY_MOOS = save region has been violated
+  savex_flag = RECOVER_POSITION=$[OSX],$[OSY]
+  visual_hints = vertex_size = 0 // default
+  visual_hints = edge_color = aqua // default
+  visual_hints = edge_size = 1 // default
+}
+
