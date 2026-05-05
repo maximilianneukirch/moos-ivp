@@ -1,42 +1,63 @@
 #!/bin/bash
-# -------------------------------------------------------
-# FILE: launch.sh
-# -------------------------------------------------------
-TIME_WARP=1
-SHORE_LISTEN="9300"
 
-# 1. Generate the Shoreside configuration
-echo "Assembling Shoreside..."
-nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
-       SNAME="shoreside" SHARE_LISTEN=$SHORE_LISTEN SPORT="9000"
+# --- Kill previous processes before starting ---
+echo "Cleaning up old processes..."
+killall -q -9 pAntler MOOSDB pMarineViewer pShare uSimMarineV23 pHelmIvP pMarinePIDV22 pNodeReporter pSimVisionServer uProcessWatch pLogger
+sleep 1
+# ----------------------------------------------------
 
-# 2. Generate the 10 Vehicle configurations
-for i in $(seq 1 10); do
-    VNAME="sailor$i"
-    VPORT=$((9000 + $i))       # MOOSDB port (9001, 9002, etc.)
-    LPORT=$((9300 + $i))       # pShare listen port
-    
-    # Stagger their starting positions slightly so they don't spawn on top of each other
-    START_POS="x=$((i*10 - 50)),y=-20,heading=180,speed=0"
-    
-    echo "Assembling $VNAME..."
-    nsplug meta_vehicle.moos targ_$VNAME.moos -f WARP=$TIME_WARP \
-           VNAME=$VNAME VPORT=$VPORT SHARE_LISTEN=$LPORT \
-           SHORE_LISTEN=$SHORE_LISTEN START_POS=$START_POS
-           
-    nsplug meta_vehicle.bhv targ_$VNAME.bhv -f VNAME=$VNAME
+# Number of vehicles
+VEHICLE_COUNT=10
+
+echo "Generating dynamic pShare routes for shoreside..."
+> plug_pshare_outputs.moos # Clear or create the file
+
+# Loop to generate the pShare outputs for N vehicles
+for ((i=1; i<=$VEHICLE_COUNT; i++)); do
+  PORT=$((9200 + $i))
+  VEHICLE_NUM=$(printf "%03d" $i)
+  VNAME="alpha_$VEHICLE_NUM"
+  VNAME_UPPER=$(echo $VNAME | tr '[:lower:]' '[:upper:]')
+  echo "  // Routes for Vehicle $i (Port $PORT)" >> plug_pshare_outputs.moos
+  echo "  Output = src_name=DEPLOY_ALL, dest_name=DEPLOY, route=localhost:$PORT" >> plug_pshare_outputs.moos
+  echo "  Output = src_name=RETURN_ALL, dest_name=RETURN, route=localhost:$PORT" >> plug_pshare_outputs.moos
+  echo "  Output = src_name=MOOS_MANUAL_OVERRIDE_ALL, dest_name=MOOS_MANUAL_OVERRIDE, route=localhost:$PORT" >> plug_pshare_outputs.moos
+  echo "  Output = src_name=APPCAST_REQ, route=localhost:$PORT" >> plug_pshare_outputs.moos
+  echo "" >> plug_pshare_outputs.moos
+
+  echo "  Output = src_name=VPF_$VNAME_UPPER, dest_name=VPF, route=localhost:$PORT" >> plug_pshare_outputs.moos
+  echo "" >> plug_pshare_outputs.moos
 done
 
-# 3. Launch everything using pAntler
-echo "Launching Shoreside..."
+# Generate the final shoreside file (nsplug will automatically absorb the #include file)
+nsplug meta_shoreside.moos targ_shoreside.moos -f
+
+echo "Assembling MOOS and BHV files for vehicles..."
+
+# Loop to generate .moos and .bhv files for each vehicle
+for ((i=1; i<=$VEHICLE_COUNT; i++)); do
+  # Pad the vehicle number with leading zeros (e.g., 001, 002, ...)
+  VEHICLE_NUM=$(printf "%03d" $i)
+  VNAME="alpha_$VEHICLE_NUM"
+  MOOS_PORT=$((9000 + $i))
+  PSHARE_PORT=$((9200 + $i))
+
+  # Generate .moos and .bhv files
+  nsplug meta_vehicle.moos "targ_${VNAME}.moos" -f VNAME="$VNAME" MOOS_PORT="$MOOS_PORT" PSHARE_PORT="$PSHARE_PORT" START_POS="x=$(($i*1)),y=-20,heading=180"
+  nsplug meta_vehicle.bhv "targ_${VNAME}.bhv" -f VNAME="$VNAME" RETURN_POS="0,-20"
+done
+
+echo "Launching Simulation..."
+# Make sure to launch the newly generated targ_shoreside.moos, not the template!
 pAntler targ_shoreside.moos >& /dev/null &
-sleep 0.25
+sleep 0.5
 
-for i in $(seq 1 10); do
-    VNAME="sailor$i"
-    echo "Launching $VNAME..."
-    pAntler targ_$VNAME.moos >& /dev/null &
-    sleep 0.25
+# Loop to launch pAntler for each vehicle
+for ((i=1; i<=$VEHICLE_COUNT; i++)); do
+  VEHICLE_NUM=$(printf "%03d" $i)
+  VNAME="alpha_$VEHICLE_NUM"
+  pAntler "targ_${VNAME}.moos" >& /dev/null &
+  sleep 0.5
 done
 
-echo "Done launching. Watch pMarineViewer!"
+echo "Simulation running. Hit [Deploy] in the pMarineViewer window to start."

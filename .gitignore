@@ -4,7 +4,9 @@
 **/logs/
 cmake-build-debug/
 .idea
+CMakeCache.txt
 CMakeFiles
+Makefile
 #.moos++
 **/*.swp
 **/.vagrant*
@@ -31,3 +33,4 @@ ivp/missions/*/*++
 ivp/missions/*/*~+
 *#
 mis
+*.cmake
