@@ -76,6 +76,9 @@ bool BHV_VisFlocking::setParam(string param, string val)
   return false;
 }
 
+//---------------------------------------------------------------
+// Empty placeholder functions
+
 void BHV_VisFlocking::onSetParamComplete() {}
 void BHV_VisFlocking::onCompleteState() {}
 void BHV_VisFlocking::onIdleState() {}

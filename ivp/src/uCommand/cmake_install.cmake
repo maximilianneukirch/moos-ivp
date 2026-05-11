@@ -1,4 +1,4 @@
-# Install script for directory: /home/mneu/PROJECT/moos-ivp/ivp/src/uCommand
+# Install script for directory: /home/niom/PROJECT/moos-ivp/ivp/src/uCommand
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -37,7 +37,7 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
   set(CMAKE_CROSSCOMPILING "FALSE")
 endif()
 
-# Set default install directory permissions.
+# Set path to fallback-tool for dependency-resolution.
 if(NOT DEFINED CMAKE_OBJDUMP)
   set(CMAKE_OBJDUMP "/usr/bin/objdump")
 endif()
@@ -57,7 +57,7 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-  file(INSTALL DESTINATION "/usr/local/bin" TYPE EXECUTABLE FILES "/home/mneu/PROJECT/moos-ivp/bin/uCommand")
+  file(INSTALL DESTINATION "/usr/local/bin" TYPE EXECUTABLE FILES "/home/niom/PROJECT/moos-ivp/bin/uCommand")
   if(EXISTS "$ENV{DESTDIR}/usr/local/bin/uCommand" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}/usr/local/bin/uCommand")
     if(CMAKE_INSTALL_DO_STRIP)
@@ -66,3 +66,9 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
   endif()
 endif()
 
+string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
+       "${CMAKE_INSTALL_MANIFEST_FILES}")
+if(CMAKE_INSTALL_LOCAL_ONLY)
+  file(WRITE "/home/niom/PROJECT/moos-ivp/ivp/src/uCommand/install_local_manifest.txt"
+     "${CMAKE_INSTALL_MANIFEST_CONTENT}")
+endif()
