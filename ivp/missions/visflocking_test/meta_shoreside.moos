@@ -30,7 +30,7 @@ ProcessConfig = ANTLER
 ProcessConfig = pShare
 {
   AppTick    = 4
-  CommsTick  = 4
+  CommsTick  = 2
   
   Input = route = localhost:9200
   
@@ -44,16 +44,9 @@ ProcessConfig = pShare
 ProcessConfig = pMarineViewer
 {
   AppTick    = 4
-  CommsTick  = 16
+  CommsTick  = 12
 
   scope = VIEW_POLYGON
-
-  // Disable trails to save massive CPU/Rendering overhead
-  trails_length = 0
-  trails_viewable = false
-  
-  // Disable heavy appcast rendering for 10 vehicles
-  appcast_viewable = false
 
   tiff_file            = Satellite_Lake_of_Constance.tif
   tiff_file            = Map_Lake_of_Constance.tif
@@ -66,7 +59,7 @@ ProcessConfig = pMarineViewer
   hash_shade           = 0.22
   hash_viewable        = true
 
-  trails_point_size    = 1
+  trails_point_size    = 5
 
   // Appcast configuration
   appcast_height       = 75
@@ -97,8 +90,8 @@ ProcessConfig = pMarineViewer
 
 ProcessConfig = pSimVisionServer
 {
-  AppTick   = 4
-  CommsTick = 4
+  AppTick   = 12
+  CommsTick = 12
 
   fov         = 360.0
   resolution  = 320

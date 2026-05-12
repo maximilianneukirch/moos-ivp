@@ -104,7 +104,7 @@ Behavior = BHV_SoftBoundary
   max_range = 6.0
   min_range = 1.0
   peak_width = 5.0
-  polygon = pts={-80,-50:-30,-175:150,-100:95,25}
+  polygon = pts={-25,50:29,50:29,-50:-25,-50}
 }
 
 //Behavior = BHV_OpRegionV24

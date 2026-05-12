@@ -147,7 +147,7 @@ IvPFunction *BHV_VisFlocking::onRunState()
   if(desired_speed < 0.0) desired_speed = 0.0;*/
 
   //-----------------------------------------------------------
-  // Procedure: buildFunctionWithZAIC
+  // Build function with ZAIC
 
   // SPEED
   ZAIC_PEAK spd_zaic(m_domain, "speed");

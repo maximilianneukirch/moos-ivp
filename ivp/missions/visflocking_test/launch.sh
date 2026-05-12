@@ -43,7 +43,7 @@ for ((i=1; i<=$VEHICLE_COUNT; i++)); do
   PSHARE_PORT=$((9200 + $i))
 
   # Generate .moos and .bhv files
-  nsplug meta_vehicle.moos "targ_${VNAME}.moos" -f VNAME="$VNAME" MOOS_PORT="$MOOS_PORT" PSHARE_PORT="$PSHARE_PORT" START_POS="x=$(($i*1)),y=-20,heading=180"
+  nsplug meta_vehicle.moos "targ_${VNAME}.moos" -f VNAME="$VNAME" MOOS_PORT="$MOOS_PORT" PSHARE_PORT="$PSHARE_PORT" START_POS="x=$(($i*1)),y=-20,heading=000"
   nsplug meta_vehicle.bhv "targ_${VNAME}.bhv" -f VNAME="$VNAME" RETURN_POS="0,-20"
 done
 

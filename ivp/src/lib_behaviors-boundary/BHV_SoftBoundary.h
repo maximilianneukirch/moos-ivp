@@ -16,15 +16,14 @@ public:
 
 protected:
     bool         updateInfoIn();
-    double       computeDistanceToBoundary();
-    void         postViewPoint();
+    void         postViewPolygon();
 
 private:
-    std::vector<std::pair<double, double>> m_boundary_polygon; // Liste der (x,y)-Punkte des Polygons
-    double       m_max_range;       // Maximale Distanz, ab der die Abstoßung beginnt
-    double       m_min_range;       // Minimale Distanz, bei der die Abstoßung am stärksten ist
-    double       m_peak_width;      // Breite des Peaks (Stärke der Abstoßung)
-    std::string  m_boundary_var;    // MOOS-Variable für die Polygon-Definition (optional)
+    std::vector<std::pair<double, double>> m_boundary_polygon; // List of (x,y) points of polygon
+    double       m_max_range;       // Max distance at where repulsion begins
+    double       m_min_range;       // Min distance at where repulsion is biggest
+    double       m_peak_width;      // ZAIC Peak width (= Strength of repulsion)
+    std::string  m_boundary_var;    // MOOS-variable for polygon definition
 };
 
 #ifdef WIN32

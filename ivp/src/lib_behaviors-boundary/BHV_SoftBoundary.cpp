@@ -6,6 +6,7 @@
 #include "AngleUtils.h"
 #include "XYPolygon.h"
 #include "ZAIC_PEAK.h"
+#include "XYFormatUtilsPoly.h"
 
 using namespace std;
 
@@ -26,17 +27,10 @@ BHV_SoftBoundary::BHV_SoftBoundary(IvPDomain domain)
     m_peak_width  = 20.0;
     m_boundary_var = "BOUNDARY_POLYGON";
 
-    // Parameters for IvP-function
-    IvPFunction *new_function = new ZAIC_PEAK(
-        "soft_boundary",  // Name
-        0.0,              // Min utility (at border)
-        100.0,            // Max utility (far from border)
-        0.0,              // Current distance
-        m_max_range,      // Peak-distance
-        m_peak_width      // Width of the function peak
-    );
-    new_function->setPWT(100.0); // Standard-PWT
-    setFunction(new_function);
+    // Subscribe to required variables
+    addInfoVars("NAV_X, NAV_Y");
+    addInfoVars(m_boundary_var);
+
 }
 
 //------------------------------------------------------------------
@@ -49,17 +43,19 @@ bool BHV_SoftBoundary::setParam(string param, string value) {
     if (IvPBehavior::setParam(param, value)) return true;
 
     if (param == "polygon") {
-        // Polygon from string (Format: "x1,y1:x2,y2:x3,y3:...")
-        vector<string> points = parseString(value, ':');
-        for (const auto& point : points) {
-            vector<string> coords = parseString(point, ',');
-            if (coords.size() == 2) {
-                double x = atof(coords[0].c_str());
-                double y = atof(coords[1].c_str());
-                m_boundary_polygon.emplace_back(x, y);
+        // parameter has the form: polygon = pts={-25,50:29,50:29,-50:-25,-50}
+        XYPolygon parsed_poly = string2Poly(value);
+
+        if (parsed_poly.size() > 0) {
+            m_boundary_polygon.clear();
+            for (unsigned int i = 0; i < parsed_poly.size(); i++) {
+                m_boundary_polygon.emplace_back(parsed_poly.get_vx(i), parsed_poly.get_vy(i));
             }
+            return true;
+        } else {
+            postWMessage("setParam failed to parse static polygon: " + value);
+            return false;
         }
-        return true;
     }
     else if (param == "max_range") {
         m_max_range = atof(value.c_str());
@@ -75,6 +71,7 @@ bool BHV_SoftBoundary::setParam(string param, string value) {
     }
     else if (param == "boundary_var") {
         m_boundary_var = value;
+        addInfoVars(m_boundary_var);
         return true;
     }
     return false;
@@ -85,69 +82,13 @@ bool BHV_SoftBoundary::setParam(string param, string value) {
 
 IvPFunction* BHV_SoftBoundary::onRunState() {
     // Update Position, Polygon, etc.
-    updateInfoIn();
-
-    double dist_to_boundary = computeDistanceToBoundary();
-
-    // Create/update IvP-Function for Repulsion
-    ZAIC_PEAK *zaic = dynamic_cast<ZAIC_PEAK*>(getFunction());
-    if (!zaic) {
-        zaic = new ZAIC_PEAK(
-            "soft_boundary",
-            0.0, 100.0, dist_to_boundary, m_max_range, m_peak_width
-        );
-        setFunction(zaic);
-    } else {
-        zaic->setParam("x", dist_to_boundary);
+    if (!updateInfoIn()) {
+        return nullptr;
     }
 
-    // Visualization of border
-    postViewPoint();
-
-    return getFunction();
-}
-
-//------------------------------------------------------------------
-// updateInfoIn: Update internal data
-
-bool BHV_SoftBoundary::updateInfoIn() {
-    bool ok = true;
-
-    // Vehicle's position
-    ok = ok && updateInfoIn("NAV_X", m_osx);
-    ok = ok && updateInfoIn("NAV_Y", m_osy);
-
-    // Polygon from MOOSDB
-    string polygon_str;
-    if (m_MissionReader->GetValue(m_boundary_var, polygon_str)) {
-        m_boundary_polygon.clear();
-        vector<string> points = parseString(polygon_str, ':');
-        for (const auto& point : points) {
-            vector<string> coords = parseString(point, ',');
-            if (coords.size() == 2) {
-                double x = atof(coords[0].c_str());
-                double y = atof(coords[1].c_str());
-                m_boundary_polygon.emplace_back(x, y);
-            }
-        }
+    if (m_boundary_polygon.empty()) {
+        return nullptr;
     }
-
-    if (!ok) {
-        postWMessage("No ownship NAV_X/NAV_Y info in info_buffer.");
-        return(false); // No data, no steering
-    } else if (polygon_str.empty()) {
-        postWMessage("No ownship polygon info in info_buffer.");
-    }
-
-    return ok;
-}
-
-//------------------------------------------------------------------
-// Procedure: computeDistanceToBoundary - Calculate distance to next polygon edge
-
-double BHV_SoftBoundary::computeDistanceToBoundary() {
-    if (m_boundary_polygon.empty())
-        return m_max_range + 1; // NO border -> no repulsion
 
     // Get polygon from points
     XYPolygon polygon;
@@ -155,35 +96,126 @@ double BHV_SoftBoundary::computeDistanceToBoundary() {
         polygon.add_vertex(point.first, point.second);
     }
 
-    // Calculate distance to next edge
-    double dist = polygon.dist_to_poly(m_osx, m_osy);
+    // Visualization of border
+    postViewPolygon();
 
-    // Restrict distance to [m_min_range, m_max_range]
-    if (dist < m_min_range)
-        return m_min_range;
-    else if (dist > m_max_range)
-        return m_max_range;
-    else
-        return dist;
+    // Calculate distance and closest point on boundary
+    double closest_x, closest_y;
+    polygon.closest_point_on_poly(m_osx, m_osy, closest_x, closest_y);
+    double dist_to_boundary = hypot(m_osx - closest_x, m_osy - closest_y);
+
+    bool is_inside = polygon.contains(m_osx, m_osy);
+
+    // Return nullptr if inside polygon and outside force-field max_range (far from border)
+    if (is_inside && dist_to_boundary >= m_max_range) {
+        return nullptr;
+    }
+
+    // Visualization of border
+    //postViewPolygon();
+
+    // Compute dynamic weight (priority) of behavior
+    // 0 at max_range, linear up to configured pwt at min_range
+    double weight = 0.0;
+    double base_pwt = getPriorityWt();
+    double escape_heading = 0.0;
+
+    if (!is_inside) {
+        // Boat already violated boundary and is outside -> highes pwt, inverted escape_heading
+        weight = base_pwt;
+        escape_heading = relAng(m_osx, m_osy, closest_x, closest_y);
+    } else {
+        if (dist_to_boundary <= m_min_range) {
+            weight = base_pwt;
+        } else {
+            // TODO: Check for m_max_range = m_min_range
+            double fraction = (m_max_range - dist_to_boundary) / (m_max_range - m_min_range);
+            weight = base_pwt * fraction;
+        }
+        
+        // Compute escape heading (absolute 360-deg heading from boundary point to vehocle pos)
+        escape_heading = relAng(closest_x, closest_y, m_osx, m_osy);
+    }
+
+
+    // COURSE: Build function with ZAIC
+    ZAIC_PEAK zaic(m_domain, "course");
+    zaic.setSummit(escape_heading);
+    zaic.setPeakWidth(m_peak_width);
+    zaic.setBaseWidth(180.0);           // 180 deg of degradation
+    zaic.setSummitDelta(0.0);
+    zaic.setValueWrap(true);            // ValueWrap: wrap 360 to 0
+
+    IvPFunction *ipf = zaic.extractIvPFunction();
+
+    if (!ipf) {
+        postWMessage("Failed to generate IvP Funczion for BHV_SoftBoundary");
+    } else {
+        // Apply dynamic weight
+        ipf->setPWT(weight);
+    }
+
+    return ipf;
+}
+
+//------------------------------------------------------------------
+// updateInfoIn: Update internal data
+
+bool BHV_SoftBoundary::updateInfoIn() {
+    bool ok_x, ok_y, ok_poly;
+    string polygon_str;
+
+    // Vehicle's position from InfoBuffer
+    m_osx = getBufferDoubleVal("NAV_X", ok_x);
+    m_osy = getBufferDoubleVal("NAV_Y", ok_y);
+
+    if (m_boundary_polygon.empty()) {
+        // Polygon from InfoBuffer
+        polygon_str = getBufferStringVal(m_boundary_var, ok_poly);
+    }
+
+    if (ok_poly && !polygon_str.empty()) {
+        XYPolygon parsed_poly = string2Poly(polygon_str);
+        
+        if (parsed_poly.size() > 0) {
+            m_boundary_polygon.clear();
+            for (unsigned int i = 0; i < parsed_poly.size(); i++) {
+                m_boundary_polygon.emplace_back(parsed_poly.get_vx(i), parsed_poly.get_vy(i));
+            }
+        } else {
+            postWMessage("Failed to parse polygon from string: " + polygon_str);
+        }
+    }
+    
+    if (!ok_x || !ok_y) {
+        postWMessage("No ownship NAV_X/NAV_Y info in info_buffer.");
+        return false; // No data, no steering
+    } else if (m_boundary_polygon.empty()) {
+        postWMessage("No boundary polygon configured in .bhv or received from DB.");
+        return false;
+    }
+
+    return true;
 }
 
 //------------------------------------------------------------------
 // Procedure: postViewPoint - Visualize edge in pMarineViewer (optionally)
 
-void BHV_SoftBoundary::postViewPoint() {
+void BHV_SoftBoundary::postViewPolygon() {
     if (!m_boundary_polygon.empty()) {
-        string spec = "label=soft_boundary,";
-        spec += "type=string,";
-        spec += "color=red,";
-        spec += "msg=BOUNDARY_POLYGON,";
-        spec += "x=" + doubleToString(m_osx, 2) + ",";
-        spec += "y=" + doubleToString(m_osy, 2);
+        string spec = "pts={";
 
-        // Add polygon points
-        for (const auto& point : m_boundary_polygon) {
-            spec += ":" + doubleToString(point.first, 2) + "," + doubleToString(point.second, 2);
+        for (size_t i = 0; i < m_boundary_polygon.size(); i++) {
+            spec += doubleToString(m_boundary_polygon[i].first, 2) + "," +
+                    doubleToString(m_boundary_polygon[i].second, 2);
+
+            if (i < m_boundary_polygon.size() - 1) {
+                spec += ":";
+            }
         }
 
-        postViewPoint(spec);
+        spec += "}, label=soft_boundary,edge_color=red,edge_size=2,vertex_color=white,vertex_size=2";
+
+        postMessage("VIEW_POLYGON", spec);
     }
 }

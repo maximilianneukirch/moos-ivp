@@ -91,22 +91,6 @@ Behavior=BHV_ConstantSpeed
 	
 }
 
-Behavior = BHV_SoftBoundary
-{
-  // General Behavior parameters
-  // ---------------------------
-
-  name = softbs
-  pwt = 300
-
-  // Params specific to this behavior
-  // --------------------------------
-  max_range = 6.0
-  min_range = 1.0
-  peak_width = 5.0
-  polygon = pts={-80,-50:-30,-175:150,-100:95,25}
-}
-
 //Behavior = BHV_OpRegionV24
 //{
 //  // General Behavior Parameters
