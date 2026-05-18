@@ -1241,6 +1241,19 @@ pSimVisionServer/fast:
 .PHONY : pSimVisionServer/fast
 
 #=============================================================================
+# Target rules for targets named uFlockEvaluator
+
+# Build rule for target.
+uFlockEvaluator: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 uFlockEvaluator
+.PHONY : uFlockEvaluator
+
+# fast build rule for target.
+uFlockEvaluator/fast:
+	$(MAKE) $(MAKESILENT) -f uFlockEvaluator/CMakeFiles/uFlockEvaluator.dir/build.make uFlockEvaluator/CMakeFiles/uFlockEvaluator.dir/build
+.PHONY : uFlockEvaluator/fast
+
+#=============================================================================
 # Target rules for targets named alogsplit
 
 # Build rule for target.
@@ -1857,6 +1870,7 @@ help:
 	@echo "... uFldPathCheck"
 	@echo "... uFldScope"
 	@echo "... uFldShoreBroker"
+	@echo "... uFlockEvaluator"
 	@echo "... uFunctionVis"
 	@echo "... uHelmScope"
 	@echo "... uLoadWatch"
