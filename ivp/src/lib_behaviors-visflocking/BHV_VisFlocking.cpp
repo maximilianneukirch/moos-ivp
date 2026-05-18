@@ -142,16 +142,13 @@ IvPFunction *BHV_VisFlocking::onRunState()
 
   //computeStateVariables(vpf, dv, dpsi);
   // set params order: a0, a1, b0, b1, fov, res
-  m_vision_model.setParams(a0, a1, b0, b1, fov, resolution);
-  m_vision_model.compute(vpf, dv, dpsi);
+  m_vision_model.setParams(a0, a1, b0, b1, m_v0, m_gam, fov, resolution);
+  m_vision_model.compute(m_current_speed, vpf, dv, dpsi);
 
   // TODO: DIFFERENTIATE BETWEEN FULL VPF and PARTIAL VPF (edge-wrapping)
 
   // Convert dpsi from rad/s to deg/s
   //double dpsi_deg = dpsi * (180.0 / M_PI);
-
-  // Apply ground speed with relaxation factor
-  dv += m_gam * (m_v0 - m_current_speed);
 
   // 4. Calculate desired values
   double desired_heading = m_current_heading + (dpsi * dt);

@@ -11,7 +11,7 @@ public:
 
     void setParams(double a0, double a1, double b0, double b1, double v0, double gam, double fov, int res);
 
-    void compute(const std::vector<int>& vpf, double& out_dv, double& out_dpsi);
+    void compute(double vel_now, const std::vector<int>& V_now, double& dvel, double& dpsi);
 
 private:
     std::vector<double> dPhi_V_of(const std::vector<int>& V);
