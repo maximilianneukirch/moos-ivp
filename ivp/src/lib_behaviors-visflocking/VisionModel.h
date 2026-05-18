@@ -9,17 +9,20 @@ public:
     VisionModel();
     ~VisionModel() {};
 
-    void setParams(double a0, double a1, double b0, double b1, double fov, int res);
+    void setParams(double a0, double a1, double b0, double b1, double v0, double gam, double fov, int res);
 
     void compute(const std::vector<int>& vpf, double& out_dv, double& out_dpsi);
 
 private:
-    double m_alpha_0;
-    double m_alpha_1;
-    double m_beta_0;
-    double m_beta_1;
-    
-    double m_fov_rad;
+    std::vector<double> dPhi_V_of(const std::vector<int>& V);
+
+    double m_a0;
+    double m_a1;
+    double m_b0;
+    double m_b1;
+    double m_v0;
+    double m_gam;
+    double m_fov;
     int m_resolution;
 };
 
