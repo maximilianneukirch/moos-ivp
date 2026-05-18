@@ -40,7 +40,6 @@ protected:
   double m_gam; // Relaxation factor
 
   double fov;
-  int resolution;
 
   // Internal states
   double m_current_speed;

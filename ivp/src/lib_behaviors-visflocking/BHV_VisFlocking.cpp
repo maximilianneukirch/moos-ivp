@@ -26,7 +26,6 @@ BHV_VisFlocking::BHV_VisFlocking(IvPDomain domain) :
   m_v0 = 1.0;
   m_gam = 0.1;
   fov = 175.0;
-  resolution = 320;
   m_current_speed = 0.0;
   m_current_heading = 0.0;
 
@@ -53,10 +52,6 @@ bool BHV_VisFlocking::setParam(string param, string val)
   }
   else if(param == "fov") {
     fov = atof(val.c_str());
-    return true;
-  }
-  else if(param == "resolution") {
-    resolution = atof(val.c_str());
     return true;
   }
   else if(param == "a0"){
@@ -141,17 +136,17 @@ IvPFunction *BHV_VisFlocking::onRunState()
   double dpsi = 0.0;
 
   //computeStateVariables(vpf, dv, dpsi);
-  // set params order: a0, a1, b0, b1, fov, res
-  m_vision_model.setParams(a0, a1, b0, b1, m_v0, m_gam, fov, resolution);
+  // set params order: a0, a1, b0, b1, fov
+  m_vision_model.setParams(a0, a1, b0, b1, m_v0, m_gam, fov);
   m_vision_model.compute(m_current_speed, vpf, dv, dpsi);
 
   // TODO: DIFFERENTIATE BETWEEN FULL VPF and PARTIAL VPF (edge-wrapping)
 
   // Convert dpsi from rad/s to deg/s
-  //double dpsi_deg = dpsi * (180.0 / M_PI);
+  double dpsi_deg = dpsi * (180.0 / M_PI);
 
   // 4. Calculate desired values
-  double desired_heading = m_current_heading + (dpsi * dt);
+  double desired_heading = m_current_heading + (dpsi_deg * dt);
   double desired_speed   = m_current_speed + (dv * dt);
 
   while(desired_heading >= 360.0) desired_heading -= 360.0;
@@ -179,10 +174,10 @@ IvPFunction *BHV_VisFlocking::onRunState()
   // HEADING
   ZAIC_PEAK crs_zaic(m_domain, "course");
   crs_zaic.setSummit(desired_heading);
-  crs_zaic.setPeakWidth(10.0); // +/- 10 Grad ist die "Wohlfühlzone"
-  crs_zaic.setBaseWidth(45.0); // Außerhalb von 45 Grad fällt der Nutzen auf 0
+  crs_zaic.setPeakWidth(10.0); // +/- 10°
+  crs_zaic.setBaseWidth(180.0); // Outside of 180° is the utility dropped to 0
   crs_zaic.setSummitDelta(0.0);
-  crs_zaic.setValueWrap(true); // Wichtig für 360-0 Übergang
+  crs_zaic.setValueWrap(true); // wrap 360 to 0
   if(crs_zaic.stateOK() == false) {
     string warnings = "Course ZAIC problems " + crs_zaic.getWarnings();
     postWMessage(warnings);

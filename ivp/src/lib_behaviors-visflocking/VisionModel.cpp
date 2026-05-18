@@ -17,10 +17,9 @@ VisionModel::VisionModel() {
     m_v0  = 1.0;
     m_gam = 0.1;
     m_fov = 175.0;
-    m_resolution = 320;
 }
 
-void VisionModel::setParams(double a0, double a1, double b0, double b1, double v0, double gam, double fov, int res) {
+void VisionModel::setParams(double a0, double a1, double b0, double b1, double v0, double gam, double fov) {
     m_a0  = a0;
     m_a1  = a1;
     m_b0  = b0;
@@ -28,7 +27,6 @@ void VisionModel::setParams(double a0, double a1, double b0, double b1, double v
     m_v0  = v0;
     m_gam = gam;
     m_fov = fov;
-    m_resolution = res;
 }
 
 std::vector<double> VisionModel::dPhi_V_of(const std::vector<int>& V) {
@@ -68,9 +66,8 @@ void VisionModel::compute(double vel_now, const std::vector<int>& V_now, double&
     std::vector<double> Phi(n);
     double fov_rad = m_fov * M_PI / 180.0;
     double start_phi = -fov_rad / 2.0;            // start at -FOV/2
-    double d_phi = fov_rad / (n - 1);
-
-    //double dphi = m_fov_rad / (double)m_resolution; // degree per bin
+    double d_phi = fov_rad / (n - 1);             // resolution (deg/bin) set automatically,
+                                                  // depending on the length of the generated VPF (therefor a parameter of pSimVisionServer)
 
     for (int i = 0; i < n; i++) {
         // Current angle of the bin
