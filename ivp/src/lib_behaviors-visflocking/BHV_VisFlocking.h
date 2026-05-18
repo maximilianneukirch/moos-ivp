@@ -35,6 +35,10 @@ protected:
   double a1;
   double b0;
   double b1;
+
+  double m_v0;  // Active cruising speed, modified by the behavior
+  double m_gam; // Relaxation factor
+
   double fov;
   int resolution;
 

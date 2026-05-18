@@ -23,6 +23,8 @@ BHV_VisFlocking::BHV_VisFlocking(IvPDomain domain) :
   b0 = 1.75;
   a1 = 1.25;
   b1 = 1.75;
+  m_v0 = 1.0;
+  m_gam = 0.1;
   fov = 175.0;
   resolution = 320;
   m_current_speed = 0.0;
@@ -71,6 +73,12 @@ bool BHV_VisFlocking::setParam(string param, string val)
   }
   else if(param == "b1"){
     b1 = atof(val.c_str());
+    return true;
+  } else if(param == "v0"){
+    m_v0 = atof(val.c_str());
+    return true;
+  } else if(param == "gam"){
+    m_gam = atof(val.c_str());
     return true;
   }
   return false;
@@ -126,6 +134,8 @@ IvPFunction *BHV_VisFlocking::onRunState()
     vpf.push_back(atoi(s.c_str()));
   }
 
+  // TODO: INTERSECTION, APPLY EXPLORE/BEHAVE HERE
+
   // Part 3: Calculate dv and dpsi as by Mezey et. al.
   double dv = 0.0;
   double dpsi = 0.0;
@@ -135,6 +145,14 @@ IvPFunction *BHV_VisFlocking::onRunState()
   m_vision_model.setParams(a0, a1, b0, b1, fov, resolution);
   m_vision_model.compute(vpf, dv, dpsi);
 
+  // TODO: DIFFERENTIATE BETWEEN FULL VPF and PARTIAL VPF (edge-wrapping)
+
+  // Convert dpsi from rad/s to deg/s
+  //double dpsi_deg = dpsi * (180.0 / M_PI);
+
+  // Apply ground speed with relaxation factor
+  dv += m_gam * (m_v0 - m_current_speed);
+
   // 4. Calculate desired values
   double desired_heading = m_current_heading + (dpsi * dt);
   double desired_speed   = m_current_speed + (dv * dt);
@@ -142,9 +160,9 @@ IvPFunction *BHV_VisFlocking::onRunState()
   while(desired_heading >= 360.0) desired_heading -= 360.0;
   while(desired_heading < 0.0)    desired_heading += 360.0;
   
-  /*
-  if(desired_speed > 2.0) desired_speed = 2.0;
-  if(desired_speed < 0.0) desired_speed = 0.0;*/
+  // Desired speed clamped to [0, 3*v0]
+  //if(desired_speed > (m_v0 * 3)) desired_speed = (m_v0 * 3);
+  if(desired_speed < 0.0) desired_speed = 0.0;
 
   //-----------------------------------------------------------
   // Build function with ZAIC
