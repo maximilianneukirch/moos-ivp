@@ -17,12 +17,14 @@ Behavior = BHV_VisFlocking
   vpf_variable = VPF
   
   fov          = 360.0
-  resolution   = 320
   
-  a0 = 0.95
-  a1 = 0.95
-  b0 = 1.35
-  b1 = 1.35
+  a0 = 0.05
+  a1 = 0.09
+  b0 = 0.04
+  b1 = 0.1
+
+  v0 = 1.0
+  gam = 0.1
 }
 
 //----------------------------------------------
@@ -68,14 +70,14 @@ Behavior = BHV_VisFlocking
 //  // ---------------------------
 //
 //  name = soft_boundary
-//  pwt = 200
+//  pwt = 50
 //  updates = VIEW_POINT
 //
 //  // Params specific to this behavior
 //  // --------------------------------
 //  max_range = 12.0
 //  min_range = 1.0
-//  peak_width = 5.0
+//  peak_width = 10.0
 //  polygon = pts={-25,50:29,50:29,-50:-25,-50}
 //}
 
