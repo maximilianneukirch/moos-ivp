@@ -4,7 +4,7 @@
 ServerHost   = localhost
 ServerPort   = 9000
 Community    = shoreside
-MOOSTimeWarp = 1
+MOOSTimeWarp = 10
 
 // Lake of Constance
 LatOrigin   = 47.696170

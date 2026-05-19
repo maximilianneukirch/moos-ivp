@@ -97,17 +97,17 @@ void VisionModel::compute(double vel_now, const std::vector<int>& V_now, double&
     double sum_vel_spike = 0.0;
 
     for (int i = 0; i < n; i++) {
-        sum_psi_spike += std::sin(Phi[i] * G_psi_spike[i]);
-        sum_vel_spike += std::cos(Phi[i] * G_vel_spike[i]);
+        sum_psi_spike += std::sin(Phi[i]) * G_psi_spike[i];
+        sum_vel_spike += std::cos(Phi[i]) * G_vel_spike[i];
     }
 
     for (int i = 0; i < n - 1; i++) {
-        double y_psi_i      = std::sin(Phi[i] * G_psi[i]);
-        double y_psi_next   = std::sin(Phi[i+1] * G_psi[i+1]);
+        double y_psi_i      = std::sin(Phi[i]) * G_psi[i];
+        double y_psi_next   = std::sin(Phi[i+1]) * G_psi[i+1];
         trapz_psi += ((y_psi_i + y_psi_next) / 2.0) * d_phi;
 
-        double y_vel_i      = std::cos(Phi[i] * G_vel[i]);
-        double y_vel_next   = std::cos(Phi[i+1] * G_vel[i+1]);
+        double y_vel_i      = std::cos(Phi[i]) * G_vel[i];
+        double y_vel_next   = std::cos(Phi[i+1]) * G_vel[i+1];
         trapz_vel += ((y_vel_i + y_vel_next) / 2.0) * d_phi;
     }
 

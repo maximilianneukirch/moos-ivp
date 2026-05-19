@@ -5,7 +5,7 @@
 ServerHost   = localhost
 ServerPort   = $(MOOS_PORT)
 Community    = $(VNAME)
-MOOSTimeWarp = 1
+MOOSTimeWarp = 10
 
 // Lake of Constance
 LatOrigin   = 47.696170
@@ -21,7 +21,7 @@ ProcessConfig = ANTLER
   //Run = pLogger         @ NewConsole = false
   Run = uSimMarineV23   @ NewConsole = false
   Run = pMarinePIDV22   @ NewConsole = false
-  Run = pHelmIvP        @ NewConsole = false
+  //Run = pHelmIvP        @ NewConsole = false
   Run = uProcessWatch   @ NewConsole = false
   Run = pNodeReporter   @ NewConsole = false
   Run = pRealm          @ NewConsole = false
@@ -100,7 +100,7 @@ ProcessConfig = uSimMarineV23
   turn_rate     = 95
   thrust_map    = 0:0, 50:1, 100:2
   turn_spd_loss = 0.4
-  wind_conditions = spd=3, dir=090                     
+  wind_conditions = spd=3, dir=270                     
   //polar_plot = 0,25: 20,25: 45,25: 90,100: 110,100: 135,25: 150,25: 160,25: 180,25
   polar_plot = 0,100: 90,100: 180,100
 }

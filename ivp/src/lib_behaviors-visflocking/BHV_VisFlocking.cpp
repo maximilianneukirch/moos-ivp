@@ -146,7 +146,7 @@ IvPFunction *BHV_VisFlocking::onRunState()
   double dpsi_deg = dpsi * (180.0 / M_PI);
 
   // 4. Calculate desired values
-  double desired_heading = m_current_heading + (dpsi_deg * dt);
+  double desired_heading = m_current_heading - (dpsi_deg * dt);
   double desired_speed   = m_current_speed + (dv * dt);
 
   while(desired_heading >= 360.0) desired_heading -= 360.0;
