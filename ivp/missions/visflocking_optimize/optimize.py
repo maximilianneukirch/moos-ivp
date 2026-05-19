@@ -7,10 +7,10 @@ import os
 import time
 
 # Definiere den Suchraum für deine Parameter
-a0_space = [0.5, 1.0, 1.5]
-a1_space = [0.5, 1.0, 1.5]
-b0_space = [0.5, 1.0]
-b1_space = [0.5, 1.0]
+a0_space = [0.1, 0.2, 0.3, 0.4]
+a1_space = [1.5, 2.0, 2.5, 3.0]
+b0_space = [0.1, 0.2, 0.3, 0.4]
+b1_space = [0.1, 0.2, 0.3, 0.4]
 
 # Generiere alle möglichen Kombinationen
 combinations = list(itertools.product(a0_space, a1_space, b0_space, b1_space))

@@ -44,6 +44,9 @@ rm -rf  $VERBOSE   MOOSLog_*  XLOG_* LOG_*
 rm -f   $VERBOSE   *~  *.moos++
 rm -f   $VERBOSE   targ_*
 rm -f   $VERBOSE   .LastOpenedMOOSLogDirectory
+rm -f   $VERBOSE   *.png
+rm -f   $VERBOSE   *.csv
+rm -f   $VERBOSE   debug_moos.txt
 
 echo "Clean!"
 
