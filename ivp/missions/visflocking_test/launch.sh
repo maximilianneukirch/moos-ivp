@@ -7,7 +7,7 @@ sleep 1
 # ----------------------------------------------------
 
 # Number of vehicles
-VEHICLE_COUNT=10
+VEHICLE_COUNT=2
 
 echo "Generating dynamic pShare routes for shoreside..."
 > plug_pshare_outputs.moos # Clear or create the file
