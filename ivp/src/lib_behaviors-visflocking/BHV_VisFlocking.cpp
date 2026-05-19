@@ -145,8 +145,14 @@ IvPFunction *BHV_VisFlocking::onRunState()
   // Convert dpsi from rad/s to deg/s
   double dpsi_deg = dpsi * (180.0 / M_PI);
 
+  // 2. Größeren Hebel für den Regler nutzen (z.B. 3 Sekunden in die Zukunft)
+  double lookahead_time = 3.0; 
+  
+  // 3. Vorzeichen umkehren (MOOS-Kompass-Logik) und Lookahead nutzen
+  double desired_heading = m_current_heading + (dpsi_deg * lookahead_time);
+
   // 4. Calculate desired values
-  double desired_heading = m_current_heading - (dpsi_deg * dt);
+  //double desired_heading = m_current_heading + (dpsi_deg * dt);
   double desired_speed   = m_current_speed + (dv * dt);
 
   while(desired_heading >= 360.0) desired_heading -= 360.0;

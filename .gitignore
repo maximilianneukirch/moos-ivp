@@ -4,9 +4,10 @@
 **/logs/
 cmake-build-debug/
 .idea
-CMakeCache.txt
-CMakeFiles
-Makefile
+*CMakeCache.txt
+**/*.cmake
+**/*CMakeFiles
+**/*Makefile
 #.moos++
 **/*.swp
 **/.vagrant*
