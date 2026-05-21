@@ -36,3 +36,4 @@ ivp/missions/*/*~+
 mis
 *.cmake
 ivp/missions/visflocking_optimize/debug_moos.txt
+/ivp/missions/visflocking_optimize/Test*
