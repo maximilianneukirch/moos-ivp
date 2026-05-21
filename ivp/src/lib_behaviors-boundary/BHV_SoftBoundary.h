@@ -5,6 +5,7 @@
 #include <string>
 #include "IvPBehavior.h"
 #include "ZAIC_PEAK.h"
+#include "OF_Coupler.h"
 
 class BHV_SoftBoundary : public IvPBehavior {
 public:
@@ -24,6 +25,7 @@ private:
     double       m_min_range;       // Min distance at where repulsion is biggest
     double       m_peak_width;      // ZAIC Peak width (= Strength of repulsion)
     std::string  m_boundary_var;    // MOOS-variable for polygon definition
+    double       m_min_speed;       // Minimum speed required to get any steering effect through rudder
 };
 
 #ifdef WIN32

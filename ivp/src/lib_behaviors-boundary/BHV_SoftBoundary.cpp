@@ -26,6 +26,7 @@ BHV_SoftBoundary::BHV_SoftBoundary(IvPDomain domain)
     m_min_range   = 5.0;
     m_peak_width  = 20.0;
     m_boundary_var = "BOUNDARY_POLYGON";
+    m_min_speed = 1.0;
 
     // Subscribe to required variables
     addInfoVars("NAV_X, NAV_Y");
@@ -72,6 +73,10 @@ bool BHV_SoftBoundary::setParam(string param, string value) {
     else if (param == "boundary_var") {
         m_boundary_var = value;
         addInfoVars(m_boundary_var);
+        return true;
+    }
+    else if (param == "min_speed") {
+        m_min_speed = atof(value.c_str());
         return true;
     }
     return false;
@@ -139,17 +144,33 @@ IvPFunction* BHV_SoftBoundary::onRunState() {
 
 
     // COURSE: Build function with ZAIC
-    ZAIC_PEAK zaic(m_domain, "course");
-    zaic.setSummit(escape_heading);
-    zaic.setPeakWidth(m_peak_width);
-    zaic.setBaseWidth(180.0);           // 180 deg of degradation
-    zaic.setSummitDelta(0.0);
-    zaic.setValueWrap(true);            // ValueWrap: wrap 360 to 0
+    ZAIC_PEAK crs_zaic(m_domain, "course");
+    crs_zaic.setSummit(escape_heading);
+    crs_zaic.setPeakWidth(m_peak_width);
+    crs_zaic.setBaseWidth(180.0);           // 180 deg of degradation
+    crs_zaic.setSummitDelta(0.0);
+    crs_zaic.setValueWrap(true);            // ValueWrap: wrap 360 to 0
 
-    IvPFunction *ipf = zaic.extractIvPFunction();
+    IvPFunction *crs_ipf = crs_zaic.extractIvPFunction();
+    if(!crs_ipf)
+        postWMessage("Failure on the CRS ZAIC");
 
-    if (!ipf) {
-        postWMessage("Failed to generate IvP Funczion for BHV_SoftBoundary");
+    // SPEED: Build function with ZAIC
+    ZAIC_PEAK spd_zaic(m_domain, "speed");
+    spd_zaic.setSummit(m_min_speed);
+    spd_zaic.setPeakWidth(0.2);
+    spd_zaic.setBaseWidth(1.0);
+    spd_zaic.setSummitDelta(0.0);
+    spd_zaic.setValueWrap(false);
+
+    IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
+    if(!spd_ipf)
+        postWMessage("Failure on the SPD ZAIC");
+
+    OF_Coupler coupler;
+    IvPFunction *ipf = coupler.couple(crs_ipf, spd_ipf, 0.5, 0.5);
+    if(!ipf) {
+        postWMessage("Failure on the CRS_SPD COUPLER");
     } else {
         // Apply dynamic weight
         ipf->setPWT(weight);
