@@ -2,6 +2,8 @@
 #include "MBUtils.h"
 #include "BuildUtils.h"
 #include "ZAIC_PEAK.h"
+#include "ZAIC_SPD.h"
+#include "ZAIC_HDG.h"
 #include "OF_Coupler.h"
 #include <cmath>
 #include <iostream>
@@ -31,6 +33,9 @@ BHV_VisFlocking::BHV_VisFlocking(IvPDomain domain) :
 
   // To measure time difference between iterations
   m_last_time = 0.0;
+
+  m_internal_speed = 0.0;
+  m_is_initialized = false;
 
   addInfoVars("NAV_HEADING, NAV_SPEED, " + m_vpf_var_name);
 }
@@ -146,21 +151,35 @@ IvPFunction *BHV_VisFlocking::onRunState()
   double dpsi_deg = dpsi * (180.0 / M_PI);
 
   // 2. Größeren Hebel für den Regler nutzen (z.B. 3 Sekunden in die Zukunft)
-  double lookahead_time = 3.0; 
+  //double lookahead_time = 0.5; 
   
   // 3. Vorzeichen umkehren (MOOS-Kompass-Logik) und Lookahead nutzen
-  double desired_heading = m_current_heading + (dpsi_deg * lookahead_time);
+  //double desired_heading = m_current_heading - (dpsi_deg * lookahead_time);
 
   // 4. Calculate desired values
-  //double desired_heading = m_current_heading + (dpsi_deg * dt);
-  double desired_speed   = m_current_speed + (dv * dt);
-
+  // Heading
+  double desired_heading = m_current_heading + (dpsi_deg * dt);
+  
   while(desired_heading >= 360.0) desired_heading -= 360.0;
   while(desired_heading < 0.0)    desired_heading += 360.0;
+
+  // Speed
+  if (!m_is_initialized) {
+    m_internal_speed = m_current_speed;
+    m_is_initialized = true;
+  }
+
+  m_internal_speed += (dv * dt);
   
   // Desired speed clamped to [0, 3*v0]
-  //if(desired_speed > (m_v0 * 3)) desired_speed = (m_v0 * 3);
-  if(desired_speed < 0.0) desired_speed = 0.0;
+  //if(m_internal_speed > (m_v0 * 3)) m_internal_speed = (m_v0 * 3);
+  //if(m_internal_speed < 0.0) m_internal_speed = 0.0;
+
+  double desired_speed = m_internal_speed;
+
+
+  postMessage("DEBUG_DESIRED_HEADING", desired_heading);
+  postMessage("DEBUG_DESIRED_SPEED", desired_speed);
 
   //-----------------------------------------------------------
   // Build function with ZAIC
@@ -171,6 +190,12 @@ IvPFunction *BHV_VisFlocking::onRunState()
   spd_zaic.setPeakWidth(0.2);
   spd_zaic.setBaseWidth(1.0);
   spd_zaic.setSummitDelta(0.0);
+  //ZAIC_SPD spd_zaic(m_domain, "speed");
+  //spd_zaic.setMedSpeed(desired_speed);
+  //spd_zaic.setLowSpeed(0.1);
+  //spd_zaic.setHghSpeed(desired_speed + 0.4);
+  //spd_zaic.setLowSpeedUtil(50);
+  //spd_zaic.setHghSpeedUtil(50);
   if(spd_zaic.stateOK() == false) {
     string warnings = "Speed ZAIC problems " + spd_zaic.getWarnings();
     postWMessage(warnings);
@@ -180,10 +205,16 @@ IvPFunction *BHV_VisFlocking::onRunState()
   // HEADING
   ZAIC_PEAK crs_zaic(m_domain, "course");
   crs_zaic.setSummit(desired_heading);
-  crs_zaic.setPeakWidth(10.0); // +/- 10°
+  crs_zaic.setPeakWidth(0.0); // +/- 10°
   crs_zaic.setBaseWidth(180.0); // Outside of 180° is the utility dropped to 0
   crs_zaic.setSummitDelta(0.0);
   crs_zaic.setValueWrap(true); // wrap 360 to 0
+  //ZAIC_HDG crs_zaic(m_domain, "course");
+  //crs_zaic.setSummit(desired_heading);
+  //crs_zaic.setLowDelta(20);
+  //crs_zaic.setHighDelta(20);
+  //crs_zaic.setLowDeltaUtil(25);
+  //crs_zaic.setHighDeltaUtil(25);
   if(crs_zaic.stateOK() == false) {
     string warnings = "Course ZAIC problems " + crs_zaic.getWarnings();
     postWMessage(warnings);
@@ -195,7 +226,7 @@ IvPFunction *BHV_VisFlocking::onRunState()
   
   // Couple both functions
   OF_Coupler coupler;
-  IvPFunction *ivp_function = coupler.couple(crs_ipf, spd_ipf, 50, 50);
+  IvPFunction *ivp_function = coupler.couple(crs_ipf, spd_ipf, 0.5, 0.5);
 
   // Speicher freigeben
   //if(crs_ipf) delete(crs_ipf);

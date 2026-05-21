@@ -1,5 +1,5 @@
 //---------------------------------------------------------------
-// VisionModel.h
+// VisionModel.cpp
 // This is strongly inspired by 
 // Mezey, David & Bastien, Renaud & Zheng, Yating & McKee, Neal &
 // Stoll, David & Hamann, Heiko & Romanczuk, Pawel. (2025). 
@@ -8,6 +8,7 @@
 //---------------------------------------------------------------
 
 #include "VisionModel.h"
+#include <cmath>
 
 VisionModel::VisionModel() {
     m_a0  = 1.25;
@@ -86,8 +87,11 @@ void VisionModel::compute(double vel_now, const std::vector<int>& V_now, double&
     for (int i = 0; i < n; i++) {
         G_vel[i] = -V_now[i];                   //EDIT for EVENT-BASED CAMERA (with actual dt_V)
         G_psi[i] = -V_now[i];                   //EDIT for EVENT-BASED CAMERA (with actual dt_V)
-        G_vel_spike[i] = dPhi_V[i] * dPhi_V[i];
-        G_psi_spike[i] = dPhi_V[i] * dPhi_V[i];
+
+        //G_vel_spike[i] = dPhi_V[i] * dPhi_V[i];
+        //G_psi_spike[i] = dPhi_V[i] * dPhi_V[i];
+        G_vel_spike[i] = std::abs(dPhi_V[i]);    // Using std::abs instead of ² to handle desity-VPF (with values >1)
+        G_psi_spike[i] = std::abs(dPhi_V[i]);
     }
 
     double trapz_psi = 0.0;

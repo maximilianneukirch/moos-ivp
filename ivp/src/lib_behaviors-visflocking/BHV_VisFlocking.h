@@ -41,9 +41,13 @@ protected:
 
   double fov;
 
-  // Internal states
+  // States
   double m_current_speed;
   double m_current_heading;
+
+  // Internal states for integration
+  double m_internal_speed;
+  bool m_is_initialized;
 
   // To measure time difference between iterations
   double m_last_time;

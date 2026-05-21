@@ -185,7 +185,8 @@ bool SimVisionServer::Iterate()
         
                 for(int i = center_bin - bins_span; i <= center_bin + bins_span; ++i) {
                     if(i >= 0 && i < m_resolution) {
-                        vpf[i] = 1; // 1 = Boat visible (occlusions are implicitly correct)
+                        vpf[i] += 1; // 1 = Boat visible (occlusions are implicitly correct)
+                        // Adding boat-blobs onto each other (+=), resulting in a density-VPF
                     }
                 }
             }
