@@ -16,15 +16,15 @@ Behavior = BHV_VisFlocking
   // Shore pShare strips the suffix, so this is just VPF
   vpf_variable = VPF
   
-  fov          = 360.0
+  fov          = 120.0
 
   a0 = 0.5
-  a1 = 0.25
-  b0 = 1.0
-  b1 = 0.25
+  a1 = 0.2  // equilibrium speed
+  b0 = 3.0
+  b1 = 0.9  // equilibrium psi
 
   v0 = 1.0
-  gam = 0.1
+  gam = 1.2
 }
 
 //----------------------------------------------
@@ -64,22 +64,23 @@ Behavior = BHV_VisFlocking
 //  visual_hints = edge_size = 1 // default
 //}
 
-Behavior = BHV_SoftBoundary
-{
-  // General Behavior parameters
-  // ---------------------------
-
-  name = soft_boundary
-  pwt = 50
-  updates = VIEW_POINT
-
-  // Params specific to this behavior
-  // --------------------------------
-  max_range = 12.0
-  min_range = 1.0
-  peak_width = 10.0
-  polygon = pts={-25,50:29,50:29,-50:-25,-50}
-}
+//Behavior = BHV_SoftBoundary
+//{
+//  // General Behavior parameters
+//  // ---------------------------
+//
+//  name = soft_boundary
+//  pwt = 50
+//  updates = VIEW_POINT
+//
+//  // Params specific to this behavior
+//  // --------------------------------
+//  max_range = 12.0
+//  min_range = 1.0
+//  peak_width = 10.0
+//  polygon = pts={-25,50:29,50:29,-50:-25,-50}
+//  min_speed = 2.0
+//}
 
 //----------------------------------------------
 // Retrun behavior (Return to homepoint)

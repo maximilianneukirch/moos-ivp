@@ -93,7 +93,7 @@ ProcessConfig = pSimVisionServer
   AppTick   = 12
   CommsTick = 12
 
-  fov         = 360.0
+  fov         = 120.0
   resolution  = 320
   boat_length = 1.1
   boat_beam   = 1.1
