@@ -64,27 +64,84 @@ Behavior = BHV_VisFlocking
 //  visual_hints = edge_size = 1 // default
 //}
 
-//Behavior = BHV_SoftBoundary
+Behavior = BHV_SoftBoundary
+{
+  // General Behavior parameters
+  // ---------------------------
+
+  name = soft_boundary
+  pwt = 50
+  updates = VIEW_POINT
+
+  // Params specific to this behavior
+  // --------------------------------
+  max_range = 6.0
+  min_range = 1.0
+  peak_width = 1.0
+  polygon = pts={-25,50:29,50:29,-50:-25,-50}
+  min_speed = 2.0
+}
+
+////----------------------------------------------
+// Collision Avoidance Behavior
+//Behavior = BHV_AvdColregsV22
 //{
-//  // General Behavior parameters
-//  // ---------------------------
+//  name      = ac_
+//  pwt       = 100
+//  condition = DEPLOY = true
+//  
+//  // 1. DYNAMIC SPAWNING (Crucial)
+//  updates   = COLLISION_CONTACT
+//  templating   = spawn
+//  //endflag   = CONTACT_RESOLVED = $[CONTACT]
 //
-//  name = soft_boundary
-//  pwt = 50
-//  updates = VIEW_POINT
+//  contact   = to-be-set
+//  on_no_contact_ok = true
+//  extrapolate  = true
+//  decay        = 30,60
 //
-//  // Params specific to this behavior
-//  // --------------------------------
-//  max_range = 12.0
-//  min_range = 1.0
-//  peak_width = 10.0
-//  polygon = pts={-25,50:29,50:29,-50:-25,-50}
-//  min_speed = 2.0
+//  // 2. ENGAGEMENT RANGES (Required for your scale)
+//  pwt_outer_dist = 2
+//  pwt_inner_dist = 0.5
+//
+//  // 3. CPA DISTANCES
+//  min_util_cpa_dist = 0.5
+//  max_util_cpa_dist = 1
+//
+//  pwt_grade         = linear
+//  bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
 //}
 
 //----------------------------------------------
+Behavior = BHV_AvoidCollision
+{
+  name         = ac_
+  pwt          = 150
+  condition    = DEPLOY = true
+  updates      = COLLISION_CONTACT
+  templating   = spawn
+
+  contact   = to-be-set
+  on_no_contact_ok = true
+  extrapolate  = true
+  decay        = 30,60
+
+  // 2. ENGAGEMENT RANGES (Required for your scale)
+  pwt_outer_dist = 2
+  pwt_inner_dist = 1.5
+
+  // 3. CPA DISTANCES
+  min_util_cpa_dist = 1.5
+  max_util_cpa_dist = 2.0
+  //completed_dist = 2
+  pwt_grade = linear
+  bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
+}
+
+
+//----------------------------------------------
 // Retrun behavior (Return to homepoint)
-Behavior=BHV_Waypoint
+Behavior = BHV_Waypoint
 {
   name      = waypt_return
   pwt       = 100
@@ -107,7 +164,7 @@ Behavior=BHV_Waypoint
 //----------------------------------------------
 //Backup bahavior (drive straight)
 
-Behavior=BHV_ConstantSpeed
+Behavior = BHV_ConstantSpeed
 {
   name      = const_speed
   pwt       = 100

@@ -7,7 +7,7 @@ sleep 1
 # ----------------------------------------------------
 
 # Number of vehicles
-VEHICLE_COUNT=10
+VEHICLE_COUNT=3
 
 echo "Generating dynamic pShare routes for shoreside..."
 > plug_pshare_outputs.moos # Clear or create the file
@@ -24,6 +24,8 @@ for ((i=1; i<=$VEHICLE_COUNT; i++)); do
   echo "  Output = src_name=MOOS_MANUAL_OVERRIDE_ALL, dest_name=MOOS_MANUAL_OVERRIDE, route=localhost:$PORT" >> plug_pshare_outputs.moos
   echo "  Output = src_name=APPCAST_REQ, route=localhost:$PORT" >> plug_pshare_outputs.moos
   echo "" >> plug_pshare_outputs.moos
+
+  echo "  Output = src_name=NODE_REPORT_ALL, dest_name=NODE_REPORT, route=localhost:$PORT" >> plug_pshare_outputs.moos
 
   echo "  Output = src_name=VPF_$VNAME_UPPER, dest_name=VPF, route=localhost:$PORT" >> plug_pshare_outputs.moos
   echo "" >> plug_pshare_outputs.moos
@@ -43,7 +45,7 @@ for ((i=1; i<=$VEHICLE_COUNT; i++)); do
   PSHARE_PORT=$((9200 + $i))
 
   # Generate .moos and .bhv files
-  nsplug meta_vehicle.moos "targ_${VNAME}.moos" -f VNAME="$VNAME" MOOS_PORT="$MOOS_PORT" PSHARE_PORT="$PSHARE_PORT" START_POS="x=$(($i*2)),y=$((-20 + $i%3)),heading=-$(($i*10))"
+  nsplug meta_vehicle.moos "targ_${VNAME}.moos" -f VNAME="$VNAME" MOOS_PORT="$MOOS_PORT" PSHARE_PORT="$PSHARE_PORT" START_POS="x=$(($i*6)),y=$((-20 + $i%3)),heading=-$(($i*10))"
   nsplug meta_vehicle.bhv "targ_${VNAME}.bhv" -f VNAME="$VNAME" RETURN_POS="0,-20"
 done
 

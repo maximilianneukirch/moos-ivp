@@ -5,7 +5,7 @@
 ServerHost   = localhost
 ServerPort   = $(MOOS_PORT)
 Community    = $(VNAME)
-MOOSTimeWarp = 10
+MOOSTimeWarp = 1
 
 // Lake of Constance
 LatOrigin   = 47.696170
@@ -26,6 +26,7 @@ ProcessConfig = ANTLER
   Run = pNodeReporter   @ NewConsole = false
   Run = pRealm          @ NewConsole = false
   Run = pShare          @ NewConsole = false
+  Run = pContactMgrV20  @ NewConsole = false
 }
 
 //------------------------------------------
@@ -160,4 +161,24 @@ ProcessConfig = pNodeReporter
   platform_type   = kayak
   platform_color  = yellow
   platform_length = 1.1
+}
+
+ProcessConfig = pContactMgrV20
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  decay = 30,60
+
+  //alert_verbose = true
+  alert = var=COLLISION_CONTACT, val="name=ac_$[VNAME] # contact=$[VNAME]", alert_range=5, cpa_range=7
+
+  //match_group = alpha_
+
+  contact_max_age = 30
+  display_radii   = false
+
+  alert_range_color = gray70
+  cpa_range_color   = gray30
+
 }

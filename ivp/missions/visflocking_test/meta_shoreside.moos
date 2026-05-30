@@ -4,7 +4,7 @@
 ServerHost   = localhost
 ServerPort   = 9000
 Community    = shoreside
-MOOSTimeWarp = 10
+MOOSTimeWarp = 1
 
 // Lake of Constance
 LatOrigin   = 47.696170
@@ -21,6 +21,7 @@ ProcessConfig = ANTLER
   Run = pShare          @ NewConsole = false
 
   Run = pSimVisionServer @ NewConsole = false
+  Run = pEchoVar        @ NewConsole = false
 }
 
 //------------------------------------------
@@ -97,4 +98,32 @@ ProcessConfig = pSimVisionServer
   resolution  = 320
   boat_length = 1.1
   boat_beam   = 1.1
+}
+
+////--------------------------------------------------------
+//// pBasicContactMgr Configuration Block
+//
+//ProcessConfig = pContactMgrV20
+//{
+//  AppTick   = 4
+//  CommsTick = 4
+//
+//  // 1. Contact Memory & Timeouts
+//  contact_max_age  = 15    // Drop contact if no report received in 15 seconds
+//  display_radii    = true  // Useful for seeing the alert zones in pMarineViewer
+//
+//  // 2. The Alert Trigger (The crucial connection to the Helm)
+//  // Format: id=<name>, var=<moos_var>, val=<string>, alert_range=<dist>, cpa_range=<dist>
+//  alert = id=avd_alert, var=CONTACT_INFO, val="name=$[VNAME] # contact=$[VNAME]", alert_range=10, cpa_range=15
+//}
+
+//------------------------------------------
+// pEchoVar config block
+ProcessConfig = pEchoVar
+{
+  AppTick   = 4
+  CommsTick = 4
+  
+  // Instantly duplicate the variable to bypass pShare's echo-filter
+  Echo = NODE_REPORT -> NODE_REPORT_ALL
 }
