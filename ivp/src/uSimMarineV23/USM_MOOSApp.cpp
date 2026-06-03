@@ -241,6 +241,7 @@ bool USM_MOOSApp::Iterate()
     m_model.setDriftFresh(false);
   }
 
+  postWindValues();
   postWindModelVisuals();
   applyWormHoles();
   postWormHolePolys();
@@ -661,6 +662,53 @@ void USM_MOOSApp::postWormHolePolys()
     }
   }
 }
+
+//------------------------------------------------------------------------
+// Procedure: postWindValues()
+void USM_MOOSApp::postWindValues()
+{
+  if(!m_model.sailingEnabled())
+    return;
+
+  // True wind
+  double true_wind_dir = m_model.getTrueWindDir();
+  double true_wind_spd = m_model.getTrueWindSpd();
+
+  Notify("NAV_WIND_DIR_TRUE", true_wind_dir);
+  Notify("NAV_WIND_SPD_TRUE", true_wind_spd);
+
+  // Apparent wind vector
+  double tw_rad = (90.0 - true_wind_dir) * (M_PI / 180.0);
+  double tw_vec_x = -cos(tw_rad) * true_wind_spd;
+  double tw_vec_y = -sin(tw_rad) * true_wind_spd;
+
+  // Vessel's velocity vector
+  double os_hdg = m_model.getNodeRecord().getHeading();
+  double os_spd = m_model.getNodeRecord().getSpeed();
+  double os_rad = (90.0 - os_hdg) * os_spd;
+  double os_vec_x = cos(os_rad) * os_spd;
+  double os_vec_y = sin(os_rad) * os_spd;
+
+  // Apparent Wind vector = true wind vector - vessel velocity vector
+  double aw_vec_x = tw_vec_x - os_vec_x;
+  double aw_vec_y = tw_vec_y - os_vec_y;
+
+  double apparent_wind_spd = sqrt((aw_vec_x * aw_vec_x) + (aw_vec_y * aw_vec_y));
+
+  double aw_rad = atan2(aw_vec_y, aw_vec_x);
+  double aw_deg = 90.0 - (aw_rad * (180.0 / M_PI));
+
+  double apparent_wind_dir = aw_deg + 180; // +180 -> to get dir where the wind is coming FROM
+
+  while(apparent_wind_dir >= 360.0) apparent_wind_dir -= 360.0;
+  while(apparent_wind_dir < 0.0)    apparent_wind_dir += 360.0;
+
+  Notify("NAV_WIND_DIR_APP", apparent_wind_dir);
+  Notify("NAV_WIND_SPD_APP", apparent_wind_spd);
+
+  return;
+}
+
 
 //------------------------------------------------------------------------
 // Procedure: postWindModelVisuals()

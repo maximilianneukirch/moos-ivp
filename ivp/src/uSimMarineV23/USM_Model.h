@@ -112,6 +112,9 @@ public:
   double     getMaxDeceleration() const {return(m_max_deceleration);}
   bool       geoOK() const {return(m_geo_ok);}
 
+  double     getTrueWindDir() const {return(m_wind_model.getWindDir());}
+  double     getTrueWindSpd() const {return(m_wind_model.getWindSpd());}
+
   unsigned int getResetCount() const {return(m_reset_count);}
   bool       getThrustModeReverse() const {return(m_thrust_mode_reverse);}
   void       cacheStartingInfo();

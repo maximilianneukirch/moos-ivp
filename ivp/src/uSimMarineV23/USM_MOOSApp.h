@@ -48,6 +48,7 @@ public:
   void postNodeRecordUpdate(std::string, const NodeRecord&);
   void postWormHolePolys();
   void postWindModelVisuals();
+  void postWindValues();
   void handleBuoyancyAndTrim(NodeRecord);
   void handleMailBuoyancyControl(std::string);
   void handleMailTrimControl(std::string);
