@@ -62,9 +62,9 @@ public:
   IvPFunction* extractOF();
   IvPFunction* extractIvPFunction()  {return(extractOF());}
   IvPDomain    getIvPDomain()        {return(m_ivp_domain);}
+  bool   stateOK();
   
  protected:
-  bool   stateOK();
   void   convertValues();
   void   sortMapping();
   PDMap* setPDMap();
