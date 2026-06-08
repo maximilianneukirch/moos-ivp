@@ -228,6 +228,8 @@ IvPFunction *BHV_VisFlocking::onRunState()
   OF_Coupler coupler;
   IvPFunction *ivp_function = coupler.couple(crs_ipf, spd_ipf, 0.5, 0.5);
 
+  ivp_function->setPWT(m_priority_wt);
+
   // Speicher freigeben
   //if(crs_ipf) delete(crs_ipf);
   //if(spd_ipf)   delete(spd_ipf);
