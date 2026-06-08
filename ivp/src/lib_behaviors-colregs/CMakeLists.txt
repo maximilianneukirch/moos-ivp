@@ -7,7 +7,6 @@ SET(SRC
   BHV_AvdColregsV17.cpp
   BHV_AvdColregsV19.cpp
   BHV_AvdColregsV22.cpp
-  BHV_AvdColregsV22Sail.cpp
   VelocityFilter.cpp
   AOF_R13.cpp
   AOF_R14.cpp
@@ -20,7 +19,6 @@ SET(HEADERS
   BHV_AvdColregsV17.h
   BHV_AvdColregsV19.h
   BHV_AvdColregsV22.h
-  BHV_AvdColregsV22Sail.h
   VelocityFilter.h
   AOF_R13.h
   AOF_R14.h
