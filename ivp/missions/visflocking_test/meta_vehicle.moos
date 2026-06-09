@@ -103,7 +103,8 @@ ProcessConfig = uSimMarineV23
   turn_spd_loss = 0.4
   wind_conditions = spd=3, dir=270                     
   //polar_plot = 0,25: 20,25: 45,25: 90,100: 110,100: 135,25: 150,25: 160,25: 180,25
-  polar_plot = 0,100: 90,100: 180,100
+  //polar_plot = 0,100: 90,100: 180,100
+  polar_plot = $(POLAR_PLOT)
 }
 
 //------------------------------------------

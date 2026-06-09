@@ -7,7 +7,7 @@ sleep 1
 # ----------------------------------------------------
 
 # Number of vehicles
-VEHICLE_COUNT=3
+VEHICLE_COUNT=10
 
 echo "Generating dynamic pShare routes for shoreside..."
 > plug_pshare_outputs.moos # Clear or create the file
@@ -43,10 +43,12 @@ for ((i=1; i<=$VEHICLE_COUNT; i++)); do
   VNAME="alpha_$VEHICLE_NUM"
   MOOS_PORT=$((9000 + $i))
   PSHARE_PORT=$((9200 + $i))
+  #POLAR_PLOT_STR="0,100: 90,100: 180,100"
+  POLAR_PLOT_STR="0,0: 45,100: 90,60: 135,100: 180,0"
 
   # Generate .moos and .bhv files
-  nsplug meta_vehicle.moos "targ_${VNAME}.moos" -f VNAME="$VNAME" MOOS_PORT="$MOOS_PORT" PSHARE_PORT="$PSHARE_PORT" START_POS="x=$(($i*6)),y=$((-20 + $i%3)),heading=-$(($i*10))"
-  nsplug meta_vehicle.bhv "targ_${VNAME}.bhv" -f VNAME="$VNAME" RETURN_POS="0,-20"
+  nsplug meta_vehicle.moos "targ_${VNAME}.moos" -f VNAME="$VNAME" MOOS_PORT="$MOOS_PORT" PSHARE_PORT="$PSHARE_PORT" POLAR_PLOT="$POLAR_PLOT_STR" START_POS="x=$(($i*6)),y=$((-20 + $i%3)),heading=-$(($i*10))"
+  nsplug meta_vehicle.bhv "targ_${VNAME}.bhv" -f VNAME="$VNAME" POLAR_PLOT="$POLAR_PLOT_STR" RETURN_POS="0,-20"
 done
 
 echo "Launching Simulation..."
