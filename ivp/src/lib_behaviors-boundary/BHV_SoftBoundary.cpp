@@ -30,6 +30,7 @@ BHV_SoftBoundary::BHV_SoftBoundary(IvPDomain domain)
 
     // Subscribe to required variables
     addInfoVars("NAV_X, NAV_Y");
+    addInfoVars("NAV_HEADING");
     addInfoVars(m_boundary_var);
 
 }
@@ -128,18 +129,37 @@ IvPFunction* BHV_SoftBoundary::onRunState() {
     if (!is_inside) {
         // Boat already violated boundary and is outside -> highes pwt, inverted escape_heading
         weight = base_pwt;
+        //suppression_multiplier = 0.0;
         escape_heading = relAng(m_osx, m_osy, closest_x, closest_y);
     } else {
         if (dist_to_boundary <= m_min_range) {
             weight = base_pwt;
+            //suppression_multiplier = 0.0;
         } else {
             // TODO: Check for m_max_range = m_min_range
             double fraction = (m_max_range - dist_to_boundary) / (m_max_range - m_min_range);
             weight = base_pwt * fraction;
+            //suppression_multiplier = 1.0 - fraction;
         }
         
         // Compute escape heading (absolute 360-deg heading from boundary point to vehocle pos)
-        escape_heading = relAng(closest_x, closest_y, m_osx, m_osy);
+        double inward_heading = relAng(closest_x, closest_y, m_osx, m_osy);
+
+        double tangent_offset = 75.0;
+        double opt1 = angle360(inward_heading + tangent_offset);
+        double opt2 = angle360(inward_heading - tangent_offset);
+
+        double diff1 = abs(m_osh - opt1);
+        if (diff1 > 180.0) diff1 = 360.0 - diff1;
+
+        double diff2 = abs(m_osh - opt2);
+        if (diff2 > 180.0) diff2 = 360.0 - diff2;
+
+        if (diff1 <= diff2) {
+            escape_heading = opt1;
+        } else {
+            escape_heading = opt2;
+        }
     }
 
 
@@ -183,12 +203,13 @@ IvPFunction* BHV_SoftBoundary::onRunState() {
 // updateInfoIn: Update internal data
 
 bool BHV_SoftBoundary::updateInfoIn() {
-    bool ok_x, ok_y, ok_poly;
+    bool ok_x, ok_y, ok_poly, ok_h;
     string polygon_str;
 
     // Vehicle's position from InfoBuffer
     m_osx = getBufferDoubleVal("NAV_X", ok_x);
     m_osy = getBufferDoubleVal("NAV_Y", ok_y);
+    m_osh = getBufferDoubleVal("NAV_HEADING", ok_h);
 
     if (m_boundary_polygon.empty()) {
         // Polygon from InfoBuffer
@@ -210,6 +231,9 @@ bool BHV_SoftBoundary::updateInfoIn() {
     
     if (!ok_x || !ok_y) {
         postWMessage("No ownship NAV_X/NAV_Y info in info_buffer.");
+        return false; // No data, no steering
+    }else if (!ok_h) {
+        postWMessage("No ownship NAV_HEADING info in info_buffer.");
         return false; // No data, no steering
     } else if (m_boundary_polygon.empty()) {
         postWMessage("No boundary polygon configured in .bhv or received from DB.");
