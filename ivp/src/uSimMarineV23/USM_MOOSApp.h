@@ -49,6 +49,7 @@ public:
   void postWormHolePolys();
   void postWindModelVisuals();
   void postWindValues();
+  void postPolarPlot();
   void handleBuoyancyAndTrim(NodeRecord);
   void handleMailBuoyancyControl(std::string);
   void handleMailTrimControl(std::string);

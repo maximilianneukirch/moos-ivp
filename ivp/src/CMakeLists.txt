@@ -149,7 +149,7 @@ message("+++++++++++++++++++++++++++++++++++++++++")
 SET(IVP_NON_GUI_LIBS
   lib_behaviors      lib_bhvutil         lib_behaviors-marine     
   lib_genutil        lib_geometry        lib_behaviors-colregs
-  lib_behaviors-colregs-sail
+  lib_behaviors-colregs-sail             lib_behaviors-marine-sail
   lib_polar          lib_helmivp         lib_ivpbuild
   lib_ivpsolve       lib_logic           lib_ivpcore
   lib_evalutil       lib_encounters      lib_apputil  

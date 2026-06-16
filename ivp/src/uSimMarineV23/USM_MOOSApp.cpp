@@ -242,6 +242,7 @@ bool USM_MOOSApp::Iterate()
   }
 
   postWindValues();
+  postPolarPlot();
   postWindModelVisuals();
   applyWormHoles();
   postWormHolePolys();
@@ -705,6 +706,20 @@ void USM_MOOSApp::postWindValues()
 
   Notify("NAV_WIND_DIR_APP", apparent_wind_dir);
   Notify("NAV_WIND_SPD_APP", apparent_wind_spd);
+
+  return;
+}
+
+//------------------------------------------------------------------------
+// Procedure: postPolarPlot()
+void USM_MOOSApp::postPolarPlot()
+{
+  if(!m_model.sailingEnabled())
+    return;
+
+  std::string polar_str = m_model.getPolarPlotSpec();
+  
+  Notify("POLAR_PLOT", polar_str);
 
   return;
 }
