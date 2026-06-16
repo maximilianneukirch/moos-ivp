@@ -1,4 +1,7 @@
-//--------    FILE: meta_vehicle.bhv   -------------
+//-------------------------------------------------
+// NAME: Maximilian v. Neukirch
+// FILE: meta_vehicle.bhv
+//-------------------------------------------------
 
 initialize   DEPLOY = false
 initialize   RETURN = false
@@ -85,33 +88,33 @@ Behavior = BHV_SoftBoundary
 //----------------------------------------------
 // Collision Avoidance Behavior
 
-Behavior = BHV_AvdColregsV22Sail
-{
-  name      = ac_
-  //pwt       = 100
-  condition = DEPLOY = true
-  
-  // 1. DYNAMIC SPAWNING (Crucial)
-  updates   = COLLISION_CONTACT
-  templating   = spawn
-  //endflag   = CONTACT_RESOLVED = $[CONTACT]
-
-  contact   = to-be-set
-  on_no_contact_ok = true
-  extrapolate  = true
-  decay        = 30,60
-
-  // 2. ENGAGEMENT RANGES (Required for your scale)
-  pwt_outer_dist = 4.0
-  pwt_inner_dist = 3.5
-
-  // 3. CPA DISTANCES
-  min_util_cpa_dist = 3.5
-  max_util_cpa_dist = 4.0
-
-  pwt_grade         = linear
-  bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
-}
+//Behavior = BHV_AvdColregsV22Sail
+//{
+//  name      = ac_
+//  //pwt       = 100
+//  condition = DEPLOY = true
+//  
+//  // 1. DYNAMIC SPAWNING (Crucial)
+//  updates   = COLLISION_CONTACT
+//  templating   = spawn
+//  //endflag   = CONTACT_RESOLVED = $[CONTACT]
+//
+//  contact   = to-be-set
+//  on_no_contact_ok = true
+//  extrapolate  = true
+//  decay        = 30,60
+//
+//  // 2. ENGAGEMENT RANGES (Required for your scale)
+//  pwt_outer_dist = 4.0
+//  pwt_inner_dist = 3.5
+//
+//  // 3. CPA DISTANCES
+//  min_util_cpa_dist = 3.5
+//  max_util_cpa_dist = 4.0
+//
+//  pwt_grade         = linear
+//  bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
+//}
 
 //Behavior = BHV_AvoidCollision
 //{
@@ -138,17 +141,42 @@ Behavior = BHV_AvdColregsV22Sail
 //  bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
 //}
 
+Behavior = BHV_AvoidCollisionSail
+{
+  name         = ac_
+  //pwt          = 200
+  condition    = DEPLOY = true
+  updates      = COLLISION_CONTACT
+  templating   = spawn
+
+  contact   = to-be-set
+  on_no_contact_ok = true
+  extrapolate  = true
+  decay        = 30,60
+
+  // 2. ENGAGEMENT RANGES (Required for your scale)
+  pwt_outer_dist = 4.0
+  pwt_inner_dist = 3.5
+
+  // 3. CPA DISTANCES
+  min_util_cpa_dist = 3.5
+  max_util_cpa_dist = 4.0
+  //completed_dist = 2
+  pwt_grade = linear
+  bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
+}
+
 //----------------------------------------------
 // Wind Maneuverability behavior
 
-Behavior = BHV_WindManeuverability
-{
-  name = wind_maneuverability
-  pwt = 50
-  condition = DEPLOY = true
-
-  polar_plot = $(POLAR_PLOT)
-}
+//Behavior = BHV_WindManeuverability
+//{
+//  name = wind_maneuverability
+//  pwt = 50
+//  condition = DEPLOY = true
+//
+//  polar_plot = $(POLAR_PLOT)
+//}
 
 
 
@@ -178,17 +206,17 @@ Behavior = BHV_Waypoint
 //----------------------------------------------
 //Backup bahavior (drive straight)
 
-Behavior = BHV_ConstantSpeed
-{
-  name      = const_speed
-  pwt       = 100
-  condition = SPD=true
-  condition = DEPLOY = true
-  perpetual = true
-  updates   = SPEED_UPDATE
-  endflag   = SPD = false
-  
-  speed = 0.5
-  duration = 10
-  duration_reset = CONST_SPD_RESET=true
-}
+//Behavior = BHV_ConstantSpeed
+//{
+//  name      = const_speed
+//  pwt       = 100
+//  condition = SPD=true
+//  condition = DEPLOY = true
+//  perpetual = true
+//  updates   = SPEED_UPDATE
+//  endflag   = SPD = false
+//  
+//  speed = 0.5
+//  duration = 10
+//  duration_reset = CONST_SPD_RESET=true
+//}
