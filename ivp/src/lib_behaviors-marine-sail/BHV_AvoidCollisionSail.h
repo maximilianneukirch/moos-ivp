@@ -51,6 +51,7 @@ public:
   double m_max_polar_speed;
   std::string m_last_polar_str;
   double m_apparent_wind_heading;
+  bool m_wind_received;
 
   bool parsePolarPlot(std::string str);
   //double getPolarMultiplier(double candidate_heading);

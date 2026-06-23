@@ -391,20 +391,28 @@ bool BHV_AvoidCollisionSail::parsePolarPlot(string str)
 
 IvPFunction *BHV_AvoidCollisionSail::onRunState() 
 {
-  bool ok_wind, ok_polar;
+  bool ok_polar = false;
 
-  m_apparent_wind_heading = getBufferDoubleVal("NAV_WIND_DIR_APP", ok_wind);
-  string polar_str = getBufferStringVal("POLAR_PLOT", ok_polar);
-
-  if(ok_polar && (polar_str != m_last_polar_str)) {
-    if(parsePolarPlot(polar_str)) {
-      m_last_polar_str = polar_str;
-    } else {
-      postWMessage("Failed to parse incoming POLAR_PLOT string");
+  if (getBufferVarUpdated("POLAR_PLOT")) {
+    string polar_str = getBufferStringVal("POLAR_PLOT", ok_polar);
+    if(ok_polar && (polar_str != m_last_polar_str)) {
+      if(parsePolarPlot(polar_str)) {
+        m_last_polar_str = polar_str;
+      } else {
+        postWMessage("Failed to parse incoming POLAR_PLOT string");
+      }
     }
   }
 
-  if (!ok_wind || m_polar_map.empty() || m_max_polar_speed == 0.0) {
+  if (getBufferVarUpdated("NAV_WIND_DIR_APP")) {
+    bool ok_wind = false;
+    m_apparent_wind_heading = getBufferDoubleVal("NAV_WIND_DIR_APP", ok_wind);
+    if (ok_wind) {
+      m_wind_received = true;
+    }
+  }
+
+  if (!m_wind_received || m_polar_map.empty() || m_max_polar_speed == 0.0) {
     return(0);
   }
 
