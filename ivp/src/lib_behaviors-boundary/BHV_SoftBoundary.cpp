@@ -5,7 +5,6 @@
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "ZAIC_PEAK.h"
-#include "ZAIC_Vector.h"
 #include "XYFormatUtilsPoly.h"
 
 
@@ -94,8 +93,6 @@ bool BHV_SoftBoundary::setParam(string param, string value) {
 // Procedure: onRunState - called every helm itertion
 
 IvPFunction* BHV_SoftBoundary::onRunState() {
-
-
     // Update Position, Polygon, etc.
     if (!updateInfoIn()) {
         return nullptr;
@@ -144,7 +141,6 @@ IvPFunction* BHV_SoftBoundary::onRunState() {
 
     // Return nullptr if inside polygon and outside force-field max_range (far from border)
     if (is_inside && dist_to_boundary >= m_max_range) {
-        postMessage("VIEW_VECTOR", "label=escape_heading_" + m_us_name + ",clear=true");
         return nullptr;
     }
 
@@ -227,7 +223,6 @@ IvPFunction* BHV_SoftBoundary::onRunState() {
         }
     }
 
-
     // COURSE: Build function with ZAIC
     ZAIC_PEAK crs_zaic(m_domain, "course");
     crs_zaic.setSummit(escape_heading);
@@ -235,12 +230,6 @@ IvPFunction* BHV_SoftBoundary::onRunState() {
     crs_zaic.setBaseWidth(360.0);           // 360 deg of degradation
     crs_zaic.setSummitDelta(0.0);
     crs_zaic.setValueWrap(true);            // ValueWrap: wrap 360 to 0
-    
-    if(crs_zaic.stateOK() == false) {
-        string warnings = "Course ZAIC problems " + crs_zaic.getWarnings();
-        postWMessage(warnings);
-        return(0);
-    }
 
     IvPFunction *crs_ipf = crs_zaic.extractIvPFunction();
     if(!crs_ipf)
