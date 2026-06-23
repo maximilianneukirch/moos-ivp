@@ -73,7 +73,7 @@ Behavior = BHV_SoftBoundary
   // ---------------------------
 
   name = soft_boundary
-  pwt = 70
+  pwt = 100
   updates = VIEW_POINT
 
   // Params specific to this behavior
@@ -82,7 +82,7 @@ Behavior = BHV_SoftBoundary
   min_range = 10.0
   peak_width = 5.0
   polygon = pts={-25,50:29,50:29,-50:-25,-50}
-  min_speed = 1.0
+  min_speed = 2.0
 }
 
 //----------------------------------------------
@@ -141,30 +141,30 @@ Behavior = BHV_SoftBoundary
 //  bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
 //}
 
-Behavior = BHV_AvoidCollisionSail
-{
-  name         = ac_
-  //pwt          = 200
-  condition    = DEPLOY = true
-  updates      = COLLISION_CONTACT
-  templating   = spawn
-
-  contact   = to-be-set
-  on_no_contact_ok = true
-  extrapolate  = true
-  decay        = 30,60
-
-  // 2. ENGAGEMENT RANGES (Required for your scale)
-  pwt_outer_dist = 4.0
-  pwt_inner_dist = 3.5
-
-  // 3. CPA DISTANCES
-  min_util_cpa_dist = 3.5
-  max_util_cpa_dist = 4.0
-  //completed_dist = 2
-  pwt_grade = linear
-  bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
-}
+//Behavior = BHV_AvoidCollisionSail
+//{
+//  name         = ac_
+//  //pwt          = 200
+//  condition    = DEPLOY = true
+//  updates      = COLLISION_CONTACT
+//  templating   = spawn
+//
+//  contact   = to-be-set
+//  on_no_contact_ok = true
+//  extrapolate  = true
+//  decay        = 30,60
+//
+//  // 2. ENGAGEMENT RANGES (Required for your scale)
+//  pwt_outer_dist = 4.0
+//  pwt_inner_dist = 3.5
+//
+//  // 3. CPA DISTANCES
+//  min_util_cpa_dist = 3.5
+//  max_util_cpa_dist = 4.0
+//  //completed_dist = 2
+//  pwt_grade = linear
+//  bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
+//}
 
 //----------------------------------------------
 // Wind Maneuverability behavior

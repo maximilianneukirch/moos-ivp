@@ -6,6 +6,7 @@
 #include "IvPBehavior.h"
 #include "ZAIC_PEAK.h"
 #include "OF_Coupler.h"
+#include "XYPolygon.h"
 
 class BHV_SoftBoundary : public IvPBehavior {
 public:
@@ -20,12 +21,14 @@ protected:
     void         postViewPolygon();
 
 private:
-    std::vector<std::pair<double, double>> m_boundary_polygon; // List of (x,y) points of polygon
+    //std::vector<std::pair<double, double>> m_boundary_polygon; // List of (x,y) points of polygon
+    XYPolygon    m_boundary_polygon;
     double       m_max_range;       // Max distance at where repulsion begins
     double       m_min_range;       // Min distance at where repulsion is biggest
     double       m_peak_width;      // ZAIC Peak width (= Strength of repulsion)
     std::string  m_boundary_var;    // MOOS-variable for polygon definition
     double       m_min_speed;       // Minimum speed required to get any steering effect through rudder
+    double       m_lookahead_dist;
 };
 
 #ifdef WIN32

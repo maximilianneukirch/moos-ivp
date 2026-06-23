@@ -47,21 +47,21 @@ for ((i=1; i<=$VEHICLE_COUNT; i++)); do
   POLAR_PLOT_STR="0,0: 30,40: 45,80: 90,90: 135,100: 180,60"
 
   # Generate .moos and .bhv files
-  nsplug meta_vehicle.moos "targ_${VNAME}.moos" -f VNAME="$VNAME" MOOS_PORT="$MOOS_PORT" PSHARE_PORT="$PSHARE_PORT" POLAR_PLOT="$POLAR_PLOT_STR" START_POS="x=$(($i*6)),y=$((-20 + $i%3)),heading=-$(($i*10))"
+  nsplug meta_vehicle.moos "targ_${VNAME}.moos" -f VNAME="$VNAME" MOOS_PORT="$MOOS_PORT" PSHARE_PORT="$PSHARE_PORT" POLAR_PLOT="$POLAR_PLOT_STR" START_POS="x=$((-10 + $i*3)),y=$((-20 + $i%3)),heading=-$(($i*5))"
   nsplug meta_vehicle.bhv "targ_${VNAME}.bhv" -f VNAME="$VNAME" POLAR_PLOT="$POLAR_PLOT_STR" RETURN_POS="0,-20"
 done
 
 echo "Launching Simulation..."
 # Make sure to launch the newly generated targ_shoreside.moos, not the template!
 pAntler targ_shoreside.moos >& /dev/null &
-sleep 0.5
+sleep 0.6
 
 # Loop to launch pAntler for each vehicle
 for ((i=1; i<=$VEHICLE_COUNT; i++)); do
   VEHICLE_NUM=$(printf "%03d" $i)
   VNAME="alpha_$VEHICLE_NUM"
   pAntler "targ_${VNAME}.moos" >& /dev/null &
-  sleep 0.5
+  sleep 0.6
 done
 
 echo "Simulation running. Hit [Deploy] in the pMarineViewer window to start."
