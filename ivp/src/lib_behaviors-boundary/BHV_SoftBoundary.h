@@ -19,18 +19,7 @@ public:
 protected:
     bool         updateInfoIn();
     void         postViewPolygon();
-    void         postEscapeVector(double heading);
-
-    // Polar Plot / Wind State
-    std::map<double, double> m_polar_map;
-    double m_max_polar_speed;
-    std::string m_last_polar_str;
-    double m_apparent_wind_heading;
-    bool m_wind_received;
     
-    bool parsePolarPlot(std::string str);
-    double getPolarMultiplier(double candidate_heading);
-
 private:
     //std::vector<std::pair<double, double>> m_boundary_polygon; // List of (x,y) points of polygon
     XYPolygon    m_boundary_polygon;
