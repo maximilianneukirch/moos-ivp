@@ -28,16 +28,6 @@ protected:
   //void computeStateVariables(const std::vector<int>& vpf, double& out_dv, double& out_dpsi);
   VisionModel m_vision_model;
 
-  // Polar Plot / Wind State
-  std::map<double, double> m_polar_map;
-  double m_max_polar_speed;
-  std::string m_last_polar_str;
-  double m_apparent_wind_heading;
-  bool m_wind_received;
-
-  bool parsePolarPlot(std::string str);
-  double getPolarMultiplier(double candidate_heading);
-
 protected:
   std::string m_vpf_var_name;
 

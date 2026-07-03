@@ -1,10 +1,8 @@
 #include "BHV_VisFlocking.h"
 #include "AngleUtils.h"
 #include "MBUtils.h"
-#include "AngleUtils.h"
 #include "BuildUtils.h"
 #include "ZAIC_PEAK.h"
-#include "ZAIC_Vector.h"
 #include "ZAIC_SPD.h"
 #include "ZAIC_HDG.h"
 #include "OF_Coupler.h"
@@ -40,13 +38,7 @@ BHV_VisFlocking::BHV_VisFlocking(IvPDomain domain) :
   m_internal_speed = 0.0;
   m_is_initialized = false;
 
-  // Wind state initialization
-  m_max_polar_speed = 0.0;
-  m_last_polar_str = "";
-  m_apparent_wind_heading = 0.0;
-  m_wind_received = false;
-
-  addInfoVars("NAV_HEADING, NAV_SPEED, NAV_WIND_DIR_APP, POLAR_PLOT, " + m_vpf_var_name);
+  addInfoVars("NAV_HEADING, NAV_SPEED, " + m_vpf_var_name);
 }
 
 //---------------------------------------------------------------
@@ -105,129 +97,11 @@ void BHV_VisFlocking::onRunToIdleState() {}
 void BHV_VisFlocking::onIdleToRunState() {}
 
 //---------------------------------------------------------------
-// Procedure: parsePolarPlot()
-bool BHV_VisFlocking::parsePolarPlot(string str)
-{
-  m_polar_map.clear();
-  m_max_polar_speed = 0.0;
-
-  vector<string> svector = parseString(str, ':');
-  for(unsigned int i = 0; i < svector.size(); i++) {
-    string pair_str = svector[i];
-    string angle_str = biteStringX(pair_str, ',');
-    string speed_str = pair_str;
-
-    if(!isNumber(angle_str) || !isNumber(speed_str))
-      return(false);
-
-    double angle = atof(angle_str.c_str());
-    double speed = atof(speed_str.c_str());
-
-    m_polar_map[angle] = speed;
-    if(speed > m_max_polar_speed) {
-      m_max_polar_speed = speed;
-    }
-  }
-
-  return(m_polar_map.size() > 0);
-}
-
-//--------------------------------------------------------
-// Procedure: getPolarMultiplier
-// Purpose: Calculates relative wind and interpolates utility [0.0, 1.0]
-
-double BHV_VisFlocking::getPolarMultiplier(double candidate_heading)
-{
-  if(m_polar_map.empty() || m_max_polar_speed == 0.0) {
-    return(1.0); // Fail open if no valid polar plot exists
-  }
-
-  double rel_wind = candidate_heading - m_apparent_wind_heading;
-  if(rel_wind < -180.0) rel_wind += 360.0;
-  if(rel_wind >  180.0) rel_wind -= 360.0;
-  rel_wind = fabs(rel_wind);
-
-  if(m_polar_map.count(rel_wind)) {
-    //return (m_polar_map[rel_wind] / m_max_polar_speed);
-    double exact_spd = m_polar_map[rel_wind];
-    double deadzone_threshold = 0.20; // 20% of max speed defines the deadzone boundary
-    double raw_mult = exact_spd / m_max_polar_speed;
-    
-    if (raw_mult >= deadzone_threshold) return 1.0;
-    return raw_mult / deadzone_threshold;
-  }
-
-  double lower_angle = 0.0, lower_spd = 0.0;
-  double upper_angle = 180.0, upper_spd = 0.0;
-
-  map<double, double>::iterator it;
-  for(it = m_polar_map.begin(); it != m_polar_map.end(); it++) {
-    if(it->first < rel_wind) {
-      lower_angle = it->first;
-      lower_spd = it->second;
-    } else if (it->first > rel_wind) {
-      upper_angle = it->first;
-      upper_spd = it->second;
-      break;
-    }
-  }
-
-  // Linear interpolation
-  double pct = (rel_wind - lower_angle) / (upper_angle - lower_angle);
-  double interp_spd = lower_spd + (pct * (upper_spd - lower_spd));
-
-  //double utility_multiplier = interp_spd / m_max_polar_speed;
-  double raw_multiplier = interp_spd / m_max_polar_speed;
-  
-  double deadzone_threshold = 0.20; 
-  double utility_multiplier = 0.0;
-
-  if (raw_multiplier >= deadzone_threshold) {
-      // Flat top: Preserve 100% utility for all viable sailing angles
-      utility_multiplier = 1.0; 
-  } else {
-      // Valley walls: Smoothly ramp down to 0 inside the deadzone to avoid sharp mathematical cliffs
-      utility_multiplier = raw_multiplier / deadzone_threshold; 
-  }
-
-  if(utility_multiplier < 0.0) utility_multiplier = 0.0;
-  if(utility_multiplier > 1.0) utility_multiplier = 1.0;
-
-  return(utility_multiplier);
-}
-
-//---------------------------------------------------------------
 // Procedure: onRunState
 
 IvPFunction *BHV_VisFlocking::onRunState()
 {
-  // Part 1: Get data
-  // Get wind and polar data
-  bool ok_polar = false;
-  if (getBufferVarUpdated("POLAR_PLOT")) {
-    string polar_str = getBufferStringVal("POLAR_PLOT", ok_polar);
-    if(ok_polar && (polar_str != m_last_polar_str)) {
-      if(parsePolarPlot(polar_str)) {
-        m_last_polar_str = polar_str;
-      } else {
-        postWMessage("Failed to parse incoming POLAR_PLOT string");
-      }
-    }
-  }
-
-  if (getBufferVarUpdated("NAV_WIND_DIR_APP")) {
-    bool ok_wind = false;
-    m_apparent_wind_heading = getBufferDoubleVal("NAV_WIND_DIR_APP", ok_wind);
-    if (ok_wind) {
-      m_wind_received = true;
-    }
-  }
-
-  if (!m_wind_received || m_polar_map.empty() || m_max_polar_speed == 0.0) {
-    return(0); // Cannot safely navigate without wind data
-  }
-
-  // Get vehicle data from InfoBuffer and post a 
+  // Part 1: Get vehicle data from InfoBuffer and post a 
   // warning if problem is encountered
   bool ok1, ok2, ok3;
   m_current_heading = getBufferDoubleVal("NAV_HEADING", ok1);
@@ -246,6 +120,7 @@ IvPFunction *BHV_VisFlocking::onRunState()
   if (m_last_time > 0.0) {
     dt = curr_time - m_last_time;
   }
+
   m_last_time = curr_time;
 
   // If dt is too big (helm was in idle too long or stalled), cap dt
@@ -313,7 +188,7 @@ IvPFunction *BHV_VisFlocking::onRunState()
   postMessage("DEBUG_DESIRED_SPEED", desired_speed);
 
   //-----------------------------------------------------------
-  // Build objective functions with ZAIC
+  // Build function with ZAIC
 
   // SPEED
   ZAIC_PEAK spd_zaic(m_domain, "speed");
@@ -342,18 +217,16 @@ IvPFunction *BHV_VisFlocking::onRunState()
   crs_zaic.setValueWrap(true); // wrap 360 to 0
   //ZAIC_HDG crs_zaic(m_domain, "course");
   //crs_zaic.setSummit(desired_heading);
-  //crs_zaic.setPeakWidth(0.0); // +/- 10°
-  //crs_zaic.setBaseWidth(180.0); // Outside of 180° is the utility dropped to 0
-  //crs_zaic.setSummitDelta(0.0);
-  //crs_zaic.setValueWrap(true); // wrap 360 to 0
-
+  //crs_zaic.setLowDelta(20);
+  //crs_zaic.setHighDelta(20);
+  //crs_zaic.setLowDeltaUtil(25);
+  //crs_zaic.setHighDeltaUtil(25);
   if(crs_zaic.stateOK() == false) {
     string warnings = "Course ZAIC problems " + crs_zaic.getWarnings();
     postWMessage(warnings);
     return(0);
   }
 
-  // Extract IvP functions
   IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
   IvPFunction *crs_ipf = crs_zaic.extractIvPFunction();
   
@@ -368,6 +241,5 @@ IvPFunction *BHV_VisFlocking::onRunState()
   //if(spd_ipf)   delete(spd_ipf);
 
   return(ivp_function);
+  //postWMessage("LOOOOOL");
 }
-
-// uPokeDB WIND_CONDITIONS=spd=3,dir=121 targ_alpha_002.moos

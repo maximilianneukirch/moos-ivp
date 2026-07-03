@@ -19,7 +19,7 @@ public:
 protected:
     bool         updateInfoIn();
     void         postViewPolygon();
-    
+
 private:
     //std::vector<std::pair<double, double>> m_boundary_polygon; // List of (x,y) points of polygon
     XYPolygon    m_boundary_polygon;
