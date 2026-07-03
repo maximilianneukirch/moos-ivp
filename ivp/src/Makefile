@@ -240,6 +240,32 @@ behaviors-colregs/fast:
 .PHONY : behaviors-colregs/fast
 
 #=============================================================================
+# Target rules for targets named BHV_AvdColregsV22Sail
+
+# Build rule for target.
+BHV_AvdColregsV22Sail: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 BHV_AvdColregsV22Sail
+.PHONY : BHV_AvdColregsV22Sail
+
+# fast build rule for target.
+BHV_AvdColregsV22Sail/fast:
+	$(MAKE) $(MAKESILENT) -f lib_behaviors-colregs-sail/CMakeFiles/BHV_AvdColregsV22Sail.dir/build.make lib_behaviors-colregs-sail/CMakeFiles/BHV_AvdColregsV22Sail.dir/build
+.PHONY : BHV_AvdColregsV22Sail/fast
+
+#=============================================================================
+# Target rules for targets named BHV_AvoidCollisionSail
+
+# Build rule for target.
+BHV_AvoidCollisionSail: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 BHV_AvoidCollisionSail
+.PHONY : BHV_AvoidCollisionSail
+
+# fast build rule for target.
+BHV_AvoidCollisionSail/fast:
+	$(MAKE) $(MAKESILENT) -f lib_behaviors-marine-sail/CMakeFiles/BHV_AvoidCollisionSail.dir/build.make lib_behaviors-marine-sail/CMakeFiles/BHV_AvoidCollisionSail.dir/build
+.PHONY : BHV_AvoidCollisionSail/fast
+
+#=============================================================================
 # Target rules for targets named polar
 
 # Build rule for target.
@@ -511,6 +537,19 @@ BHV_SoftBoundary: cmake_check_build_system
 BHV_SoftBoundary/fast:
 	$(MAKE) $(MAKESILENT) -f lib_behaviors-boundary/CMakeFiles/BHV_SoftBoundary.dir/build.make lib_behaviors-boundary/CMakeFiles/BHV_SoftBoundary.dir/build
 .PHONY : BHV_SoftBoundary/fast
+
+#=============================================================================
+# Target rules for targets named BHV_WindManeuverability
+
+# Build rule for target.
+BHV_WindManeuverability: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 BHV_WindManeuverability
+.PHONY : BHV_WindManeuverability
+
+# fast build rule for target.
+BHV_WindManeuverability/fast:
+	$(MAKE) $(MAKESILENT) -f lib_behaviors-wind/CMakeFiles/BHV_WindManeuverability.dir/build.make lib_behaviors-wind/CMakeFiles/BHV_WindManeuverability.dir/build
+.PHONY : BHV_WindManeuverability/fast
 
 #=============================================================================
 # Target rules for targets named ipfview
@@ -1772,8 +1811,11 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... BHV_AvdColregsV22Sail"
+	@echo "... BHV_AvoidCollisionSail"
 	@echo "... BHV_SoftBoundary"
 	@echo "... BHV_VisFlocking"
+	@echo "... BHV_WindManeuverability"
 	@echo "... alogavg"
 	@echo "... alogbin"
 	@echo "... alogcat"

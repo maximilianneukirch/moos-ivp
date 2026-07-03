@@ -206,7 +206,7 @@ IvPFunction* BHV_SoftBoundary::onRunState() {
         // Compute escape heading (absolute 360-deg heading from boundary point to vehocle pos)
         double inward_heading = relAng(closest_x, closest_y, m_osx, m_osy);
 
-        double tangent_offset = 90.0;
+        double tangent_offset = 70.0;
         double opt1 = angle360(inward_heading + tangent_offset);
         double opt2 = angle360(inward_heading - tangent_offset);
 
@@ -221,6 +221,8 @@ IvPFunction* BHV_SoftBoundary::onRunState() {
         } else {
             escape_heading = opt2;
         }
+
+        escape_heading = opt1; // fixed wall-behavior (evading to the left)
     }
 
     // COURSE: Build function with ZAIC

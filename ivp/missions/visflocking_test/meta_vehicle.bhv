@@ -21,13 +21,13 @@ Behavior = BHV_VisFlocking
   
   fov          = 120.0
 
-  a0 = 0.5
-  a1 = 0.05  // equilibrium speed
-  b0 = 1.5
-  b1 = 1.1  // equilibrium psi
+  a0 = 0.5   // social acceleration strength
+  a1 = 0.09  // equilibrium speed
+  b0 = 2.0   // social turning strength
+  b1 = 0.15   // equilibrium psi
 
   v0 = 1.0
-  gam = 1.2
+  gam = 1.0
 }
 
 //----------------------------------------------
@@ -78,11 +78,13 @@ Behavior = BHV_SoftBoundary
 
   // Params specific to this behavior
   // --------------------------------
-  max_range = 20.0
-  min_range = 10.0
-  peak_width = 5.0
+  max_range = 10.0
+  min_range = 2.0
+  peak_width = 5.0  //in deg!
   polygon = pts={-25,50:29,50:29,-50:-25,-50}
+  //polygon = pts={-8.75,9.25:0.25,9.25:0.25,3.25:-8.75,3.25}
   min_speed = 2.0
+  lookahead_dist = 5.0
 }
 
 //----------------------------------------------

@@ -31,27 +31,14 @@ void VisionModel::setParams(double a0, double a1, double b0, double b1, double v
 }
 
 std::vector<double> VisionModel::dPhi_V_of(const std::vector<int>& V) {
-    int n = V.size();
+int n = V.size();
     if (n == 0) return std::vector<double>();
 
-    std::vector<double> diff(n + 1);
+    std::vector<double> result(n, 0.0);
 
-    // Circular padding for edge cases
-    diff[0] = V[0] - V[n - 1];
+    // Standard forward difference
     for (int i = 1; i < n; i++) {
-        diff[i] = V[i] - V[i - 1];
-    }
-    diff[n] = V[0] - V[n - 1];
-
-    std::vector<double> result(n);
-    if (diff[0] > 0.0 && diff[n] > 0.0) {
-        for (int i = 0; i < n; i++) {
-            result[i] = diff[i];
-        }
-    } else {
-        for (int i = 0; i < n; i++) {
-            result[i] = diff[i + 1];
-        }
+        result[i] = (V[i] - V[i - 1]);
     }
 
     return result;
@@ -88,10 +75,10 @@ void VisionModel::compute(double vel_now, const std::vector<int>& V_now, double&
         G_vel[i] = -V_now[i];                   //EDIT for EVENT-BASED CAMERA (with actual dt_V)
         G_psi[i] = -V_now[i];                   //EDIT for EVENT-BASED CAMERA (with actual dt_V)
 
-        //G_vel_spike[i] = dPhi_V[i] * dPhi_V[i];
-        //G_psi_spike[i] = dPhi_V[i] * dPhi_V[i];
-        G_vel_spike[i] = std::abs(dPhi_V[i]);    // Using std::abs instead of ² to handle desity-VPF (with values >1)
-        G_psi_spike[i] = std::abs(dPhi_V[i]);
+        G_vel_spike[i] = dPhi_V[i] * dPhi_V[i];
+        G_psi_spike[i] = dPhi_V[i] * dPhi_V[i];
+        //G_vel_spike[i] = std::abs(dPhi_V[i]);    // Using std::abs instead of ² to handle desity-VPF (with values >1)
+        //G_psi_spike[i] = std::abs(dPhi_V[i]);
     }
 
     double trapz_psi = 0.0;

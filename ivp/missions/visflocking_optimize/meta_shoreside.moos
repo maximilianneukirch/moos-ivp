@@ -4,7 +4,7 @@
 ServerHost   = localhost
 ServerPort   = 9000
 Community    = shoreside
-MOOSTimeWarp = 10
+MOOSTimeWarp = 20
 
 // Lake of Constance
 LatOrigin   = 47.696170
@@ -21,6 +21,7 @@ ProcessConfig = ANTLER
   Run = pShare          @ NewConsole = false
 
   Run = pSimVisionServer @ NewConsole = false
+  Run = pEchoVar        @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
   Run = uFlockEvaluator @ NewConsole = false
 }
@@ -43,49 +44,49 @@ ProcessConfig = pShare
 //------------------------------------------
 // pMarineViewer config block
 
-//ProcessConfig = pMarineViewer
-//{
-//  AppTick    = 4
-//  CommsTick  = 12
-//
-//  scope = VIEW_POLYGON
-//
-//  tiff_file            = Satellite_Lake_of_Constance.tif
-//  tiff_file            = Map_Lake_of_Constance.tif
-//
-//  set_pan_x            = -90
-//  set_pan_y            = -280
-//  zoom                 = 0.65
-//  vehicle_shape_scale  = 1.5
-//  hash_delta           = 50
-//  hash_shade           = 0.22
-//  hash_viewable        = true
-//
-//  trails_point_size    = 5
-//
-//  // Appcast configuration
-//  appcast_height       = 75
-//  appcast_width        = 30
-//  appcast_viewable     = true
-//  appcast_color_scheme = indigo
-//  nodes_font_size      = xlarge
-//  procs_font_size      = xlarge
-//  appcast_font_size    = large
-//
-//  // Variable scope
-//  scope = MOOS_MANUAL_OVERRIDE
-//  scope = MOOS_MANUAL_OVERRIDE_ALL
-//
-//  // Use the _ALL suffixed variables for the multi-vehicle deployment
-//  button_one = DEPLOY # DEPLOY_ALL=true # RETURN_ALL=false # MOOS_MANUAL_OVERRIDE_ALL=false
-//  button_two = RETURN # RETURN_ALL=true
-//  button_three = FASTER # WPT_UPDATE=speed=3.5
-//
-//  action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
-//  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false # MOOS_MANUAL_OVERRIDE_ALL=false
-//  action  = RETURN=true
-//  action  = UPDATES_RETURN=speed=1.4
-//}
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 12
+
+  scope = VIEW_POLYGON
+
+  tiff_file            = Satellite_Lake_of_Constance.tif
+  tiff_file            = Map_Lake_of_Constance.tif
+
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicle_shape_scale  = 1.5
+  hash_delta           = 50
+  hash_shade           = 0.22
+  hash_viewable        = true
+
+  trails_point_size    = 5
+
+  // Appcast configuration
+  appcast_height       = 75
+  appcast_width        = 30
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+  nodes_font_size      = xlarge
+  procs_font_size      = xlarge
+  appcast_font_size    = large
+
+  // Variable scope
+  scope = MOOS_MANUAL_OVERRIDE
+  scope = MOOS_MANUAL_OVERRIDE_ALL
+
+  // Use the _ALL suffixed variables for the multi-vehicle deployment
+  button_one = DEPLOY # DEPLOY_ALL=true # RETURN_ALL=false # MOOS_MANUAL_OVERRIDE_ALL=false
+  button_two = RETURN # RETURN_ALL=true
+  button_three = FASTER # WPT_UPDATE=speed=3.5
+
+  action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false # MOOS_MANUAL_OVERRIDE_ALL=false
+  action  = RETURN=true
+  action  = UPDATES_RETURN=speed=1.4
+}
 
 //------------------------------------------
 // pSimVisionServer config block
@@ -95,10 +96,38 @@ ProcessConfig = pSimVisionServer
   AppTick   = 12
   CommsTick = 12
 
-  fov         = 360.0
+  fov         = 120.0
   resolution  = 320
   boat_length = 1.1
   boat_beam   = 1.1
+}
+
+////--------------------------------------------------------
+//// pBasicContactMgr Configuration Block
+//
+//ProcessConfig = pContactMgrV20
+//{
+//  AppTick   = 4
+//  CommsTick = 4
+//
+//  // 1. Contact Memory & Timeouts
+//  contact_max_age  = 15    // Drop contact if no report received in 15 seconds
+//  display_radii    = true  // Useful for seeing the alert zones in pMarineViewer
+//
+//  // 2. The Alert Trigger (The crucial connection to the Helm)
+//  // Format: id=<name>, var=<moos_var>, val=<string>, alert_range=<dist>, cpa_range=<dist>
+//  alert = id=avd_alert, var=CONTACT_INFO, val="name=$[VNAME] # contact=$[VNAME]", alert_range=10, cpa_range=15
+//}
+
+//------------------------------------------
+// pEchoVar config block
+ProcessConfig = pEchoVar
+{
+  AppTick   = 4
+  CommsTick = 4
+  
+  // Instantly duplicate the variable to bypass pShare's echo-filter
+  Echo = NODE_REPORT -> NODE_REPORT_ALL
 }
 
 //------------------------------------------
@@ -117,9 +146,9 @@ ProcessConfig = uTimerScript
   reset_time = end
 
   // Nach genau 15.0 Sekunden werden die Variablen für den autonomen Start gesetzt
-  event = time=80.0, var=DEPLOY_ALL, val=true
-  event = time=80.0, var=RETURN_ALL, val=false
-  event = time=80.0, var=MOOS_MANUAL_OVERRIDE_ALL, val=false
+  event = time=160.0, var=DEPLOY_ALL, val=true
+  event = time=160.0, var=RETURN_ALL, val=false
+  event = time=160.0, var=MOOS_MANUAL_OVERRIDE_ALL, val=false
 }
 
 //------------------------------------------
