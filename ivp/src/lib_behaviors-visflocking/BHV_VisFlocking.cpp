@@ -1,4 +1,5 @@
 #include "BHV_VisFlocking.h"
+#include "AngleUtils.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "BuildUtils.h"
@@ -273,17 +274,22 @@ IvPFunction *BHV_VisFlocking::onRunState()
   // TODO: DIFFERENTIATE BETWEEN FULL VPF and PARTIAL VPF (edge-wrapping)
 
   // Convert dpsi from rad/s to deg/s
-  double dpsi_deg = dpsi * (180.0 / M_PI);
+  ////double dpsi_deg = dpsi * (180.0 / M_PI);
 
   // 2. Größeren Hebel für den Regler nutzen (z.B. 3 Sekunden in die Zukunft)
   //double lookahead_time = 0.5; 
   
-  // 3. Vorzeichen umkehren (MOOS-Kompass-Logik) und Lookahead nutzen
-  //double desired_heading = m_current_heading - (dpsi_deg * lookahead_time);
+  // 3. Vorzeichen umkehren (MOOS-Kompass-Logik)
+  ////double desired_heading = m_current_heading - (dpsi_deg * dt);
 
   // 4. Calculate desired values
   // Heading
-  double desired_heading = m_current_heading + (dpsi_deg * dt);
+  //double desired_heading = m_current_heading + (dpsi_deg * dt);
+
+  double turn_gain = 10.0;
+  double raw_heading = m_current_heading + radToDegrees(dpsi * turn_gain * dt);
+
+  double desired_heading = angle360(raw_heading);
   
   while(desired_heading >= 360.0) desired_heading -= 360.0;
   while(desired_heading < 0.0)    desired_heading += 360.0;
@@ -327,37 +333,14 @@ IvPFunction *BHV_VisFlocking::onRunState()
     return(0);
   }
   
-  // HEADING (wind-aware)
-  int crs_ix = m_domain.getIndex("course");
-  int crs_pts = m_domain.getVarPoints("course");
-  vector<double> domain_vec(crs_pts, 0.0);
-  vector<double> utility_vec(crs_pts, 0.0);
-
-  for(int i = 0; i < crs_pts; i++) {
-    double h = m_domain.getVal(crs_ix, i);
-    domain_vec[i] = h;
-    
-    // Base Utility
-    // Drops from 100 at the desired_heading to 0 at +/- 90 degrees away
-    double diff = fabs(angle180(h - desired_heading));
-    double base_util = 0.0;
-    if(diff <= 90.0) {
-      base_util = 100.0 * (1.0 - (diff / 90.0));
-    }
-
-    // Wind Penalty Multiplier [0.0 to 1.0]
-    double wind_mult = getPolarMultiplier(h);
-
-    // Multiplication
-    utility_vec[i] = base_util * wind_mult;
-  }
-
-  ZAIC_Vector crs_zaic(m_domain, "course");
-  crs_zaic.setDomainVals(domain_vec);
-  crs_zaic.setRangeVals(utility_vec);
-  
-  // old ZAIC
-  //ZAIC_PEAK crs_zaic(m_domain, "course");
+  // HEADING
+  ZAIC_PEAK crs_zaic(m_domain, "course");
+  crs_zaic.setSummit(desired_heading);
+  crs_zaic.setPeakWidth(0.0); // +/- 0°
+  crs_zaic.setBaseWidth(180.0); // Outside of 180° is the utility dropped to 0
+  crs_zaic.setSummitDelta(0.0);
+  crs_zaic.setValueWrap(true); // wrap 360 to 0
+  //ZAIC_HDG crs_zaic(m_domain, "course");
   //crs_zaic.setSummit(desired_heading);
   //crs_zaic.setPeakWidth(0.0); // +/- 10°
   //crs_zaic.setBaseWidth(180.0); // Outside of 180° is the utility dropped to 0

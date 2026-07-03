@@ -7,16 +7,19 @@
 
 using namespace std;
 
-// Konstruktor - Initialisierung der Variablen
 FlockEvaluator::FlockEvaluator() {
-    m_total_crashes = 0;
-    m_crash_distance = 0.9;       // Länge der alpha-Boote
-    m_hysteresis_distance = 1.3;  // Leicht größer, um "Flackern" zu vermeiden
+    // Physical parameters 
+    m_overlap_distance = 0.9; // Distance to count as "Overlap"
+    m_cluster_distance = 5.0; // Max distance between agents to be in the same cluster
     
-    m_sum_heading_variance = 0.0;
-    m_sum_convex_area = 0.0;
+    // Initialize running sums
+    m_sum_polarization = 0.0;
+    m_sum_mean_distance = 0.0;
+    m_sum_max_cluster_size = 0.0;
+    m_sum_rca = 0.0;
+    m_overlap_ticks = 0;
+    
     m_iterations_count = 0;
-    
     m_run_id = "run_default";
 }
 
@@ -29,8 +32,9 @@ FlockEvaluator::~FlockEvaluator() {
 bool FlockEvaluator::OnStartUp() {
     m_log_file.open("flock_evaluation.csv", ios::app);
     if(m_log_file.tellp() == 0) {
-        m_log_file << "RunID,TotalCrashes,AvgHeadingVar,AvgConvexArea,Iterations\n";
-        m_log_file.flush(); // <--- DIESE ZEILE HINZUFÜGEN! Zwingt C++ zum Speichern.
+        // Updated Header matching Python analysis script
+        m_log_file << "RunID,PolarizationOrder,MeanDistance,MaxClusterSize,AreaToCircleRatio,OverlapRatio,Iterations\n";
+        m_log_file.flush(); 
     }
 
     m_MissionReader.GetConfigurationParam("RUN_ID", m_run_id);
@@ -48,20 +52,12 @@ void FlockEvaluator::RegisterVariables() {
 }
 
 bool FlockEvaluator::OnNewMail(MOOSMSG_LIST &NewMail) {
-    // Öffne eine temporäre Debug-Datei
-    std::ofstream dlog("debug_moos.txt", std::ios::app);
-    
     MOOSMSG_LIST::iterator p;
     for(p = NewMail.begin(); p != NewMail.end(); p++) {
         CMOOSMsg &msg = *p;
         
         if(msg.GetKey() == "NODE_REPORT" && msg.IsString()) {
-            dlog << "Empfangen: " << msg.GetString() << "\n";
-            
-            // WICHTIG: Das 'true' (für strict mode) wurde hier entfernt!
             NodeRecord record = string2NodeRecord(msg.GetString()); 
-            
-            dlog << "Ist Valid? " << record.valid() << " | Name: " << record.getName() << "\n";
             
             if(record.valid() && record.getName() != "") {
                 std::string vname = record.getName();
@@ -75,112 +71,122 @@ bool FlockEvaluator::OnNewMail(MOOSMSG_LIST &NewMail) {
 }
 
 bool FlockEvaluator::Iterate() {
-    if(m_vehicles.size() < 3) {
-        return true; // Wir warten, bis genug Fahrzeuge im System sind
-    }
+    int n = m_vehicles.size();
+    if(n < 3) return true; // Wait for vehicles to deploy
 
     m_iterations_count++;
+    
+    vector<VehicleState> states;
+    for(const auto& pair : m_vehicles) states.push_back(pair.second);
 
-    // 1. Crashes berechnen
-    updateCrashes();
+    // --- 1. Distances, Overlap (R^sim_o), and Clusters (N^max_clus) ---
+    double sum_dist = 0.0;
+    double max_dist = 0.0001; 
+    bool is_overlapping_now = false;
+    int pair_count = 0;
 
-    // 2. Heading Variance berechnen
-    double current_var = calculateHeadingVariance();
-    m_sum_heading_variance += current_var;
+    // Union-Find structure for clustering
+    vector<int> parent(n);
+    for(int i=0; i<n; i++) parent[i] = i;
+    
+    auto find_root = [&](int i) {
+        int root = i;
+        while(parent[root] != root) root = parent[root];
+        return root;
+    };
+    
+    auto unite = [&](int i, int j) {
+        int root_i = find_root(i);
+        int root_j = find_root(j);
+        if(root_i != root_j) parent[root_i] = root_j;
+    };
 
-    // 3. Konvexe Fläche berechnen
-    double current_area = calculateConvexArea();
-    m_sum_convex_area += current_area;
+    for(int i = 0; i < n; i++) {
+        for(int j = i + 1; j < n; j++) {
+            double dx = states[i].x - states[j].x;
+            double dy = states[i].y - states[j].y;
+            double dist = sqrt(dx*dx + dy*dy);
+            
+            sum_dist += dist;
+            if(dist > max_dist) max_dist = dist;
+            if(dist < m_overlap_distance) is_overlapping_now = true;
+            if(dist < m_cluster_distance) unite(i, j);
+            
+            pair_count++;
+        }
+    }
 
-    // Laufende Durchschnitte berechnen
-    double avg_var = m_sum_heading_variance / m_iterations_count;
-    double avg_area = m_sum_convex_area / m_iterations_count;
+    double current_mean_dist = sum_dist / std::max(1, pair_count);
+    if(is_overlapping_now) m_overlap_ticks++;
 
-    // 4. In Datei loggen (Python liest später die letzte Zeile)
+    // Calculate max cluster size
+    vector<int> cluster_sizes(n, 0);
+    for(int i = 0; i < n; i++) {
+        cluster_sizes[find_root(i)]++;
+    }
+    int current_max_cluster = *std::max_element(cluster_sizes.begin(), cluster_sizes.end());
+
+
+    // --- 2. Polarization Order (P) ---
+    double sum_sin = 0.0, sum_cos = 0.0;
+    for(int i = 0; i < n; i++) {
+        double rad = states[i].heading * M_PI / 180.0;
+        sum_sin += sin(rad);
+        sum_cos += cos(rad);
+    }
+    double current_polarization = sqrt(sum_sin * sum_sin + sum_cos * sum_cos) / n;
+
+
+    // --- 3. Area-to-Circle Ratio (RCA) ---
+    double convex_area = calculateConvexArea();
+    double circle_area = std::max(0.0001, M_PI * std::pow(max_dist / 2.0, 2));
+    double current_rca = convex_area / circle_area;
+
+
+    // --- 4. Accumulate and Calculate Averages ---
+    m_sum_polarization += current_polarization;
+    m_sum_mean_distance += current_mean_dist;
+    m_sum_max_cluster_size += current_max_cluster;
+    m_sum_rca += current_rca;
+
+    double avg_pol = m_sum_polarization / m_iterations_count;
+    double avg_dist = m_sum_mean_distance / m_iterations_count;
+    double avg_cluster = m_sum_max_cluster_size / m_iterations_count;
+    double avg_rca = m_sum_rca / m_iterations_count;
+    double overlap_ratio = (double)m_overlap_ticks / m_iterations_count;
+
+    // Log the current overall averages
     m_log_file << m_run_id << "," 
-               << m_total_crashes << "," 
-               << avg_var << "," 
-               << avg_area << "," 
+               << avg_pol << "," 
+               << avg_dist << "," 
+               << avg_cluster << "," 
+               << avg_rca << ","
+               << overlap_ratio << ","
                << m_iterations_count << "\n";
     m_log_file.flush();
 
     return true;
 }
 
-// ================================================================
-// ALGORITHMEN
-// ================================================================
+// ----------------------------------------------------------------
+// Geometric Helper Functions
+// ----------------------------------------------------------------
 
-void FlockEvaluator::updateCrashes() {
-    // Konvertiere Map in einen Vector für einfacheren Paar-Vergleich
-    vector<pair<string, VehicleState>> v_list(m_vehicles.begin(), m_vehicles.end());
-
-    for(size_t i = 0; i < v_list.size(); i++) {
-        for(size_t j = i + 1; j < v_list.size(); j++) {
-            string v1 = v_list[i].first;
-            string v2 = v_list[j].first;
-            
-            // Paarschlüssel immer alphabetisch sortieren, um Vertauschungen zu vermeiden
-            if(v1 > v2) swap(v1, v2);
-            pair<string, string> crash_pair = make_pair(v1, v2);
-
-            double dx = v_list[i].second.x - v_list[j].second.x;
-            double dy = v_list[i].second.y - v_list[j].second.y;
-            double dist = sqrt(dx*dx + dy*dy);
-
-            bool is_active = (m_active_crashes.find(crash_pair) != m_active_crashes.end());
-
-            if(!is_active && dist < m_crash_distance) {
-                // Neuer Crash!
-                m_active_crashes.insert(crash_pair);
-                m_total_crashes++;
-            } 
-            else if(is_active && dist > m_hysteresis_distance) {
-                // Fahrzeuge sind wieder weit genug voneinander entfernt
-                m_active_crashes.erase(crash_pair);
-            }
-        }
-    }
-}
-
-double FlockEvaluator::calculateHeadingVariance() {
-    double sum_sin = 0.0;
-    double sum_cos = 0.0;
-    int n = m_vehicles.size();
-
-    for(auto const& pair : m_vehicles) {
-        const VehicleState& state = pair.second;
-        
-        // Umwandlung in Radiant
-        double rad = state.heading * M_PI / 180.0;
-        sum_sin += sin(rad);
-        sum_cos += cos(rad);
-    }
-
-    double R = sqrt(sum_sin * sum_sin + sum_cos * sum_cos) / n;
-    return 1.0 - R; // 0 = Perfekt parallel, 1 = Totales Chaos
-}
-
-// Hilfsfunktion: 2D Kreuzprodukt
 double FlockEvaluator::crossProduct(Point p, Point q, Point r) {
     return (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x);
 }
 
 double FlockEvaluator::calculateConvexArea() {
     vector<Point> pts;
-
     for(auto const& pair : m_vehicles) {
-        const VehicleState& state = pair.second;
-        pts.push_back({state.x, state.y});
+        pts.push_back({pair.second.x, pair.second.y});
     }
 
     int n = pts.size();
-    if(n < 3) return 0.0; // Keine Fläche möglich
+    if(n < 3) return 0.0; 
 
-    // 1. Jarvis March (Gift Wrapping) für die Convex Hull
+    // Jarvis March (Gift Wrapping)
     vector<Point> hull;
-    
-    // Finde den am weitesten links liegenden Punkt
     int l = 0;
     for(int i = 1; i < n; i++) {
         if(pts[i].x < pts[l].x) l = i;
@@ -191,7 +197,6 @@ double FlockEvaluator::calculateConvexArea() {
         hull.push_back(pts[p]);
         q = (p + 1) % n;
         for(int i = 0; i < n; i++) {
-            // Wenn Punkt 'i' weiter links (counter-clockwise) von der Linie pq liegt
             if(crossProduct(pts[p], pts[i], pts[q]) > 0) {
                 q = i;
             }
@@ -199,7 +204,7 @@ double FlockEvaluator::calculateConvexArea() {
         p = q;
     } while(p != l);
 
-    // 2. Shoelace-Formel für die Fläche des Polygons
+    // Shoelace Formula
     double area = 0.0;
     int j = hull.size() - 1;
     for(size_t i = 0; i < hull.size(); i++) {

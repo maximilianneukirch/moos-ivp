@@ -15,10 +15,19 @@
 ########################
 
 //Dependencies for the target
+BHV_AvdColregsV22Sail_LIB_DEPENDS:STATIC=general;bhvutil;general;mbutil;general;helmivp;general;behaviors;general;geometry;general;ivpbuild;general;ivpcore;general;logic;
+
+//Dependencies for the target
+BHV_AvoidCollisionSail_LIB_DEPENDS:STATIC=general;-Wl,--start-group;general;helmivp;general;logic;general;behaviors;general;bhvutil;general;geometry;general;ivpbuild;general;ivpcore;general;mbutil;general;-Wl,--end-group;
+
+//Dependencies for the target
 BHV_SoftBoundary_LIB_DEPENDS:STATIC=general;-Wl,--start-group;general;helmivp;general;logic;general;behaviors;general;bhvutil;general;geometry;general;ivpbuild;general;ivpcore;general;mbutil;general;-Wl,--end-group;
 
 //Dependencies for the target
 BHV_VisFlocking_LIB_DEPENDS:STATIC=general;-Wl,--start-group;general;helmivp;general;logic;general;behaviors;general;bhvutil;general;geometry;general;ivpbuild;general;ivpcore;general;mbutil;general;-Wl,--end-group;
+
+//Dependencies for the target
+BHV_WindManeuverability_LIB_DEPENDS:STATIC=general;-Wl,--start-group;general;helmivp;general;logic;general;behaviors;general;bhvutil;general;geometry;general;ivpbuild;general;ivpcore;general;mbutil;general;-Wl,--end-group;
 
 //Path to a program.
 CMAKE_ADDR2LINE:FILEPATH=/usr/bin/addr2line
@@ -265,6 +274,9 @@ MOOS_DIR:PATH=/home/niom/PROJECT/moos-ivp/build/MOOS/MOOSCore
 USE_UTM:BOOL=ON
 
 //Dependencies for the target
+behaviors-colregs-sail_LIB_DEPENDS:STATIC=general;mbutil;general;helmivp;general;behaviors;general;geometry;
+
+//Dependencies for the target
 behaviors-colregs_LIB_DEPENDS:STATIC=general;mbutil;general;helmivp;general;behaviors;general;geometry;
 
 //Dependencies for the target
@@ -388,7 +400,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=124
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=127
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
