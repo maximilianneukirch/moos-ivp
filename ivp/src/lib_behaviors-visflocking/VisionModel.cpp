@@ -31,14 +31,29 @@ void VisionModel::setParams(double a0, double a1, double b0, double b1, double v
 }
 
 std::vector<double> VisionModel::dPhi_V_of(const std::vector<int>& V) {
-int n = V.size();
+    int n = V.size();
     if (n == 0) return std::vector<double>();
 
     std::vector<double> result(n, 0.0);
 
-    // Standard forward difference
-    for (int i = 1; i < n; i++) {
-        result[i] = (V[i] - V[i - 1]);
+    bool full_fov = (m_fov >= 359.9);
+    
+    // forward difference
+    for (int i = 0; i < n; i++) {
+        int val_current = V[i];
+        int val_prev;
+
+        if (i == 0) {
+            if (full_fov) {
+                val_prev = V[n - 1];
+            } else {
+                val_prev = V[0];
+            }
+        } else {
+            val_prev = V[i - 1];
+        }
+
+        result[i] = (val_current - val_prev);
     }
 
     return result;
