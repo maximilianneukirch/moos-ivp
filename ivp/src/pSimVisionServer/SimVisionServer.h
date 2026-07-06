@@ -57,7 +57,7 @@ private:
     double m_len;        // Length of boat in meters
     double m_beam;       // Width of boat in meters
 
-    std::string m_exclude_prefix;   // exlude NODE_REPORTs with this prefix in vname
+    std::string m_real_boat_prefix;
 
     // Store all contacts (sim and real)
     std::map<std::string, ContactState> m_contacts;

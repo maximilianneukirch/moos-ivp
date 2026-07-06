@@ -27,6 +27,7 @@ SimVisionServer::SimVisionServer()
     m_resolution = 320; // resolution of camera image (width)
     m_len = 5.0;   // e.g. 5 meters length
     m_beam = 1.5;  // e.g. 1.5 meters width
+    m_real_boat_prefix = "real";
 }
 
 //---------------------------------------------------------
@@ -54,8 +55,8 @@ bool SimVisionServer::OnStartUp()
             else if(param == "boat_beam") {
                 m_beam = atof(value.c_str());
             }
-            else if(param == "exclude_prefix") {
-                m_exclude_prefix = value.c_str();
+            else if(param == "real_boat_prefix") {
+                m_real_boat_prefix = value.c_str();
             }
         }
     }
@@ -108,10 +109,6 @@ bool SimVisionServer::OnNewMail(MOOSMSG_LIST &NewMail)
             
             // Save or update all contacts, except excluded vname prefixes
             if(vname != "") {
-                if(m_exclude_prefix.size() > 0 && vname.find(m_exclude_prefix) == 0) {
-                    continue; 
-                }
-
                 ContactState contact;
                 contact.name = vname;
                 contact.x = atof(tokStringParse(report, "X", ',', '=').c_str());
@@ -157,7 +154,13 @@ bool SimVisionServer::Iterate()
                 continue; 
             }
 
-            // TODO: If own boat is a real boat, also filter all real boats, as these are detected by the real boat's camera
+            // If own boat is a real boat, also filter all real boats, as these are detected by the real boat's camera
+            bool observer_is_real = (observer.name.find(m_real_boat_prefix) == 0);
+            bool target_is_real = (target.name.find(m_real_boat_prefix) == 0);
+
+            if (observer_is_real && target_is_real) {
+                continue;
+            }
 
             // Get distance and bearing from observer to target (Min dist is 0.1m)
             double dx = target.x - observer.x;

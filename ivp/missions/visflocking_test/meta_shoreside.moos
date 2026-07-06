@@ -98,7 +98,7 @@ ProcessConfig = pSimVisionServer
   resolution  = 320
   boat_length = 1.1
   boat_beam   = 1.1
-  exclude_prefix = real
+  real_boat_prefix = real
 }
 
 ////--------------------------------------------------------
