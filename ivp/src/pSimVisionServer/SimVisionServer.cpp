@@ -54,6 +54,9 @@ bool SimVisionServer::OnStartUp()
             else if(param == "boat_beam") {
                 m_beam = atof(value.c_str());
             }
+            else if(param == "exclude_prefix") {
+                m_exclude_prefix = value.c_str();
+            }
         }
     }
 
@@ -103,8 +106,12 @@ bool SimVisionServer::OnNewMail(MOOSMSG_LIST &NewMail)
             string report = msg.GetString();
             string vname = tokStringParse(report, "NAME", ',', '=');
             
-            // Save or update all contacts
+            // Save or update all contacts, except excluded vname prefixes
             if(vname != "") {
+                if(m_exclude_prefix.size() > 0 && vname.find(m_exclude_prefix) == 0) {
+                    continue; 
+                }
+
                 ContactState contact;
                 contact.name = vname;
                 contact.x = atof(tokStringParse(report, "X", ',', '=').c_str());
