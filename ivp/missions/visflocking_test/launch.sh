@@ -16,7 +16,7 @@ echo "Generating dynamic pShare routes for shoreside..."
 for ((i=1; i<=$VEHICLE_COUNT; i++)); do
   PORT=$((9200 + $i))
   VEHICLE_NUM=$(printf "%03d" $i)
-  VNAME="alpha_$VEHICLE_NUM"
+  VNAME="sim_$VEHICLE_NUM"
   VNAME_UPPER=$(echo $VNAME | tr '[:lower:]' '[:upper:]')
   echo "  // Routes for Vehicle $i (Port $PORT)" >> plug_pshare_outputs.moos
   echo "  Output = src_name=DEPLOY_ALL, dest_name=DEPLOY, route=localhost:$PORT" >> plug_pshare_outputs.moos
@@ -40,7 +40,7 @@ echo "Assembling MOOS and BHV files for vehicles..."
 for ((i=1; i<=$VEHICLE_COUNT; i++)); do
   # Pad the vehicle number with leading zeros (e.g., 001, 002, ...)
   VEHICLE_NUM=$(printf "%03d" $i)
-  VNAME="alpha_$VEHICLE_NUM"
+  VNAME="sim_$VEHICLE_NUM"
   MOOS_PORT=$((9000 + $i))
   PSHARE_PORT=$((9200 + $i))
   POLAR_PLOT_STR="0,100: 90,100: 180,100"
@@ -59,7 +59,7 @@ sleep 0.6
 # Loop to launch pAntler for each vehicle
 for ((i=1; i<=$VEHICLE_COUNT; i++)); do
   VEHICLE_NUM=$(printf "%03d" $i)
-  VNAME="alpha_$VEHICLE_NUM"
+  VNAME="sim_$VEHICLE_NUM"
   pAntler "targ_${VNAME}.moos" >& /dev/null &
   sleep 0.6
 done
