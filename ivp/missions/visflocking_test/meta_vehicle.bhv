@@ -23,7 +23,7 @@ Behavior = BHV_VisFlocking
 
   a0 = 0.5   // social acceleration strength
   a1 = 0.09  // equilibrium speed
-  b0 = 2.0   // social turning strength
+  b0 = 2.2   // social turning strength
   b1 = 0.15   // equilibrium psi
 
   v0 = 1.0

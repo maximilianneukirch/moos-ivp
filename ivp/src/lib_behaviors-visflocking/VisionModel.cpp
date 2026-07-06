@@ -90,10 +90,10 @@ void VisionModel::compute(double vel_now, const std::vector<int>& V_now, double&
         G_vel[i] = -V_now[i];                   //EDIT for EVENT-BASED CAMERA (with actual dt_V)
         G_psi[i] = -V_now[i];                   //EDIT for EVENT-BASED CAMERA (with actual dt_V)
 
-        G_vel_spike[i] = dPhi_V[i] * dPhi_V[i];
-        G_psi_spike[i] = dPhi_V[i] * dPhi_V[i];
-        //G_vel_spike[i] = std::abs(dPhi_V[i]);    // Using std::abs instead of ² to handle desity-VPF (with values >1)
-        //G_psi_spike[i] = std::abs(dPhi_V[i]);
+        //G_vel_spike[i] = dPhi_V[i] * dPhi_V[i];
+        //G_psi_spike[i] = dPhi_V[i] * dPhi_V[i];
+        G_vel_spike[i] = std::abs(dPhi_V[i]);    // Using std::abs instead of ² to handle desity-VPF (with values >1)
+        G_psi_spike[i] = std::abs(dPhi_V[i]);
     }
 
     double trapz_psi = 0.0;
