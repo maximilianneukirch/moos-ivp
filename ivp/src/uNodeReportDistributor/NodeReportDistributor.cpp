@@ -7,6 +7,8 @@ using namespace std;
 //---------------------------------------------------------
 // Constructor
 NodeReportDistributor::NodeReportDistributor() {
+    m_nrd_in_var = "BOAT_REPORT";
+    m_nrd_out_var = "NODE_REPORT";
     m_extra_args = ""; 
 }
 
@@ -25,6 +27,10 @@ bool NodeReportDistributor::OnStartUp() {
 
             if(param == "extra_args") {
                 m_extra_args = value;
+            } else if(param == "nrd_in_var") {
+                m_nrd_in_var = value;
+            } else if(param == "nrd_out_var") {
+                m_nrd_out_var = value;
             }
         }
     }
@@ -54,7 +60,7 @@ bool NodeReportDistributor::OnNewMail(MOOSMSG_LIST &NewMail) {
         CMOOSMsg &msg = *p;
         string key = msg.GetKey();
 
-        if(key == "NODE_REPORTS_AGG" && msg.IsString()) {
+        if(key == m_nrd_in_var && msg.IsString()) {
             string agg_string = msg.GetString();
             
             // Split at '|'
@@ -83,7 +89,7 @@ bool NodeReportDistributor::OnNewMail(MOOSMSG_LIST &NewMail) {
                         node_report += "," + m_extra_args;
                     }
 
-                    m_Comms.Notify("NODE_REPORTTTT", node_report);
+                    m_Comms.Notify(m_nrd_out_var, node_report);
                 }
             }
         }
@@ -106,4 +112,6 @@ bool NodeReportDistributor::Iterate() {
 //  CommsTick = 4
 //  
 //  extra_args = TYPE=kayak,LENGTH=1.1
+//  nrd_in_var = NODE_REPORT_AGG
+//  nrd_out_var = NODE_REPORT
 //}

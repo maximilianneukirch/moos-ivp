@@ -17,6 +17,8 @@ protected:
     void RegisterVariables();
 
 private:
+    std::string m_nrd_in_var;
+    std::string m_nrd_out_var;
     std::string m_extra_args;
 };
 
