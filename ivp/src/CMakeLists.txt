@@ -182,7 +182,7 @@ SET(ROBOT_APPS
   pMarinePIDV22      uSimMarineV22       uSimMarineV23
   pMissionHash       pMissionEval        iBlinkStick
   pSimVisionServer   uFlockEvaluator     uNodeReportAggregator
-  uNodeReportDistributor
+  uNodeReportDistributor                 uVPFMerger
 )
 SET(IVP_NON_GUI_APPS
   app_alogsplit      app_alogsort        app_alogcheck
