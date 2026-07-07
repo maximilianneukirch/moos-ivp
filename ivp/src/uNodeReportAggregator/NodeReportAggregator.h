@@ -20,6 +20,7 @@ protected:
 private:
     unsigned int m_target_vehicle_count;
     std::string m_vname_prefix;
+    std::string m_in_var_name;
     std::string m_out_var_name;
     
     std::map<std::string, std::string> m_vehicle_reports;

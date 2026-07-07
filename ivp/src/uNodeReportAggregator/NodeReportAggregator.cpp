@@ -9,6 +9,8 @@ using namespace std;
 NodeReportAggregator::NodeReportAggregator() {
     m_target_vehicle_count = 1; 
     m_vname_prefix = "sim";
+    m_in_var_name = "NODE_REPORT";
+    m_out_var_name = "NODE_REPORTS_AGG";
 }
 
 //---------------------------------------------------------
@@ -28,6 +30,8 @@ bool NodeReportAggregator::OnStartUp() {
                 m_target_vehicle_count = atoi(value.c_str());
             } else if(param == "vname_prefix") {
                 m_vname_prefix = value.c_str();
+            } else if(param == "in_var_name") {
+                m_in_var_name = value;
             } else if(param == "out_var_name") {
                 m_out_var_name = value.c_str();
             }
@@ -48,8 +52,9 @@ bool NodeReportAggregator::OnConnectToServer() {
 //---------------------------------------------------------
 // Procedure: RegisterVariables()
 void NodeReportAggregator::RegisterVariables() {
-    m_Comms.Register("NODE_REPORT", 0);
-    m_Comms.Register("NODE_REPORT_LOCAL", 0);
+    //m_Comms.Register("NODE_REPORT", 0);
+    //m_Comms.Register("NODE_REPORT_LOCAL", 0);
+    m_Comms.Register(m_in_var_name, 0);
 }
 
 //---------------------------------------------------------
@@ -60,7 +65,8 @@ bool NodeReportAggregator::OnNewMail(MOOSMSG_LIST &NewMail) {
         CMOOSMsg &msg = *p;
         string key = msg.GetKey();
 
-        if(key == "NODE_REPORT" || key == "NODE_REPORT_LOCAL") {
+        //if(key == "NODE_REPORT" || key == "NODE_REPORT_LOCAL") {
+        if(key == m_in_var_name) {
             string report = msg.GetString();
             
             string vname = "";
@@ -123,5 +129,6 @@ bool NodeReportAggregator::Iterate() {
 //  
 //  target_vehicle_count = 10
 //  vname_prefix = sim
+//  in_var_name = NODE_REPORT
 //  out_var_name = NODE_REPORTS_AGG
 //}

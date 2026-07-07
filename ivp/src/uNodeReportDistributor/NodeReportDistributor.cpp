@@ -49,7 +49,8 @@ bool NodeReportDistributor::OnConnectToServer() {
 //---------------------------------------------------------
 // Procedure: RegisterVariables()
 void NodeReportDistributor::RegisterVariables() {
-    m_Comms.Register("NODE_REPORTS_AGG", 0);
+    //m_Comms.Register("NODE_REPORTS_AGG", 0);
+    m_Comms.Register(m_in_var_name, 0);
 }
 
 //---------------------------------------------------------
