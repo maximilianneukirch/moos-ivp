@@ -7,8 +7,8 @@ using namespace std;
 //---------------------------------------------------------
 // Constructor
 NodeReportDistributor::NodeReportDistributor() {
-    m_nrd_in_var = "BOAT_REPORT";
-    m_nrd_out_var = "NODE_REPORT";
+    m_in_var_name = "BOAT_REPORT";
+    m_out_var_name = "NODE_REPORT";
     m_extra_args = ""; 
 }
 
@@ -27,10 +27,10 @@ bool NodeReportDistributor::OnStartUp() {
 
             if(param == "extra_args") {
                 m_extra_args = value;
-            } else if(param == "nrd_in_var") {
-                m_nrd_in_var = value;
-            } else if(param == "nrd_out_var") {
-                m_nrd_out_var = value;
+            } else if(param == "in_var_name") {
+                m_in_var_name = value;
+            } else if(param == "out_var_name") {
+                m_out_var_name = value;
             }
         }
     }
@@ -60,7 +60,7 @@ bool NodeReportDistributor::OnNewMail(MOOSMSG_LIST &NewMail) {
         CMOOSMsg &msg = *p;
         string key = msg.GetKey();
 
-        if(key == m_nrd_in_var && msg.IsString()) {
+        if(key == m_in_var_name && msg.IsString()) {
             string agg_string = msg.GetString();
             
             // Split at '|'
@@ -89,7 +89,7 @@ bool NodeReportDistributor::OnNewMail(MOOSMSG_LIST &NewMail) {
                         node_report += "," + m_extra_args;
                     }
 
-                    m_Comms.Notify(m_nrd_out_var, node_report);
+                    m_Comms.Notify(m_out_var_name, node_report);
                 }
             }
         }
@@ -112,6 +112,6 @@ bool NodeReportDistributor::Iterate() {
 //  CommsTick = 4
 //  
 //  extra_args = TYPE=kayak,LENGTH=1.1
-//  nrd_in_var = NODE_REPORT_AGG
-//  nrd_out_var = NODE_REPORT
+//  in_var_name = NODE_REPORT_AGG
+//  out_var_name = NODE_REPORT
 //}

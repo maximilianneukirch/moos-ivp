@@ -28,6 +28,8 @@ bool NodeReportAggregator::OnStartUp() {
                 m_target_vehicle_count = atoi(value.c_str());
             } else if(param == "vname_prefix") {
                 m_vname_prefix = value.c_str();
+            } else if(param == "out_var_name") {
+                m_out_var_name = value.c_str();
             }
         }
     }
@@ -105,9 +107,21 @@ bool NodeReportAggregator::Iterate() {
             agg_string.pop_back(); 
         }
 
-        m_Comms.Notify("NODE_REPORTS_AGG", agg_string);
+        m_Comms.Notify(m_out_var_name, agg_string);
         m_vehicle_reports.clear();
     }
     
     return true;
 }
+
+//------------------------------------------
+// uNodeReportAggregator config block
+//ProcessConfig = uNodeReportAggregator
+//{
+//  AppTick   = 4
+//  CommsTick = 4
+//  
+//  target_vehicle_count = 10
+//  vname_prefix = sim
+//  out_var_name = NODE_REPORTS_AGG
+//}

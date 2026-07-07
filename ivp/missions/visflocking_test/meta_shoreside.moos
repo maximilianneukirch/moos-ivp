@@ -138,4 +138,5 @@ ProcessConfig = uNodeReportAggregator
   
   target_vehicle_count = 10
   vname_prefix = sim
+  out_var_name = NODE_REPORTS_AGG
 }
