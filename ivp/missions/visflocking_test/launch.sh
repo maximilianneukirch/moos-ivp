@@ -43,8 +43,8 @@ for ((i=1; i<=$VEHICLE_COUNT; i++)); do
   VNAME="sim_$VEHICLE_NUM"
   MOOS_PORT=$((9000 + $i))
   PSHARE_PORT=$((9200 + $i))
-  POLAR_PLOT_STR="0,100: 90,100: 180,100"
-  #POLAR_PLOT_STR="0,0: 30,40: 45,80: 90,90: 135,100: 180,60"
+  #POLAR_PLOT_STR="0,100: 90,100: 180,100"
+  POLAR_PLOT_STR="0,0: 30,40: 45,80: 90,90: 135,100: 180,60"
 
   # Generate .moos and .bhv files
   nsplug meta_vehicle.moos "targ_${VNAME}.moos" -f VNAME="$VNAME" MOOS_PORT="$MOOS_PORT" PSHARE_PORT="$PSHARE_PORT" POLAR_PLOT="$POLAR_PLOT_STR" START_POS="x=$((($i*4) - 10)),y=$((6 +($i%3))),heading=-$(($i*5))"

@@ -27,7 +27,7 @@ ProcessConfig = ANTLER
 
 //------------------------------------------
 // pShare config block
-// Routes DEPLOY and RETURN to all simulated vehicles
+// Routes DEPLOY, RETURN, MMO, APPCAST_REQ, NODE_REPORT and VPF to all simulated vehicles
 
 ProcessConfig = pShare
 {

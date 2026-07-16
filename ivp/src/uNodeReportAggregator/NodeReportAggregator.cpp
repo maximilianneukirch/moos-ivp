@@ -120,6 +120,8 @@ bool NodeReportAggregator::Iterate() {
     return true;
 }
 
+// result: sim1,45.2,12.1,270.5|sim2,45.2,12.1,270.5 ...
+
 //------------------------------------------
 // uNodeReportAggregator config block
 //ProcessConfig = uNodeReportAggregator

@@ -111,7 +111,7 @@ bool VPFMerger::Iterate() {
         return true;
     }
 
-    // At least one has to be being updated
+    // At least one must have been updated
     if(!m_real_updated && !m_sim_updated) {
         return true;
     }
@@ -145,14 +145,16 @@ bool VPFMerger::Iterate() {
     return true;
 }
 
+//------------------------------------------
+// uVPFMerger config block
 //ProcessConfig = uVPFMerger
 //{
-//  AppTick   = 10
-//  CommsTick = 10
+//  AppTick   = 4
+//  CommsTick = 4
 //
 //  // The MOOS variables to subscribe to
 //  vpf_real_var = VPF_CAMERA   // E.g., The raw python output
-//  vpf_sim_var  = VPF_SIMULATED // E.g., The incoming pSimVisionServer feed
+//  vpf_sim_var  = VPF_SIM // E.g., The incoming pSimVisionServer feed
 //
 //  // The final MOOS variable to publish (The helm expects 'VPF*')
 //  vpf_out_var  = VPF          
