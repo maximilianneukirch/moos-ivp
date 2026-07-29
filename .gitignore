@@ -4,7 +4,8 @@
 **/logs/
 cmake-build-debug/
 .idea
-*CMakeCache.txt
+CMakeCache.txt
+**/CMakeCache.txt
 **/*.cmake
 **/*CMakeFiles
 **/*Makefile
