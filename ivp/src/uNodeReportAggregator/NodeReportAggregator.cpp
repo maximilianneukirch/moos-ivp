@@ -82,7 +82,6 @@ bool NodeReportAggregator::OnNewMail(MOOSMSG_LIST &NewMail) {
                 else if(param == "X")     vx = value;
                 else if(param == "Y")     vy = value;
                 else if(param == "HDG")   vhdg = value;
-
                 else if(param == "SPD")   vspd = value;
             }
 

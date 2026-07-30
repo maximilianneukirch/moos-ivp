@@ -87,7 +87,7 @@ bool NodeReportDistributor::OnNewMail(MOOSMSG_LIST &NewMail) {
                     string vx    = fields[1];
                     string vy    = fields[2];
                     string vhdg  = fields[3];
-                    string vspd  = fields[4]
+                    string vspd  = fields[4];
                     
                     // standard MOOS NODE_REPORT string
                     string node_report = "NAME=" + vname + 
