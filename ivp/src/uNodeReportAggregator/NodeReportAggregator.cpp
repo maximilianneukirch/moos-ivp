@@ -70,7 +70,7 @@ bool NodeReportAggregator::OnNewMail(MOOSMSG_LIST &NewMail) {
             string report = msg.GetString();
             
             string vname = "";
-            string vx = "", vy = "", vhdg = "";
+            string vx = "", vy = "", vhdg = "", vspd = "";
             
             vector<string> svector = parseString(report, ',');
             for(unsigned int i=0; i<svector.size(); i++) {
@@ -82,12 +82,14 @@ bool NodeReportAggregator::OnNewMail(MOOSMSG_LIST &NewMail) {
                 else if(param == "X")     vx = value;
                 else if(param == "Y")     vy = value;
                 else if(param == "HDG")   vhdg = value;
+
+                else if(param == "SPD")   vspd = value;
             }
 
             // Filter for prefix
             if(vname.find(m_vname_prefix) == 0) {
                 // Pack into small format: sim1,45.2,12.1,270.5
-                string compact_state = vname + "," + vx + "," + vy + "," + vhdg;
+                string compact_state = vname + "," + vx + "," + vy + "," + vhdg + "," + vspd;
                 
                 m_vehicle_reports[vname] = compact_state;
             }

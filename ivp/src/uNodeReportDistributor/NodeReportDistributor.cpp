@@ -24,6 +24,7 @@ bool NodeReportDistributor::OnStartUp() {
             string line  = *p;
             string param = tolower(biteStringX(line, '='));
             string value = line;
+            stripBlankEnds(value);
 
             if(param == "extra_args") {
                 m_extra_args = value;
@@ -61,8 +62,14 @@ bool NodeReportDistributor::OnNewMail(MOOSMSG_LIST &NewMail) {
         CMOOSMsg &msg = *p;
         string key = msg.GetKey();
 
-        if(key == m_in_var_name && msg.IsString()) {
+        if(key == m_in_var_name) {
+            if(!msg.IsString()) {
+                cout << "WARNING: Received " << key << " but it is NOT a string!" << endl;
+                continue;
+            }
+
             string agg_string = msg.GetString();
+            cout << "Received string: '" << agg_string << "'" << endl;
             
             // Split at '|'
             vector<string> boat_records = parseString(agg_string, '|');
@@ -72,25 +79,34 @@ bool NodeReportDistributor::OnNewMail(MOOSMSG_LIST &NewMail) {
                 
                 // vname,x,y,hdg
                 vector<string> fields = parseString(record, ',');
+
+                cout << "Parsed " << fields.size() << " fields from record." << endl;
                 
-                if(fields.size() == 4) {
+                if(fields.size() == 5) {
                     string vname = fields[0];
                     string vx    = fields[1];
                     string vy    = fields[2];
                     string vhdg  = fields[3];
+                    string vspd  = fields[4]
                     
                     // standard MOOS NODE_REPORT string
                     string node_report = "NAME=" + vname + 
                                          ",X=" + vx + 
                                          ",Y=" + vy + 
                                          ",HDG=" + vhdg + 
+                                         ",SPD=" + vspd +
                                          ",TIME=" + doubleToStringX(MOOSTime());
                                          
                     if(!m_extra_args.empty()) {
                         node_report += "," + m_extra_args;
                     }
 
+                    cout << "node_report: " << node_report << endl;
+
                     m_Comms.Notify(m_out_var_name, node_report);
+
+                } else {
+                    cout << "FAILED: Expected 4 fields, got " << fields.size() << endl;
                 }
             }
         }
