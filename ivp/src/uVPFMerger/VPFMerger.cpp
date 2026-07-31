@@ -138,6 +138,7 @@ bool VPFMerger::Iterate() {
     }
 
     m_Comms.Notify(m_vpf_out_var, vpfToString(merged_vpf));
+    cout << "uVPFMerger OUTPUT: " << vpfToString(merged_vpf) << endl;
 
     m_real_updated = false;
     m_sim_updated = false;
