@@ -212,7 +212,12 @@ bool SimVisionServer::Iterate()
         }
     
         // Publish vehicle specific VPF
-        std::string var_name = "VPF_" + toupper(observer.name);
+        std::string name = observer.name;
+        std::transform(name.begin(), name.end(), name.begin(),
+               [](unsigned char c) { return std::toupper(c); });
+
+        std::string var_name = "VPF_" + name;
+
         m_Comms.Notify(var_name, s_vpf);
     }
 
