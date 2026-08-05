@@ -137,7 +137,15 @@ IvPFunction* BHV_SoftBoundary::onRunState() {
     double dist_to_boundary = hypot(proj_x - closest_x, proj_y - closest_y);
 
     //bool is_inside = m_boundary_polygon.contains(m_osx, m_osy);
-    bool is_inside = m_boundary_polygon.contains(proj_x, proj_y);
+    bool is_inside;
+    bool os_inside = m_boundary_polygon.contains(m_osx, m_osy);
+    bool proj_os_inside = m_boundary_polygon.contains(proj_x, proj_y);
+
+    if (os_inside && proj_os_inside) {
+        is_inside = true;
+    } else {
+        is_inside = false;
+    }
 
     // Return nullptr if inside polygon and outside force-field max_range (far from border)
     if (is_inside && dist_to_boundary >= m_max_range) {
