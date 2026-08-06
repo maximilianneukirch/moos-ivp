@@ -131,25 +131,43 @@ IvPFunction* BHV_SoftBoundary::onRunState() {
     double proj_x = m_osx + (m_lookahead_dist * cos(math_heading_rad));
     double proj_y = m_osy + (m_lookahead_dist * sin(math_heading_rad));
 
-    double closest_x, closest_y;
-    m_boundary_polygon.closest_point_on_poly(proj_x, proj_y, closest_x, closest_y);
+    // Distance to boundary from projected pos
+    double proj_closest_x, proj_closest_y;
+    m_boundary_polygon.closest_point_on_poly(proj_x, proj_y, proj_closest_x, proj_closest_y);
+    double proj_dist_to_boundary = hypot(proj_x - proj_closest_x, proj_y - proj_closest_y);
 
-    double dist_to_boundary = hypot(proj_x - closest_x, proj_y - closest_y);
+    // Distance to boundary from true pos
+    double true_closest_x, true_closest_y;
+    m_boundary_polygon.closest_point_on_poly(m_osx, m_osy, true_closest_x, true_closest_y);
+    double true_dist_to_boundary = hypot(m_osx - true_closest_x, m_osy - true_closest_y);
 
-    //bool is_inside = m_boundary_polygon.contains(m_osx, m_osy);
-    bool is_inside;
-    bool os_inside = m_boundary_polygon.contains(m_osx, m_osy);
-    bool proj_os_inside = m_boundary_polygon.contains(proj_x, proj_y);
+    bool is_inside = m_boundary_polygon.contains(m_osx, m_osy);
+    //bool is_inside;
+    //bool os_inside = m_boundary_polygon.contains(m_osx, m_osy);
+    //bool proj_os_inside = m_boundary_polygon.contains(proj_x, proj_y);
 
-    if (os_inside && proj_os_inside) {
-        is_inside = true;
-    } else {
-        is_inside = false;
-    }
+    //if (os_inside && proj_os_inside) {
+    //    is_inside = true;
+    //} else {
+    //    is_inside = false;
+    //}
 
     // Return nullptr if inside polygon and outside force-field max_range (far from border)
-    if (is_inside && dist_to_boundary >= m_max_range) {
-        return nullptr;
+    if (is_inside) {
+        double heading_to_boundary = relAng(m_osx, m_osy, true_closest_x, true_closest_y);
+
+        double hdg_diff = abs(m_osh - heading_to_boundary);
+        if (hdg_diff > 180.0) {
+            hdg_diff = 360.0 - hdg_diff;
+        }
+
+        if (hdg_diff > 120.0) {
+            return nullptr;
+        }
+
+        if (proj_dist_to_boundary >= m_max_range) {
+            return nullptr;
+        }
     }
 
     // Visualization of border
@@ -198,21 +216,21 @@ IvPFunction* BHV_SoftBoundary::onRunState() {
     //}
 
     // V2: lets the boats outside the polygon 
-    if (!is_inside) {
+    if (!is_inside || (is_inside && true_dist_to_boundary < m_min_range)) {
         // Boat already violated boundary and is outside -> highes pwt, inverted escape_heading
         weight = base_pwt;
-        escape_heading = relAng(m_osx, m_osy, closest_x, closest_y);
+        escape_heading = relAng(m_osx, m_osy, true_closest_x, true_closest_y);
     } else {
-        if (dist_to_boundary <= m_min_range) {
+        if (proj_dist_to_boundary <= m_min_range) {
             weight = base_pwt;
         } else {
             // TODO: Check for m_max_range = m_min_range
-            double fraction = (m_max_range - dist_to_boundary) / (m_max_range - m_min_range);
+            double fraction = (m_max_range - proj_dist_to_boundary) / (m_max_range - m_min_range);
             weight = base_pwt * fraction;
         }
         
         // Compute escape heading (absolute 360-deg heading from boundary point to vehocle pos)
-        double inward_heading = relAng(closest_x, closest_y, m_osx, m_osy);
+        double inward_heading = relAng(proj_closest_x, proj_closest_y, m_osx, m_osy);
 
         double tangent_offset = 70.0;
         double opt1 = angle360(inward_heading + tangent_offset);
@@ -230,7 +248,7 @@ IvPFunction* BHV_SoftBoundary::onRunState() {
             escape_heading = opt2;
         }
 
-        escape_heading = opt1; // fixed wall-behavior (evading to the left)
+        //escape_heading = opt1; // fixed wall-behavior (evading to the left)
     }
 
     // COURSE: Build function with ZAIC
