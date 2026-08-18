@@ -22,6 +22,8 @@ BHV_WindManeuverability::BHV_WindManeuverability(IvPDomain domain) :
   m_hdg_valid = false;
 
   m_max_polar_speed = 0;
+  m_polar_valid = false;
+  m_last_polar_plot = "";
 
   m_nogo_speed_frac = 0.15;
   m_nogo_penalty = -1000.0;
@@ -30,6 +32,7 @@ BHV_WindManeuverability::BHV_WindManeuverability(IvPDomain domain) :
 
   addInfoVars("NAV_WIND_DIR_APP");
   addInfoVars("NAV_HEADING");
+  addInfoVars("POLAR_PLOT");
 }
 
 //--------------------------------------------------------
@@ -41,8 +44,15 @@ bool BHV_WindManeuverability::setParam(string param, string val)
   if(IvPBehavior::setParam(param, val))
     return(true);
 
-  if(param == "polar_plot")
-    return(parsePolarPlot(val));
+  if(param == "polar_plot") {
+    // Optional fallback: allow static configuration from .bhv, but
+    // runtime POLAR_PLOT updates from the MOOSDB will override this.
+    bool ok = parsePolarPlot(val);
+    m_polar_valid = ok;
+    if(ok)
+      m_last_polar_plot = val;
+    return(ok);
+  }
   else if(param == "nogo_speed_frac") {
     m_nogo_speed_frac = atof(val.c_str());
     return(true);
@@ -160,6 +170,23 @@ double BHV_WindManeuverability::getPolarUtility(double rel_wind)
 // Procedure: onRunState
 IvPFunction* BHV_WindManeuverability::onRunState()
 {
+  // Pull latest polar plot from MOOSDB when updated.
+  if(getBufferVarUpdated("POLAR_PLOT")) {
+    bool ok_polar = false;
+    string polar_str = getBufferStringVal("POLAR_PLOT", ok_polar);
+
+    if(ok_polar && !polar_str.empty() && (polar_str != m_last_polar_plot)) {
+      bool parsed = parsePolarPlot(polar_str);
+      if(parsed) {
+        m_polar_valid = true;
+        m_last_polar_plot = polar_str;
+      } else {
+        m_polar_valid = false;
+        postWMessage("Failed to parse POLAR_PLOT from MOOSDB: " + polar_str);
+      }
+    }
+  }
+
   bool ok = false;
   m_app_wind_dir = getBufferDoubleVal("NAV_WIND_DIR_APP", ok);
   m_wind_valid = ok;
@@ -169,6 +196,9 @@ IvPFunction* BHV_WindManeuverability::onRunState()
 
   m_current_hdg = getBufferDoubleVal("NAV_HEADING", ok);
   m_hdg_valid = ok;
+
+  if(!m_polar_valid || m_polar_map.empty() || (m_max_polar_speed <= 0.0))
+    return(0);
 
   int crs_ix = m_domain.getIndex("course");
   int crs_pts = m_domain.getVarPoints("course");

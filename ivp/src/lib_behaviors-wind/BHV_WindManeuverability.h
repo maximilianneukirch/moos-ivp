@@ -35,6 +35,8 @@ private:
   // Polar plot mapping (Relative Wind Angle -> Speed)
   std::map<double, double> m_polar_map;
   double       m_max_polar_speed;
+  bool         m_polar_valid;
+  std::string  m_last_polar_plot;
 
   // No-go configuration
   double       m_nogo_speed_frac;  // speed/max speed threshold for no-go
