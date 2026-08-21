@@ -9,6 +9,7 @@
 #include "OF_Coupler.h"
 #include <cmath>
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 
@@ -38,6 +39,9 @@ BHV_VisFlocking::BHV_VisFlocking(IvPDomain domain) :
 
   m_internal_speed = 0.0;
   m_is_initialized = false;
+
+  m_last_desired_heading = 0.0;
+  m_have_last_desired_heading = false;
 
   m_max_polar_speed = 0.0;
   m_last_polar_str = "";
@@ -250,10 +254,18 @@ IvPFunction *BHV_VisFlocking::onRunState()
   double dv = 0.0;
   double dpsi = 0.0;
 
-  //computeStateVariables(vpf, dv, dpsi);
-  // set params order: a0, a1, b0, b1, fov
-  m_vision_model.setParams(a0, a1, b0, b1, m_v0, m_gam, fov);
-  m_vision_model.compute(m_current_speed, vpf, dv, dpsi);
+  // No visual information: keep the last desired heading so the boat holds a
+  // straight course instead of integrating tiny turn noise.
+  bool all_zero_vpf = (!vpf.empty() &&
+                       std::all_of(vpf.begin(), vpf.end(),
+                                   [](int x){return x == 0;}));
+
+  if(!all_zero_vpf) {
+    //computeStateVariables(vpf, dv, dpsi);
+    // set params order: a0, a1, b0, b1, fov
+    m_vision_model.setParams(a0, a1, b0, b1, m_v0, m_gam, fov);
+    m_vision_model.compute(m_current_speed, vpf, dv, dpsi);
+  }
 
   // TODO: DIFFERENTIATE BETWEEN FULL VPF and PARTIAL VPF (edge-wrapping)
 
@@ -270,13 +282,21 @@ IvPFunction *BHV_VisFlocking::onRunState()
   // Heading
   //double desired_heading = m_current_heading + (dpsi_deg * dt);
 
-  double turn_gain = 10.0;
-  double raw_heading = m_current_heading + radToDegrees(dpsi * turn_gain * dt);
+  double desired_heading = m_current_heading;
 
-  double desired_heading = angle360(raw_heading);
+  if(all_zero_vpf) {
+    if(m_have_last_desired_heading)
+      desired_heading = m_last_desired_heading;
+  } else {
+    double turn_gain = 10.0;
+    double raw_heading = m_current_heading + radToDegrees(dpsi * turn_gain * dt);
+    desired_heading = angle360(raw_heading);
+  }
 
   while(desired_heading >= 360.0) desired_heading -= 360.0;
   while(desired_heading < 0.0)    desired_heading += 360.0;
+  m_last_desired_heading = desired_heading;
+  m_have_last_desired_heading = true;
 
   // Speed
   if (!m_is_initialized) {
@@ -287,8 +307,8 @@ IvPFunction *BHV_VisFlocking::onRunState()
   m_internal_speed += (dv * dt);
 
   // Desired speed clamped to [0, 3*v0]
-  //if(m_internal_speed > (m_v0 * 3)) m_internal_speed = (m_v0 * 3);
-  //if(m_internal_speed < 0.0) m_internal_speed = 0.0;
+  if(m_internal_speed > (m_v0 * 2)) m_internal_speed = (m_v0 * 2);
+  if(m_internal_speed < 0.0) m_internal_speed = 0.0;
 
   double desired_speed = m_internal_speed;
 

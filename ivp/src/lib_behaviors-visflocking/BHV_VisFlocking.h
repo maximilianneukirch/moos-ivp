@@ -59,6 +59,10 @@ protected:
   double m_internal_speed;
   bool m_is_initialized;
 
+  // Hold the last commanded heading while visual input is all zeros.
+  double m_last_desired_heading;
+  bool m_have_last_desired_heading;
+
   // To measure time difference between iterations
   double m_last_time;
 };
