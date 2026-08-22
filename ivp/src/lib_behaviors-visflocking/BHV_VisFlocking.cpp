@@ -31,6 +31,12 @@ BHV_VisFlocking::BHV_VisFlocking(IvPDomain domain) :
   m_v0 = 1.0;
   m_gam = 0.1;
   fov = 175.0;
+
+  // Phase 0.2/0.3: overridable from the .bhv
+  m_turn_lookahead = 2.5;    // s; reproduces the old turn_gain=10.0 * dt at AppTick=4 (dt=0.25 s)
+  m_max_speed_error = 1.0;   // m/s; max |internal - actual| speed gap (anti-windup)
+  m_speed_cap_factor = 2.0;  // speed command cap = factor * v0
+
   m_current_speed = 0.0;
   m_current_heading = 0.0;
 
@@ -90,6 +96,18 @@ bool BHV_VisFlocking::setParam(string param, string val)
     return true;
   } else if(param == "gam"){
     m_gam = atof(val.c_str());
+    return true;
+  }
+  else if(param == "turn_lookahead"){
+    m_turn_lookahead = atof(val.c_str());
+    return true;
+  }
+  else if(param == "max_speed_error"){
+    m_max_speed_error = atof(val.c_str());
+    return true;
+  }
+  else if(param == "speed_cap_factor"){
+    m_speed_cap_factor = atof(val.c_str());
     return true;
   }
   return false;
@@ -260,12 +278,13 @@ IvPFunction *BHV_VisFlocking::onRunState()
                        std::all_of(vpf.begin(), vpf.end(),
                                    [](int x){return x == 0;}));
 
-  if(!all_zero_vpf) {
-    //computeStateVariables(vpf, dv, dpsi);
-    // set params order: a0, a1, b0, b1, fov
-    m_vision_model.setParams(a0, a1, b0, b1, m_v0, m_gam, fov);
-    m_vision_model.compute(m_current_speed, vpf, dv, dpsi);
-  }
+  // Phase 0.1: always compute. An all-zero VPF already yields
+  // dv = gam*(v0 - v) and dpsi = 0, i.e. the paper's "no visual input"
+  // relaxation back to v0. Skipping it here used to let a boat that lost the
+  // flock coast at its current speed forever.
+  // set params order: a0, a1, b0, b1, fov
+  m_vision_model.setParams(a0, a1, b0, b1, m_v0, m_gam, fov);
+  m_vision_model.compute(m_current_speed, vpf, dv, dpsi);
 
   // TODO: DIFFERENTIATE BETWEEN FULL VPF and PARTIAL VPF (edge-wrapping)
 
@@ -288,8 +307,9 @@ IvPFunction *BHV_VisFlocking::onRunState()
     if(m_have_last_desired_heading)
       desired_heading = m_last_desired_heading;
   } else {
-    double turn_gain = 10.0;
-    double raw_heading = m_current_heading + radToDegrees(dpsi * turn_gain * dt);
+    // Phase 0.2: dpsi is a rate (rad/s), so a fixed lookahead horizon in
+    // seconds keeps the turn authority independent of the helm tick rate.
+    double raw_heading = m_current_heading + radToDegrees(dpsi * m_turn_lookahead);
     desired_heading = angle360(raw_heading);
   }
 
@@ -306,9 +326,19 @@ IvPFunction *BHV_VisFlocking::onRunState()
 
   m_internal_speed += (dv * dt);
 
-  // Desired speed clamped to [0, 3*v0]
-  if(m_internal_speed > (m_v0 * 2)) m_internal_speed = (m_v0 * 2);
+  // Desired speed clamped to [0, speed_cap_factor * v0]
+  if(m_internal_speed > (m_speed_cap_factor * m_v0)) m_internal_speed = (m_speed_cap_factor * m_v0);
   if(m_internal_speed < 0.0) m_internal_speed = 0.0;
+
+  // Phase 0.3 anti-windup: keep the integrator near the hull's actual speed.
+  // External forces (sail, motor, current) push actual speed around; without
+  // this clamp the integral drifts away and the command saturates at the cap
+  // even though the boat is nowhere near it.
+  double speed_err = m_internal_speed - m_current_speed;
+  if(speed_err > m_max_speed_error)
+    m_internal_speed = m_current_speed + m_max_speed_error;
+  if(speed_err < -m_max_speed_error)
+    m_internal_speed = m_current_speed - m_max_speed_error;
 
   double desired_speed = m_internal_speed;
 

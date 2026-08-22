@@ -28,6 +28,7 @@ SimVisionServer::SimVisionServer()
     m_len = 5.0;   // e.g. 5 meters length
     m_beam = 1.5;  // e.g. 1.5 meters width
     m_real_boat_prefix = "real";
+    m_only_vname = "";  // empty = synthesise every observer (default)
 }
 
 //---------------------------------------------------------
@@ -57,6 +58,9 @@ bool SimVisionServer::OnStartUp()
             }
             else if(param == "real_boat_prefix") {
                 m_real_boat_prefix = value.c_str();
+            }
+            else if(param == "only_vname") {
+                m_only_vname = value.c_str();
             }
         }
     }
@@ -114,6 +118,7 @@ bool SimVisionServer::OnNewMail(MOOSMSG_LIST &NewMail)
                 contact.x = atof(tokStringParse(report, "X", ',', '=').c_str());
                 contact.y = atof(tokStringParse(report, "Y", ',', '=').c_str());
                 contact.heading = atof(tokStringParse(report, "HDG", ',', '=').c_str());
+                contact.speed = atof(tokStringParse(report, "SPD", ',', '=').c_str()); // 0 if absent
                 contact.time = MOOSTime();
                 
                 m_contacts[vname] = contact;
@@ -136,7 +141,13 @@ bool SimVisionServer::Iterate()
     for(obs_it = m_contacts.begin(); obs_it != m_contacts.end(); obs_it++){
         
         ContactState &observer = obs_it->second;
-        
+
+        // only_vname: synthesise just this one observer (ownship on a real
+        // boat) instead of every contact -- avoids ~N x wasted work on the Pi.
+        if(!m_only_vname.empty() && observer.name != m_only_vname) {
+            continue;
+        }
+
         // Filter old contacts (e.g. older than 5 seconds)
         if(current_time - observer.time > 5.0) continue;
         
@@ -162,12 +173,24 @@ bool SimVisionServer::Iterate()
                 continue;
             }
 
-            // Get distance and bearing from observer to target (Min dist is 0.1m)
-            double dx = target.x - observer.x;
-            double dy = target.y - observer.y;
+            // Dead-reckon the target forward along its heading since its last
+            // report, so the VPF tracks moving sim boats between the ~1 Hz
+            // contact updates. The observer (ownship) is fresh (high-rate
+            // NODE_REPORT_LOCAL), so only the target is extrapolated. Cap at
+            // 3 s (the 5 s staleness filter above stays as the outer bound).
+            double age = current_time - target.time;
+            if(age < 0.0) age = 0.0;
+            if(age > 3.0) age = 3.0;
+            double thr = degToRad(target.heading);
+            double tx = target.x + target.speed * std::sin(thr) * age;
+            double ty = target.y + target.speed * std::cos(thr) * age;
+
+            // Get distance and bearing from observer to (extrapolated) target
+            double dx = tx - observer.x;
+            double dy = ty - observer.y;
             double dist = std::max(0.1, std::sqrt(dx*dx + dy*dy));
-            
-            double bearing = relAng(observer.x, observer.y, target.x, target.y);
+
+            double bearing = relAng(observer.x, observer.y, tx, ty);
 
             // Relative angle in own VPF (0 = straight ahead, positive = right)
             double rel_bearing = angle360(bearing - observer.heading);

@@ -22,6 +22,7 @@ struct ContactState {
     double y;
     double heading;
     double time;
+    double speed;   // m/s -- lets us dead-reckon stale contacts (default 0)
 };
 
 class SimVisionServer : public CMOOSApp {
@@ -58,6 +59,11 @@ private:
     double m_beam;       // Width of boat in meters
 
     std::string m_real_boat_prefix;
+
+    // When non-empty, only synthesise the VPF for this observer (ownship on a
+    // real boat). On a Pi this avoids re-computing every contact as an
+    // observer (~N x wasted work). Empty (default) computes for all observers.
+    std::string m_only_vname;
 
     // Store all contacts (sim and real)
     std::map<std::string, ContactState> m_contacts;

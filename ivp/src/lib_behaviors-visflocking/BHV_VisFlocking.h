@@ -51,6 +51,11 @@ protected:
 
   double fov;
 
+  // Phase 0.2/0.3: overridable from the .bhv
+  double m_turn_lookahead;   // s; heading += dpsi * lookahead (tick-rate independent)
+  double m_max_speed_error;  // m/s; anti-windup clamp on |internal - actual| speed
+  double m_speed_cap_factor; // speed command cap = factor * v0
+
   // States
   double m_current_speed;
   double m_current_heading;
