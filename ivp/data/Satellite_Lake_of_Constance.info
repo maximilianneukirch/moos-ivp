@@ -6,8 +6,8 @@ lon_west = 9.183197021484375
 //datum_lat = 47.696170
 //datum_lon = 9.195229
 // Lake
-//datum_lat = 47.695803
-//datum_lon = 9.194176
+datum_lat = 47.695803
+datum_lon = 9.194176
 // Uni North
-datum_lat = 47.691520
-datum_lon = 9.185751
+//datum_lat = 47.691520
+//datum_lon = 9.185751
