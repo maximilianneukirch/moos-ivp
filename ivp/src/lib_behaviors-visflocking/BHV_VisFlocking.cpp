@@ -324,7 +324,8 @@ IvPFunction *BHV_VisFlocking::onRunState()
     m_is_initialized = true;
   }
 
-  m_internal_speed += (dv * dt);
+  //m_internal_speed += (dv * dt);
+  m_internal_speed += (dv * 2.5);
 
   // Desired speed clamped to [0, speed_cap_factor * v0]
   if(m_internal_speed > (m_speed_cap_factor * m_v0)) m_internal_speed = (m_speed_cap_factor * m_v0);
