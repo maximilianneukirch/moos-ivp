@@ -12,6 +12,7 @@
 #include "MOOS/libMOOS/MOOSLib.h"
 #include "NodeRecord.h" // Standard MOOS-Utility for NODE_REPORTS
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -57,6 +58,14 @@ private:
     int    m_resolution; // Number of bins (e.g. 320)
     double m_len;        // Length of boat in meters
     double m_beam;       // Width of boat in meters
+
+    // Optional FOV-cone visualization (VIEW_WEDGE for pMarineViewer).
+    // The cone angle always matches m_fov (the simulated camera's FOV).
+    bool        m_post_fov_cones;
+    double      m_fov_cone_radius;       // meters
+    std::string m_fov_cone_color;
+    double      m_fov_cone_transparency; // 0=opaque .. 1=invisible
+    std::set<std::string> m_fov_cones_inactivated; // already told viewer to drop
 
     std::string m_real_boat_prefix;
 

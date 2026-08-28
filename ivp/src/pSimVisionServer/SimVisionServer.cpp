@@ -27,6 +27,12 @@ SimVisionServer::SimVisionServer()
     m_resolution = 320; // resolution of camera image (width)
     m_len = 5.0;   // e.g. 5 meters length
     m_beam = 1.5;  // e.g. 1.5 meters width
+
+    // Optional FOV-cone visualization (off by default)
+    m_post_fov_cones = false;
+    m_fov_cone_radius = 50.0;      // meters
+    m_fov_cone_color = "yellow";
+    m_fov_cone_transparency = 0.5; // 0=opaque .. 1=invisible
     m_real_boat_prefix = "real";
     m_only_vname = "";  // empty = synthesise every observer (default)
 }
@@ -58,6 +64,18 @@ bool SimVisionServer::OnStartUp()
             }
             else if(param == "real_boat_prefix") {
                 m_real_boat_prefix = value.c_str();
+            }
+            else if(param == "post_fov_cones") {
+                setBooleanOnString(m_post_fov_cones, value);
+            }
+            else if(param == "fov_cone_radius") {
+                m_fov_cone_radius = atof(value.c_str());
+            }
+            else if(param == "fov_cone_color") {
+                m_fov_cone_color = value.c_str();
+            }
+            else if(param == "fov_cone_transparency") {
+                m_fov_cone_transparency = atof(value.c_str());
             }
             else if(param == "only_vname") {
                 m_only_vname = value.c_str();
@@ -242,6 +260,47 @@ bool SimVisionServer::Iterate()
         std::string var_name = "VPF_" + name;
 
         m_Comms.Notify(var_name, s_vpf);
+    }
+
+    //--------------------------------------------------
+    // Optional: post an FOV cone (wedge) in front of every boat so that
+    // pMarineViewer can draw the simulated camera's field of view. The cone
+    // angle always matches m_fov. Wedges carry a stable per-boat label, so
+    // repeated posts update the existing cone instead of adding new ones.
+    if(m_post_fov_cones) {
+        double half_fov = m_fov / 2.0;
+
+        std::map<std::string, ContactState>::iterator fov_it;
+        for(fov_it = m_contacts.begin(); fov_it != m_contacts.end(); fov_it++) {
+            ContactState &contact = fov_it->second;
+
+            // Same 5 s freshness window the VPF loop uses above
+            bool fresh = (current_time - contact.time) <= 5.0;
+
+            // A dead boat's cone was already removed once -- nothing to do
+            if(!fresh && m_fov_cones_inactivated.count(contact.name) > 0)
+                continue;
+
+            std::string wedge = "x=" + doubleToStringX(contact.x, 3)
+                + ",y=" + doubleToStringX(contact.y, 3)
+                + ",rad_low=0"
+                + ",rad_hgh=" + doubleToStringX(m_fov_cone_radius, 3)
+                + ",ang_low=" + doubleToStringX(angle360(contact.heading - half_fov), 3)
+                + ",ang_hgh=" + doubleToStringX(angle360(contact.heading + half_fov), 3)
+                + ",label=FOV_" + contact.name
+                + ",active=" + (fresh ? "true" : "false")
+                + ",fill_color=" + m_fov_cone_color
+                + ",fill_transparency=" + doubleToStringX(m_fov_cone_transparency, 2)
+                + ",edge_color=" + m_fov_cone_color
+                + ",edge_size=1";
+
+            m_Comms.Notify("VIEW_WEDGE", wedge);
+
+            if(fresh)
+                m_fov_cones_inactivated.erase(contact.name);
+            else
+                m_fov_cones_inactivated.insert(contact.name);
+        }
     }
 
 
