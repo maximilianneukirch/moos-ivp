@@ -5,6 +5,7 @@
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "ZAIC_PEAK.h"
+#include "ZAIC_Vector.h"
 #include "XYFormatUtilsPoly.h"
 
 
@@ -22,6 +23,7 @@ BHV_SoftBoundary::BHV_SoftBoundary(IvPDomain domain)
     m_max_range   = 20.0;
     m_min_range   = 5.0;
     m_peak_width  = 20.0;
+    m_curve_power = 2.0;   // quadratic by default: flat top -> helm blends smoothly instead of snapping
     m_boundary_var = "BOUNDARY_POLYGON";
     m_min_speed = 1.0;
     m_lookahead_dist = 5.0;
@@ -63,6 +65,10 @@ bool BHV_SoftBoundary::setParam(string param, string value) {
     }
     else if (param == "peak_width") {
         m_peak_width = atof(value.c_str());
+        return true;
+    }
+    else if (param == "curve_power") {
+        m_curve_power = atof(value.c_str());
         return true;
     }
     else if (param == "boundary_var") {
@@ -174,17 +180,47 @@ IvPFunction* BHV_SoftBoundary::onRunState() {
         //escape_heading = opt1; // fixed wall-behavior (evading to the left)
     }
 
-    // COURSE: Build function with ZAIC
-    ZAIC_PEAK crs_zaic(m_domain, "course");
-    crs_zaic.setSummit(escape_heading);
-    crs_zaic.setPeakWidth(m_peak_width);
-    crs_zaic.setBaseWidth(360.0);           // 360 deg of degradation
-    crs_zaic.setSummitDelta(0.0);
-    crs_zaic.setValueWrap(true);            // ValueWrap: wrap 360 to 0
+    // COURSE: Build a GENTLE, flat-topped course-preference curve (quadratic by
+    // default) that peaks (utility 100) at escape_heading and falls to 0 at
+    // +/-180 deg, using a power curve instead of a linear ramp:
+    //
+    //     utility(d) = 100 * (1 - (d / 180)^power)      d = |heading - escape|
+    //
+    // A power curve has ZERO slope at the peak (flat top), unlike the old linear
+    // ramp. Because the helm picks the single course that maximizes the SUM of all
+    // behaviors' weighted utilities, a flat-topped boundary curve lets the other
+    // behaviors (e.g. VisFlocking) keep influencing that optimum, so the resulting
+    // course is a SMOOTH compromise that drifts toward escape_heading only as this
+    // behavior's weight grows - instead of snapping to it (the hard turns / S-curves).
+    //
+    // curve_power: 1 = linear (old, snappy), 2 = quadratic (soft), higher = softer.
+    double power = m_curve_power;
+    if (power < 0.1) power = 0.1;
+    double max_dist = 180.0;
+
+    int crs_ix  = m_domain.getIndex("course");
+    int crs_pts = m_domain.getVarPoints("course");
+    std::vector<double> domain_vec(crs_pts, 0.0);
+    std::vector<double> utility_vec(crs_pts, 0.0);
+    for(int i = 0; i < crs_pts; i++) {
+        double h    = m_domain.getVal(crs_ix, i);
+        double diff = fabs(angle180(h - escape_heading));
+        domain_vec[i] = h;
+        if(diff <= max_dist) {
+            double x = diff / max_dist;          // 0 at escape_heading, 1 at the antipode
+            utility_vec[i] = 100.0 * (1.0 - pow(x, power));
+        } else {
+            utility_vec[i] = 0.0;
+        }
+    }
+
+    ZAIC_Vector crs_zaic(m_domain, "course");
+    crs_zaic.setDomainVals(domain_vec);
+    crs_zaic.setRangeVals(utility_vec);
 
     IvPFunction *crs_ipf = crs_zaic.extractIvPFunction();
     if(!crs_ipf) {
-        postWMessage("Failure on the CRS ZAIC");
+        postWMessage("Failure building the course ZAIC_Vector");
         return nullptr;
     }
     // Apply dynamic weight

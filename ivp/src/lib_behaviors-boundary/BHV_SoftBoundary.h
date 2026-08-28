@@ -25,7 +25,8 @@ private:
     XYPolygon    m_boundary_polygon;
     double       m_max_range;       // Max distance at where repulsion begins
     double       m_min_range;       // Min distance at where repulsion is biggest
-    double       m_peak_width;      // ZAIC Peak width (= Strength of repulsion)
+    double       m_peak_width;      // (legacy) ZAIC peak width
+    double       m_curve_power;     // Course-preference curve exponent (1=linear, 2=quadratic, higher=softer/flatter top)
     std::string  m_boundary_var;    // MOOS-variable for polygon definition
     double       m_min_speed;       // Minimum speed required to get any steering effect through rudder
     double       m_lookahead_dist;
