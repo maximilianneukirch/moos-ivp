@@ -5,7 +5,6 @@
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "ZAIC_PEAK.h"
-#include "ZAIC_Vector.h"
 #include "XYFormatUtilsPoly.h"
 
 
@@ -22,11 +21,13 @@ BHV_SoftBoundary::BHV_SoftBoundary(IvPDomain domain)
 
     m_max_range   = 20.0;
     m_min_range   = 5.0;
-    m_peak_width  = 20.0;
-    m_curve_power = 2.0;   // quadratic by default: flat top -> helm blends smoothly instead of snapping
+    m_max_delta   = 91.0;   // Max corrective delta: 91 deg off the wall -> glides neatly alongside the boundary
+    m_curve_power = 2.0;    // quadratic ramp: gentle until the boat is close, then turns in smoothly
+    m_peak_width  = 15.0;
+    m_base_width  = 170.0;
+    m_summit_delta = 50.0;
     m_boundary_var = "BOUNDARY_POLYGON";
     m_min_speed = 1.0;
-    m_lookahead_dist = 5.0;
 
     // Subscribe to required variables
     addInfoVars("NAV_X, NAV_Y");
@@ -63,12 +64,24 @@ bool BHV_SoftBoundary::setParam(string param, string value) {
         m_min_range = atof(value.c_str());
         return true;
     }
-    else if (param == "peak_width") {
-        m_peak_width = atof(value.c_str());
+    else if (param == "max_delta") {
+        m_max_delta = atof(value.c_str());
         return true;
     }
     else if (param == "curve_power") {
         m_curve_power = atof(value.c_str());
+        return true;
+    }
+    else if (param == "peak_width") {
+        m_peak_width = atof(value.c_str());
+        return true;
+    }
+    else if (param == "base_width") {
+        m_base_width = atof(value.c_str());
+        return true;
+    }
+    else if (param == "summit_delta") {
+        m_summit_delta = atof(value.c_str());
         return true;
     }
     else if (param == "boundary_var") {
@@ -78,10 +91,6 @@ bool BHV_SoftBoundary::setParam(string param, string value) {
     }
     else if (param == "min_speed") {
         m_min_speed = atof(value.c_str());
-        return true;
-    }
-    else if (param == "lookahead_dist") {
-        m_lookahead_dist = atof(value.c_str());
         return true;
     }
     return false;
@@ -100,131 +109,98 @@ IvPFunction* BHV_SoftBoundary::onRunState() {
         m_boundary_polygon.determine_convexity();
     }
 
-    double math_heading_rad = (90.0 - m_osh) * (M_PI / 180.0);
-
-    double proj_x = m_osx + (m_lookahead_dist * cos(math_heading_rad));
-    double proj_y = m_osy + (m_lookahead_dist * sin(math_heading_rad));
-
-    // Distance to boundary from projected pos
-    double proj_closest_x, proj_closest_y;
-    m_boundary_polygon.closest_point_on_poly(proj_x, proj_y, proj_closest_x, proj_closest_y);
-    double proj_dist_to_boundary = hypot(proj_x - proj_closest_x, proj_y - proj_closest_y);
-
-    // Distance to boundary from true pos
-    double true_closest_x, true_closest_y;
-    m_boundary_polygon.closest_point_on_poly(m_osx, m_osy, true_closest_x, true_closest_y);
-    double true_dist_to_boundary = hypot(m_osx - true_closest_x, m_osy - true_closest_y);
+    // Distance from the boat's *real* position to the nearest boundary point.
+    // (No lookahead projection: the gradually-increasing delta already provides
+    //  the smooth response, and the real position keeps activation and distance
+    //  consistent with where the boat actually is.)
+    double closest_x, closest_y;
+    m_boundary_polygon.closest_point_on_poly(m_osx, m_osy, closest_x, closest_y);
+    double dist_to_boundary = hypot(m_osx - closest_x, m_osy - closest_y);
 
     // Visualization of border
     postViewPolygon();
 
-    // Return nullptr if inside polygon and outside force-field max_range (far from border)
     bool is_inside = m_boundary_polygon.contains(m_osx, m_osy);
+
+    // Heading (0-360 deg) from the boat toward the nearest boundary point, i.e.
+    // the direction of the wall. The safe interior lies on the other side.
+    double to_wall = relAng(m_osx, m_osy, closest_x, closest_y);
+
+    // How far is the current heading from pointing straight at the wall?
+    //   0 deg  -> heading straight into the wall
+    //  90 deg  -> heading tangent to the wall (gliding alongside)
+    // 180 deg  -> heading straight away from the wall
+    double ang_from_wall = fabs(angle180(m_osh - to_wall));
+
+    // --- Decide whether the behavior is active ---
+    // Deactivate whenever the boat is pointing in a direction that will carry it
+    // out of the danger zone (tangent or away from the boundary) - even if it is
+    // close to the edge. The single exception is a boat that has crossed the
+    // boundary (outside the polygon): that case must always steer the boat back in.
     if (is_inside) {
-        double heading_to_boundary = relAng(m_osx, m_osy, true_closest_x, true_closest_y);
-
-        double hdg_diff = abs(m_osh - heading_to_boundary);
-        if (hdg_diff > 180.0) {
-            hdg_diff = 360.0 - hdg_diff;
+        if (dist_to_boundary >= m_max_range) {
+            return nullptr;  // out of the danger zone (far from the boundary)
         }
-
-        if (hdg_diff > 120.0) {
-            return nullptr;
-        }
-
-        if (proj_dist_to_boundary >= m_max_range) {
-            return nullptr;
+        if (ang_from_wall >= 90.0) {
+            return nullptr;  // heading out of the danger zone (tangent or away)
         }
     }
 
+    // --- Compute the corrective heading delta ---
+    // The behavior reads the boat's current heading and applies a delta toward a
+    // safe direction, instead of replacing it with an absolute escape heading.
+    // The delta grows as the boat closes in on the boundary and is capped so the
+    // commanded course never points more than m_max_delta (91 deg) from the wall -
+    // letting the flock glide neatly alongside the boundary.
+    double delta;
+    if (is_inside) {
+        // Aim for the tangent direction (m_max_delta off the wall) on the side
+        // nearest the current heading, so we always turn the short way.
+        double opt1 = angle360(to_wall + m_max_delta);
+        double opt2 = angle360(to_wall - m_max_delta);
+        double target = (fabs(angle180(m_osh - opt1)) <= fabs(angle180(m_osh - opt2))) ? opt1 : opt2;
 
-    // Compute dynamic weight (priority) of behavior
-    // 0 at max_range, linear up to configured pwt at min_range
-    double weight = 0.0;
-    double base_pwt = getPriorityWt();
-    double escape_heading = 0.0;
+        // Proximity factor in [0,1]: 0 at max_range, 1 at min_range. Shaped by
+        // curve_power so the correction stays gentle until the boat is close.
+        double p = (m_max_range - dist_to_boundary) / (m_max_range - m_min_range);
+        if (p < 0.0) p = 0.0;
+        if (p > 1.0) p = 1.0;
+        double proximity = pow(p, m_curve_power);
 
-    // V2: lets the boats outside the polygon
-    if (!is_inside || (is_inside && true_dist_to_boundary < m_min_range)) {
-        // Boat already violated boundary and is outside -> highes pwt, inverted escape_heading
-        weight = base_pwt;
-        escape_heading = relAng(m_osx, m_osy, true_closest_x, true_closest_y);
+        delta = angle180(target - m_osh) * proximity;
     } else {
-        if (proj_dist_to_boundary <= m_min_range) {
-            weight = base_pwt;
-        } else {
-            // TODO: Check for m_max_range = m_min_range
-            double fraction = (m_max_range - proj_dist_to_boundary) / (m_max_range - m_min_range);
-            weight = base_pwt * fraction;
-        }
-
-        // Compute escape heading (absolute 360-deg heading from boundary point to vehocle pos)
-        double inward_heading = relAng(proj_closest_x, proj_closest_y, m_osx, m_osy);
-
-        double tangent_offset = 70.0;
-        double opt1 = angle360(inward_heading + tangent_offset);
-        double opt2 = angle360(inward_heading - tangent_offset);
-
-        double diff1 = abs(m_osh - opt1);
-        if (diff1 > 180.0) diff1 = 360.0 - diff1;
-
-        double diff2 = abs(m_osh - opt2);
-        if (diff2 > 180.0) diff2 = 360.0 - diff2;
-
-        if (diff1 <= diff2) {
-            escape_heading = opt1;
-        } else {
-            escape_heading = opt2;
-        }
-
-        //escape_heading = opt1; // fixed wall-behavior (evading to the left)
+        // Boat has crossed the boundary: steer it straight back into the interior.
+        delta = angle180(to_wall - m_osh);
     }
 
-    // COURSE: Build a GENTLE, flat-topped course-preference curve (quadratic by
-    // default) that peaks (utility 100) at escape_heading and falls to 0 at
-    // +/-180 deg, using a power curve instead of a linear ramp:
-    //
-    //     utility(d) = 100 * (1 - (d / 180)^power)      d = |heading - escape|
-    //
-    // A power curve has ZERO slope at the peak (flat top), unlike the old linear
-    // ramp. Because the helm picks the single course that maximizes the SUM of all
-    // behaviors' weighted utilities, a flat-topped boundary curve lets the other
-    // behaviors (e.g. VisFlocking) keep influencing that optimum, so the resulting
-    // course is a SMOOTH compromise that drifts toward escape_heading only as this
-    // behavior's weight grows - instead of snapping to it (the hard turns / S-curves).
-    //
-    // curve_power: 1 = linear (old, snappy), 2 = quadratic (soft), higher = softer.
-    double power = m_curve_power;
-    if (power < 0.1) power = 0.1;
-    double max_dist = 180.0;
+    // Cap the corrective delta at the configured maximum.
+    if (delta >  m_max_delta) delta =  m_max_delta;
+    if (delta < -m_max_delta) delta = -m_max_delta;
 
-    int crs_ix  = m_domain.getIndex("course");
-    int crs_pts = m_domain.getVarPoints("course");
-    std::vector<double> domain_vec(crs_pts, 0.0);
-    std::vector<double> utility_vec(crs_pts, 0.0);
-    for(int i = 0; i < crs_pts; i++) {
-        double h    = m_domain.getVal(crs_ix, i);
-        double diff = fabs(angle180(h - escape_heading));
-        domain_vec[i] = h;
-        if(diff <= max_dist) {
-            double x = diff / max_dist;          // 0 at escape_heading, 1 at the antipode
-            utility_vec[i] = 100.0 * (1.0 - pow(x, power));
-        } else {
-            utility_vec[i] = 0.0;
-        }
-    }
+    double desired_course = angle360(m_osh + delta);
 
-    ZAIC_Vector crs_zaic(m_domain, "course");
-    crs_zaic.setDomainVals(domain_vec);
-    crs_zaic.setRangeVals(utility_vec);
+    // Build a course-preference peak at the desired course. The weight is the
+    // behavior's constant (maximum) priority weight - it is the DELTA, not the
+    // weight, that encodes how close the boat is to the boundary.
+    ZAIC_PEAK zaic(m_domain, "course");
+    zaic.setSummit(desired_course);
+    zaic.setBaseWidth(m_base_width);
+    zaic.setPeakWidth(m_peak_width);
+    zaic.setSummitDelta(m_summit_delta);
+    zaic.setValueWrap(true);
 
-    IvPFunction *crs_ipf = crs_zaic.extractIvPFunction();
+    IvPFunction *crs_ipf = zaic.extractIvPFunction();
     if(!crs_ipf) {
-        postWMessage("Failure building the course ZAIC_Vector");
+        postWMessage("Failure building the boundary course ZAIC_PEAK");
         return nullptr;
     }
-    // Apply dynamic weight
-    crs_ipf->setPWT(weight);
+
+    string zaic_warnings = zaic.getWarnings();
+    if(zaic_warnings != "")
+        postWMessage(zaic_warnings);
+
+    // Constant, maximum weight: this behavior dominates whenever it is active.
+    crs_ipf->setPWT(getPriorityWt());
     return crs_ipf;
 }
 

@@ -3,15 +3,23 @@
 #include "NodeRecordUtils.h"
 #include <cmath>
 #include <algorithm>
+#include <limits>
 #include <iostream>
 
 using namespace std;
 
 FlockEvaluator::FlockEvaluator() {
-    // Physical parameters 
-    m_overlap_distance = 0.9; // Distance to count as "Overlap"
-    m_cluster_distance = 5.0; // Max distance between agents to be in the same cluster
-    
+    // Physical parameters
+    m_agent_diameter = 1.1;             // agent hull diameter, meters
+    m_overlap_distance = m_agent_diameter; // default: 2*radius, overridable via OVERLAP_DISTANCE
+    m_overlap_distance_explicit = false;
+
+    m_cluster_threshold = 0.275; // Ward dendrogram cut, matches ABM's tuned default
+
+    m_toroidal = false;    // must be explicitly enabled to match a wormhole/torus mission
+    m_arena_width = 300.0; // full wrap period, e.g. visflocking_optimize's 300m torus
+    m_arena_height = m_arena_width; // assume square arena unless ARENA_HEIGHT overrides
+
     // Initialize running sums
     m_sum_polarization = 0.0;
     m_sum_mean_distance = 0.0;
@@ -21,6 +29,8 @@ FlockEvaluator::FlockEvaluator() {
     
     m_iterations_count = 0;
     m_run_id = "run_default";
+
+    m_deployed = false;
 }
 
 FlockEvaluator::~FlockEvaluator() {
@@ -38,6 +48,21 @@ bool FlockEvaluator::OnStartUp() {
     }
 
     m_MissionReader.GetConfigurationParam("RUN_ID", m_run_id);
+    m_MissionReader.GetConfigurationParam("TOROIDAL", m_toroidal);
+    m_MissionReader.GetConfigurationParam("ARENA_WIDTH", m_arena_width);
+    m_arena_height = m_arena_width;
+    m_MissionReader.GetConfigurationParam("ARENA_HEIGHT", m_arena_height);
+    m_MissionReader.GetConfigurationParam("AGENT_DIAMETER", m_agent_diameter);
+    m_MissionReader.GetConfigurationParam("CLUSTER_THRESHOLD", m_cluster_threshold);
+
+    // OVERLAP_DISTANCE, if explicitly set in the mission file, still wins
+    // over the AGENT_DIAMETER-derived default (2*radius).
+    m_overlap_distance_explicit =
+        m_MissionReader.GetConfigurationParam("OVERLAP_DISTANCE", m_overlap_distance);
+    if(!m_overlap_distance_explicit) {
+        m_overlap_distance = m_agent_diameter;
+    }
+
     RegisterVariables();
     return true;
 }
@@ -49,16 +74,22 @@ bool FlockEvaluator::OnConnectToServer() {
 
 void FlockEvaluator::RegisterVariables() {
     Register("NODE_REPORT", 0);
+    // Posted directly to shoreside's own MOOSDB -- by pMarineViewer's DEPLOY
+    // button in visflocking_test, or by uTimerScript's scripted event in
+    // visflocking_optimize -- so no extra pShare routing is needed to see it
+    // here. Gates Iterate() below so metrics aren't collected/averaged while
+    // the fleet is still sitting stationary pre-deploy.
+    Register("DEPLOY_ALL", 0);
 }
 
 bool FlockEvaluator::OnNewMail(MOOSMSG_LIST &NewMail) {
     MOOSMSG_LIST::iterator p;
     for(p = NewMail.begin(); p != NewMail.end(); p++) {
         CMOOSMsg &msg = *p;
-        
+
         if(msg.GetKey() == "NODE_REPORT" && msg.IsString()) {
-            NodeRecord record = string2NodeRecord(msg.GetString()); 
-            
+            NodeRecord record = string2NodeRecord(msg.GetString());
+
             if(record.valid() && record.getName() != "") {
                 std::string vname = record.getName();
                 m_vehicles[vname].x = record.getX();
@@ -66,52 +97,49 @@ bool FlockEvaluator::OnNewMail(MOOSMSG_LIST &NewMail) {
                 m_vehicles[vname].heading = record.getHeading();
             }
         }
+        else if(msg.GetKey() == "DEPLOY_ALL") {
+            // Posted as a string ("true"/"false") by both pMarineViewer's
+            // button handler and uTimerScript (neither treats "true" as a
+            // number) -- but also accept a nonzero double, in case some
+            // other trigger ever posts it numerically instead.
+            bool val = false;
+            if(msg.IsString()) val = (tolower(msg.GetString()) == "true");
+            else if(msg.IsDouble()) val = (msg.GetDouble() != 0.0);
+
+            if(val) m_deployed = true; // latches -- a later RETURN shouldn't blank collected data
+        }
     }
     return true;
 }
 
 bool FlockEvaluator::Iterate() {
+    if(!m_deployed) return true; // fleet hasn't been deployed yet -- ignore stationary pre-deploy ticks
+
     int n = m_vehicles.size();
     if(n < 3) return true; // Wait for vehicles to deploy
 
     m_iterations_count++;
-    
+
     vector<VehicleState> states;
     for(const auto& pair : m_vehicles) states.push_back(pair.second);
 
-    // --- 1. Distances, Overlap (R^sim_o), and Clusters (N^max_clus) ---
+    // --- 1. Pairwise distances, Overlap ratio, Mean distance ---
+    // Overlap threshold (m_overlap_distance) defaults to AGENT_DIAMETER,
+    // i.e. two agents' circular hulls actually touching -- matches ABM's
+    // calculate_collision_time() (dist < 2*RADIUS_AGENT).
+    vector<vector<double> > pos_dist(n, vector<double>(n, 0.0));
     double sum_dist = 0.0;
-    double max_dist = 0.0001; 
     bool is_overlapping_now = false;
     int pair_count = 0;
 
-    // Union-Find structure for clustering
-    vector<int> parent(n);
-    for(int i=0; i<n; i++) parent[i] = i;
-    
-    auto find_root = [&](int i) {
-        int root = i;
-        while(parent[root] != root) root = parent[root];
-        return root;
-    };
-    
-    auto unite = [&](int i, int j) {
-        int root_i = find_root(i);
-        int root_j = find_root(j);
-        if(root_i != root_j) parent[root_i] = root_j;
-    };
-
     for(int i = 0; i < n; i++) {
         for(int j = i + 1; j < n; j++) {
-            double dx = states[i].x - states[j].x;
-            double dy = states[i].y - states[j].y;
-            double dist = sqrt(dx*dx + dy*dy);
-            
+            double dist = pairDistance(states[i], states[j]);
+            pos_dist[i][j] = pos_dist[j][i] = dist;
+
             sum_dist += dist;
-            if(dist > max_dist) max_dist = dist;
             if(dist < m_overlap_distance) is_overlapping_now = true;
-            if(dist < m_cluster_distance) unite(i, j);
-            
+
             pair_count++;
         }
     }
@@ -119,15 +147,11 @@ bool FlockEvaluator::Iterate() {
     double current_mean_dist = sum_dist / std::max(1, pair_count);
     if(is_overlapping_now) m_overlap_ticks++;
 
-    // Calculate max cluster size
-    vector<int> cluster_sizes(n, 0);
-    for(int i = 0; i < n; i++) {
-        cluster_sizes[find_root(i)]++;
-    }
-    int current_max_cluster = *std::max_element(cluster_sizes.begin(), cluster_sizes.end());
+    // --- 2. Largest cluster (Ward hierarchical clustering) ---
+    int current_max_cluster = computeLargestCluster(states, pos_dist);
 
 
-    // --- 2. Polarization Order (P) ---
+    // --- 3. Polarization Order (P) ---
     double sum_sin = 0.0, sum_cos = 0.0;
     for(int i = 0; i < n; i++) {
         double rad = states[i].heading * M_PI / 180.0;
@@ -137,13 +161,27 @@ bool FlockEvaluator::Iterate() {
     double current_polarization = sqrt(sum_sin * sum_sin + sum_cos * sum_cos) / n;
 
 
-    // --- 3. Area-to-Circle Ratio (RCA) ---
-    double convex_area = calculateConvexArea();
-    double circle_area = std::max(0.0001, M_PI * std::pow(max_dist / 2.0, 2));
+    // --- 4. Area-to-Circle Ratio (RCA) ---
+    // On a torus, positions must be unwrapped into one contiguous patch
+    // before hulling -- Jarvis March on raw wrapped (x,y) would otherwise
+    // treat a group straddling a wormhole seam as spanning the whole arena.
+    vector<Point> hull_pts;
+    if(m_toroidal) {
+        hull_pts = unwrapPositions();
+    } else {
+        for(const auto& s : states) hull_pts.push_back({s.x, s.y});
+    }
+    vector<Point> hull = computeHull(hull_pts);
+    double convex_area = hullArea(hull);
+    // Reference circle diameter = longest non-adjacent hull-vertex diagonal
+    // (matches ABM's plot_convex_hull_in_current_t calc_longest_d), not the
+    // max pairwise distance across all agents.
+    double hull_diam = hullMaxNonAdjacentDiagonal(hull);
+    double circle_area = std::max(0.0001, M_PI * std::pow(hull_diam / 2.0, 2));
     double current_rca = convex_area / circle_area;
 
 
-    // --- 4. Accumulate and Calculate Averages ---
+    // --- 5. Accumulate and Calculate Averages ---
     m_sum_polarization += current_polarization;
     m_sum_mean_distance += current_mean_dist;
     m_sum_max_cluster_size += current_max_cluster;
@@ -172,21 +210,51 @@ bool FlockEvaluator::Iterate() {
 // Geometric Helper Functions
 // ----------------------------------------------------------------
 
-double FlockEvaluator::crossProduct(Point p, Point q, Point r) {
+double FlockEvaluator::crossProduct(Point p, Point q, Point r) const {
     return (q.x - p.x) * (r.y - p.y) - (q.y - p.y) * (r.x - p.x);
 }
 
-double FlockEvaluator::calculateConvexArea() {
-    vector<Point> pts;
-    for(auto const& pair : m_vehicles) {
-        pts.push_back({pair.second.x, pair.second.y});
-    }
+// --- Torus helpers ---
 
+// Signed shortest displacement for a 1-D periodic coordinate of period
+// m_arena_width (minimum-image convention): brings d into (-width/2, width/2].
+double FlockEvaluator::wrappedDelta(double d) const {
+    if(!m_toroidal || m_arena_width <= 0.0) return d;
+    double w = m_arena_width;
+    d = fmod(d, w);
+    if(d > w / 2.0) d -= w;
+    if(d < -w / 2.0) d += w;
+    return d;
+}
+
+double FlockEvaluator::pairDistance(const VehicleState& a, const VehicleState& b) const {
+    double dx = wrappedDelta(a.x - b.x);
+    double dy = wrappedDelta(a.y - b.y);
+    return sqrt(dx*dx + dy*dy);
+}
+
+// Unwraps every vehicle's position relative to the first vehicle (arbitrary
+// reference) by the minimum-image displacement, producing one contiguous
+// patch of positions suitable for a plain (non-periodic) convex hull -- the
+// same trick data_loader.py's on_torus branch relies on.
+vector<Point> FlockEvaluator::unwrapPositions() const {
+    vector<Point> pts;
+    if(m_vehicles.empty()) return pts;
+    const VehicleState& ref = m_vehicles.begin()->second;
+    for(auto const& pair : m_vehicles) {
+        const VehicleState& v = pair.second;
+        pts.push_back({ref.x + wrappedDelta(v.x - ref.x),
+                        ref.y + wrappedDelta(v.y - ref.y)});
+    }
+    return pts;
+}
+
+vector<Point> FlockEvaluator::computeHull(const vector<Point>& pts) const {
     int n = pts.size();
-    if(n < 3) return 0.0; 
+    vector<Point> hull;
+    if(n < 3) return hull;
 
     // Jarvis March (Gift Wrapping)
-    vector<Point> hull;
     int l = 0;
     for(int i = 1; i < n; i++) {
         if(pts[i].x < pts[l].x) l = i;
@@ -204,6 +272,12 @@ double FlockEvaluator::calculateConvexArea() {
         p = q;
     } while(p != l);
 
+    return hull;
+}
+
+double FlockEvaluator::hullArea(const vector<Point>& hull) const {
+    if(hull.size() < 3) return 0.0;
+
     // Shoelace Formula
     double area = 0.0;
     int j = hull.size() - 1;
@@ -213,4 +287,112 @@ double FlockEvaluator::calculateConvexArea() {
     }
 
     return abs(area / 2.0);
+}
+
+// Longest distance between two hull vertices that are not consecutive in
+// hull-boundary order, matching ABM's plot_convex_hull_in_current_t
+// (calc_longest_d): only (i, i+1) pairs for i in [0, size-2] are excluded as
+// "adjacent" -- the wrap-around pair (last, first) is deliberately NOT
+// excluded there, and this mirrors that exactly for parity with ABM's
+// reported values.
+double FlockEvaluator::hullMaxNonAdjacentDiagonal(const vector<Point>& hull) const {
+    int m = hull.size();
+    double best = 0.0;
+    for(int i = 0; i < m; i++) {
+        for(int j = i + 1; j < m; j++) {
+            if(j == i + 1) continue;
+            double dx = hull[i].x - hull[j].x;
+            double dy = hull[i].y - hull[j].y;
+            double d = sqrt(dx*dx + dy*dy);
+            if(d > best) best = d;
+        }
+    }
+    return best;
+}
+
+// Ward-linkage agglomerative clustering on a composite distance combining
+// normalized inter-agent distance and heading (polarization) dissimilarity,
+// cut at m_cluster_threshold. Mirrors ABM's return_clustering_distnace() +
+// calculate_clustering()/calculate_largest_subcluster_size(): merging the
+// dendrogram at height m_cluster_threshold is equivalent to ABM's
+// dendrogram-color cut (unmerged leaves become singleton clusters, matching
+// that code's per-leaf remap of "color C0" leaves to distinct new ids).
+int FlockEvaluator::computeLargestCluster(const vector<VehicleState>& states,
+                                           const vector<vector<double> >& pos_dist) const {
+    int n = states.size();
+    if(n == 0) return 0;
+    if(n == 1) return 1;
+
+    // Median of all pairwise position distances this tick.
+    vector<double> upper;
+    upper.reserve(n * (n - 1) / 2);
+    for(int i = 0; i < n; i++)
+        for(int j = i + 1; j < n; j++)
+            upper.push_back(pos_dist[i][j]);
+
+    sort(upper.begin(), upper.end());
+    size_t m = upper.size();
+    double median_iid = (m % 2 == 1) ? upper[m / 2]
+                                      : (upper[m / 2 - 1] + upper[m / 2]) / 2.0;
+
+    double max_dist_norm = sqrt(m_arena_width * m_arena_width +
+                                 m_arena_height * m_arena_height) / 2.0;
+    if(max_dist_norm <= 0.0) max_dist_norm = 1.0;
+
+    // Composite distance matrix: (heading-dissimilarity + normalized
+    // position-deviation) / 2, matching ABM's return_clustering_distnace().
+    vector<vector<double> > D(n, vector<double>(n, 0.0));
+    for(int i = 0; i < n; i++) {
+        double ux_i = cos(states[i].heading * M_PI / 180.0);
+        double uy_i = sin(states[i].heading * M_PI / 180.0);
+        for(int j = i + 1; j < n; j++) {
+            double ux_j = cos(states[j].heading * M_PI / 180.0);
+            double uy_j = sin(states[j].heading * M_PI / 180.0);
+
+            double ux_sum = ux_i + ux_j;
+            double uy_sum = uy_i + uy_j;
+            double pm = sqrt(ux_sum*ux_sum + uy_sum*uy_sum) / 2.0;
+            double dist_pm = 1.0 - pm;
+
+            double niidm = fabs(median_iid - pos_dist[i][j]) / max_dist_norm;
+
+            double d = (dist_pm + niidm) / 2.0;
+            D[i][j] = D[j][i] = d;
+        }
+    }
+
+    // Ward agglomeration (Lance-Williams update), merging while the closest
+    // remaining pair of clusters is below m_cluster_threshold.
+    vector<int> csize(n, 1);
+    vector<bool> active(n, true);
+
+    while(true) {
+        int bi = -1, bj = -1;
+        double best = std::numeric_limits<double>::max();
+        for(int i = 0; i < n; i++) {
+            if(!active[i]) continue;
+            for(int j = i + 1; j < n; j++) {
+                if(!active[j]) continue;
+                if(D[i][j] < best) { best = D[i][j]; bi = i; bj = j; }
+            }
+        }
+        if(bi == -1 || best >= m_cluster_threshold) break;
+
+        for(int k = 0; k < n; k++) {
+            if(!active[k] || k == bi || k == bj) continue;
+            double ni = csize[bi], nj = csize[bj], nk = csize[k];
+            double dik = D[bi][k], djk = D[bj][k], dij = D[bi][bj];
+            double d = sqrt(((ni+nk)*dik*dik + (nj+nk)*djk*djk - nk*dij*dij) /
+                            (ni+nj+nk));
+            D[bi][k] = D[k][bi] = d;
+        }
+        csize[bi] += csize[bj];
+        active[bj] = false;
+    }
+
+    int max_cluster = 0;
+    for(int i = 0; i < n; i++) {
+        if(active[i] && csize[i] > max_cluster) max_cluster = csize[i];
+    }
+    return max_cluster;
 }

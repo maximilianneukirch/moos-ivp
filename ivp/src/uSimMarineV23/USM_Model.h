@@ -176,6 +176,7 @@ public:
   double     m_thrust_rgt;
 
   double     m_turn_rate;         // turning characteristic of the vehicle
+  double     m_turn_loss;         // fraction of speed lost at full rudder
   double     m_rotate_speed;      // External rotational drift force
   double     m_drift_x;           // meters per sec
   double     m_drift_y;           // meters per sec

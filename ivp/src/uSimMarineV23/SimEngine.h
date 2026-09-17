@@ -57,7 +57,8 @@ public:
 			     double thrust, double rudder,
 			     double max_accel, double max_decel,
 			     const ThrustMap&, double thrust_fan,
-			     double max_sail_spd=-1);
+			     double max_sail_spd=-1,
+			     double turn_loss=0.85);
 
   void propagateHeading(NodeRecord&, double delta_time, double rudder,
 			double thrust, double turn_rate, 

@@ -286,6 +286,13 @@ IvPFunction *BHV_VisFlocking::onRunState()
   m_vision_model.setParams(a0, a1, b0, b1, m_v0, m_gam, fov);
   m_vision_model.compute(m_current_speed, vpf, dv, dpsi);
 
+  // Raw model output, before the turn_lookahead scaling below turns it
+  // into a target heading -- useful to check whether a weak/flat response
+  // to some parameter is the model itself vs. downstream steering/PID
+  // (see turn_lookahead's comment in meta_vehicle.bhv for a worked example).
+  postMessage("DEBUG_DPSI", dpsi);
+  postMessage("DEBUG_DV", dv);
+
   // TODO: DIFFERENTIATE BETWEEN FULL VPF and PARTIAL VPF (edge-wrapping)
 
   // Convert dpsi from rad/s to deg/s

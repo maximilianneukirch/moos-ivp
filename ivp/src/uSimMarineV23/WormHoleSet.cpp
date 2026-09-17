@@ -22,6 +22,7 @@
 /*****************************************************************/
 
 #include <cstdlib>
+#include <cmath>
 #include <iostream>
 #include "WormHoleSet.h"
 #include "XYFormatUtilsPoly.h"
@@ -43,6 +44,25 @@ WormHoleSet::WormHoleSet()
 
   m_inx = 0;   // Observed wormhole entry point
   m_iny = 0;
+
+  m_cooldown_active = false;
+  m_land_x = 0;
+  m_land_y = 0;
+  m_min_clear_dist = 0;
+
+  m_prev_x = 0;
+  m_prev_y = 0;
+  m_has_prev = false;
+}
+
+//----------------------------------------------------------------
+// Procedure: setMinClearDist()
+
+void WormHoleSet::setMinClearDist(double dist)
+{
+  if(dist < 0)
+    dist = 0;
+  m_min_clear_dist = dist;
 }
 
 //----------------------------------------------------------------
@@ -236,7 +256,17 @@ WormHole WormHoleSet::getWormHole(string tag)
 
 bool WormHoleSet::apply(double curr_time, double osx, double osy,
 			double& newx, double& newy)
-{ 
+{
+  // Remember this tick's (pre-transport) position for next call's
+  // segment-crossing check, before anything below can overwrite it via a
+  // transport. Captured unconditionally, every call, regardless of state.
+  double prev_x = m_prev_x;
+  double prev_y = m_prev_y;
+  bool   has_prev = m_has_prev;
+  m_prev_x = osx;
+  m_prev_y = osy;
+  m_has_prev = true;
+
   // Case 1: First handle where ownship is emerging from a wormhole
   // In this case the only task is to adjust the transparency
   if(m_worm_hole_state == "emerging") {
@@ -256,7 +286,17 @@ bool WormHoleSet::apply(double curr_time, double osx, double osy,
 
   // Case 2: First encounter with a wormhole
   if(m_worm_hole_state == "normal") {
-    string worm_hole_tag = findWormHoleEntry(osx, osy);
+    // Distance-based cooldown: don't even look for a new entry until
+    // ownship has moved clear of where it last landed (see header comment
+    // on m_min_clear_dist for why this must be distance-, not time-based).
+    if(m_cooldown_active) {
+      double dist = hypot(osx - m_land_x, osy - m_land_y);
+      if(dist < m_min_clear_dist)
+	return(false);
+      m_cooldown_active = false;
+    }
+
+    string worm_hole_tag = findWormHoleEntry(prev_x, prev_y, has_prev, osx, osy);
     if(worm_hole_tag == "")
       return(false);
     else {
@@ -280,12 +320,26 @@ bool WormHoleSet::apply(double curr_time, double osx, double osy,
       string connection_type = worm_hole.getConnectionType();
       if(connection_type == "from_weber") {
 	worm_hole.crossPositionWeberToMadrid(m_inx,m_iny, newx,newy);
+	m_cooldown_active = true;
+	m_land_x = newx;
+	m_land_y = newy;
+	// The vehicle's real position is about to jump straight to
+	// (newx,newy) -- next tick's segment must start fresh from there,
+	// not span the artificial teleport gap (which would otherwise look
+	// like a huge, spurious crossing of everything in between).
+	m_prev_x = newx;
+	m_prev_y = newy;
 	return(true);
       }
       if(connection_type == "from_madrid") {
 	worm_hole.crossPositionMadridToWeber(m_inx,m_iny, newx,newy);
+	m_cooldown_active = true;
+	m_land_x = newx;
+	m_land_y = newy;
+	m_prev_x = newx;
+	m_prev_y = newy;
 	return(true);
-      }	
+      }
     }
     else {
       double pct = delta_time / (m_tunnel_time/2);
@@ -299,33 +353,89 @@ bool WormHoleSet::apply(double curr_time, double osx, double osy,
 
 
 //----------------------------------------------------------------
+// Procedure: segmentCrossesBand()
+//   Purpose: does the segment from (x0,y0) to (x1,y1) pass through an
+//            axis-aligned band poly (long in one dimension, thin in the
+//            other -- exactly the shape of a wormhole's madrid/weber
+//            poly)? Checked as: does the segment's extent along the
+//            band's thin (wrap) axis overlap the band at all, AND does
+//            either endpoint's lateral coordinate fall within the band's
+//            lateral extent. This catches a crossing regardless of how
+//            large the single-tick step is, unlike plain point-in-polygon
+//            containment, which can be skipped over entirely if ownship
+//            jumps clean across a band between two consecutive ticks
+//            (confirmed happening in practice under MOOSTimeWarp=20).
+
+static bool segmentCrossesBand(const XYPolygon& poly,
+				double x0, double y0, double x1, double y1)
+{
+  double minx = poly.get_min_x();
+  double maxx = poly.get_max_x();
+  double miny = poly.get_min_y();
+  double maxy = poly.get_max_y();
+
+  double dx = maxx - minx;
+  double dy = maxy - miny;
+  if((dx <= 0) || (dy <= 0))
+    return(false);
+
+  if(dy <= dx) {
+    // Band is long in x, thin in y -- y is the wrap axis.
+    double lo = (y0 < y1) ? y0 : y1;
+    double hi = (y0 < y1) ? y1 : y0;
+    if((hi < miny) || (lo > maxy))
+      return(false);
+    if(((x0 >= minx) && (x0 <= maxx)) || ((x1 >= minx) && (x1 <= maxx)))
+      return(true);
+    return(false);
+  }
+  else {
+    // Band is long in y, thin in x -- x is the wrap axis.
+    double lo = (x0 < x1) ? x0 : x1;
+    double hi = (x0 < x1) ? x1 : x0;
+    if((hi < minx) || (lo > maxx))
+      return(false);
+    if(((y0 >= miny) && (y0 <= maxy)) || ((y1 >= miny) && (y1 <= maxy)))
+      return(true);
+    return(false);
+  }
+}
+
+
+//----------------------------------------------------------------
 // Procedure: findWormHoleEntry()
 
-string WormHoleSet::findWormHoleEntry(double osx, double osy)
+string WormHoleSet::findWormHoleEntry(double prev_x, double prev_y, bool has_prev,
+				       double osx, double osy)
 {
   // Sanity Check
   if(m_worm_holes.size() != m_worm_hole_tags.size())
     return("");
 
-  // Check each worm_hole, and if ownship is in entry polygon
-  // then return the tag of that worm_hole
+  // Check each worm_hole, and if ownship is in entry polygon, or the
+  // segment from its previous position crossed through it, then return
+  // the tag of that worm_hole.
   for(unsigned int i=0; i<m_worm_holes.size(); i++) {
 
     WormHole worm_hole = m_worm_holes[i];
-    
+
     string connection_type = worm_hole.getConnectionType();
     if(connection_type == "from_weber") {
       XYPolygon weber_poly = worm_hole.getWeberPoly();
       if(weber_poly.contains(osx, osy))
 	return(m_worm_hole_tags[i]);
+      if(has_prev && segmentCrossesBand(weber_poly, prev_x, prev_y, osx, osy))
+	return(m_worm_hole_tags[i]);
     }
     if(connection_type == "from_madrid") {
       XYPolygon madrid_poly = worm_hole.getMadridPoly();
-      if(madrid_poly.contains(osx, osy)) 
+      if(madrid_poly.contains(osx, osy))
+	return(m_worm_hole_tags[i]);
+      if(has_prev && segmentCrossesBand(madrid_poly, prev_x, prev_y, osx, osy))
 	return(m_worm_hole_tags[i]);
     }
-  }    
-  
+  }
+
   return("");
 }
 

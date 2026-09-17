@@ -29,14 +29,14 @@
 #include "AngleUtils.h"
 
 // As of Release 15.4 this is now set in CMake, defaulting to be defined
-// #define USE_UTM 
+// #define USE_UTM
 
 using namespace std;
 
 //------------------------------------------------------------------------
 // Constructor
 
-USM_MOOSApp::USM_MOOSApp() 
+USM_MOOSApp::USM_MOOSApp()
 {
   // Init Simulator variables
   m_sim_prefix  = "USM";
@@ -44,22 +44,26 @@ USM_MOOSApp::USM_MOOSApp()
   m_trim_requested = false;
   m_buoyancy_delay = 5;
   m_max_trim_delay = 10;
-  m_report_interval = 5; 
+  m_report_interval = 5;
   m_last_report     = 0;
   m_report_interval = 5;
   m_pitch_tolerance = 5;
   m_enabled = true;
   m_depth_info_acast = true;
-  
+
   // Init PID variables
   m_pid_allstop_posted = false;
   m_pid_ignore_nav_yaw = false;
   m_pid_verbose    = true;
-  m_pid_ok_skew    = 1360;  
+  m_pid_ok_skew    = 1360;
 
   // Indicate Sim/PID coupling variables
   m_pid_coupled = false;
   m_nav_modulo  = 2;
+
+  // Wormhole safety-net backstop -- disabled (0) unless configured.
+  m_wormhole_safety_bound  = 0;
+  m_wormhole_safety_period = 0;
 }
 
 //------------------------------------------------------------------------
@@ -68,7 +72,7 @@ USM_MOOSApp::USM_MOOSApp()
 bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   AppCastingMOOSApp::OnNewMail(NewMail);
-  
+
   MOOSMSG_LIST::iterator p;
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
@@ -89,25 +93,25 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 	else if(key == "PID_VERBOSE")
 	  setBooleanOnString(m_pid_verbose, sval);
 	else if(key == "SPEED_FACTOR")
-	  m_pengine.setSpeedFactor(dval);    
+	  m_pengine.setSpeedFactor(dval);
 	else if(key == "DESIRED_HEADING")
 	  m_pengine.setDesHeading(dval);
 	else if(key == "DESIRED_SPEED")
 	  m_pengine.setDesSpeed(dval);
-	else if(key == "DESIRED_DEPTH") 
+	else if(key == "DESIRED_DEPTH")
 	  m_pengine.setDesDepth(dval);
-	
+
 	// FYI normal PID mail would include NAV_* variables
 	// But when PID is embedded in this sim, NAV_* info
 	// is contained in local state, e.g., curr_nav_x.
-	else if(key == "NAV_HEADING") 
+	else if(key == "NAV_HEADING")
 	  m_pengine.setCurrHeading(angle360(dval));
 	else if(key == "NAV_SPEED")
 	  m_pengine.setCurrSpeed(dval);
 	else if(key == "NAV_DEPTH")
 	  m_pengine.setCurrDepth(dval);
 	else if(key == "NAV_PITCH")
-	  m_pengine.setCurrPitch(dval);      
+	  m_pengine.setCurrPitch(dval);
       }
       else
 	Notify("USM_NOGO", dfT);
@@ -116,9 +120,9 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     //====================================================
     // Part I: Handle Simulator related mail
     //====================================================
-    if(key == "DESIRED_THRUST") 
+    if(key == "DESIRED_THRUST")
       m_model.setThrust(dval);
-    else if(key == "DESIRED_FAN") 
+    else if(key == "DESIRED_FAN")
       m_model.setThrustFan(dval);
     else if(key == "DESIRED_RUDDER")
       m_model.setRudder(dval, MOOSTime());
@@ -144,21 +148,21 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       m_model.setDriftX(dval, src);
     else if((key == "CURRENT_Y") || (key == "DRIFT_Y"))
       m_model.setDriftY(dval, src);
-    else if(key == "DRIFT_VECTOR")  
+    else if(key == "DRIFT_VECTOR")
       m_model.setDriftVector(sval, src, false);
     else if(key == "DRIFT_VECTOR_ADD")
       m_model.setDriftVector(sval, src, true);
-    else if(key == "DRIFT_VECTOR_MULT") 
+    else if(key == "DRIFT_VECTOR_MULT")
       m_model.magDriftVector(dval, src);
     else if(key == "WATER_DEPTH")
-      m_model.setParam("water_depth", dval);    
-    else if(key == "OBSTACLE_HIT") 
+      m_model.setParam("water_depth", dval);
+    else if(key == "OBSTACLE_HIT")
       m_model.setObstacleHit(tolower(sval) == "true");
     else if(key == "USM_RESET") {
       m_model.initPosition(sval);
       Notify("USM_RESET_COUNT", m_model.getResetCount());
     }
-    else if(key == "USM_TURN_RATE") 
+    else if(key == "USM_TURN_RATE")
       m_model.setParam("turn_rate", dval);
     else if(key == "USM_ENABLED")
       setBooleanOnString(m_enabled, sval);
@@ -167,23 +171,23 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     // and updating the vehicle position. In the meanwhile we just inform
     // the model of the update nav info so it has accurate ownship info
     // when/if this sim becomes enabled again.
-    else if((key == "NAV_X") && !m_enabled) 
+    else if((key == "NAV_X") && !m_enabled)
       m_model.informX(dval);
     else if((key == "NAV_Y") && !m_enabled)
       m_model.informY(dval);
-    else if((key == "NAV_HEADING") && !m_enabled) 
+    else if((key == "NAV_HEADING") && !m_enabled)
       m_model.informHeading(dval);
-    
+
     // Added buoyancy and trim control and sonar handshake. HS 2012-07-22
     else if(key == "BUOYANCY_CONTROL")
       handleMailBuoyancyControl(sval);
     else if(key == "TRIM_CONTROL")
       handleMailTrimControl(sval);
   }
-  
+
   return(true);
 }
-  
+
 //----------------------------------------------------------------
 // Procedure: Iterate
 
@@ -195,7 +199,7 @@ bool USM_MOOSApp::Iterate()
     AppCastingMOOSApp::PostReport();
     return(true);
   }
-  
+
   //====================================================
   // Part I: PID Controller Function (optional)
   //====================================================
@@ -209,7 +213,7 @@ bool USM_MOOSApp::Iterate()
     m_pengine.setCurrSpeed(record.getSpeed());
     if(m_pengine.hasDepthControl()) {
       m_pengine.setCurrDepth(record.getDepth());
-      m_pengine.setCurrPitch(record.getPitch());      
+      m_pengine.setCurrPitch(record.getPitch());
     }
 
     // Part B: Update the desired_* values
@@ -217,8 +221,8 @@ bool USM_MOOSApp::Iterate()
     m_pengine.setDesiredValues();
 
     // Part C: Post results
-    postPengineResults();  
-    postPenginePostings(); 
+    postPengineResults();
+    postPenginePostings();
   }
 
   //====================================================
@@ -246,7 +250,7 @@ bool USM_MOOSApp::Iterate()
   postWindModelVisuals();
   applyWormHoles();
   postWormHolePolys();
-  
+
   AppCastingMOOSApp::PostReport();
   return(true);
 }
@@ -258,9 +262,9 @@ bool USM_MOOSApp::Iterate()
 bool USM_MOOSApp::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
-  
+
   STRING_LIST sParams;
-  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
+  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams))
     reportConfigWarning("No config block found for " + GetAppName());
 
   //====================================================
@@ -277,13 +281,13 @@ bool USM_MOOSApp::OnStartUp()
       reportConfigWarning("Improper SPD PID Setting");
     if( !ok_dep)
       reportConfigWarning("Improper DEP PID Setting");
-    if(!ok_yaw || !ok_spd || !ok_dep) 
+    if(!ok_yaw || !ok_spd || !ok_dep)
       return(true);
 
     m_pid_coupled = true;
   }
-  
-  
+
+
   //====================================================
   // Part II: Vehicle Simulator Config Params
   //====================================================
@@ -319,7 +323,7 @@ bool USM_MOOSApp::OnStartUp()
       handled = m_model.setParam("wind_conditions", value);
     else if(param == "polar_plot")
       handled = m_model.setParam("polar_plot", value);
-    
+
     else if(param == "turn_spd_map_full_speed")
       handled = m_model.setTSMapFullSpeed(value);
     else if(param == "turn_spd_map_null_speed")
@@ -353,10 +357,10 @@ bool USM_MOOSApp::OnStartUp()
       handled = m_model.initPosition(value);
     else if(param == "thrust_reflect")
       m_model.setThrustReflect(value);
-    else if(param == "thrust_mode_diff") 
+    else if(param == "thrust_mode_diff")
       handled = m_model.setThrustModeDiff(value);
     else if(param == "thrust_mode_reverse")
-      m_model.setThrustModeReverse(value);	
+      m_model.setThrustModeReverse(value);
     else if((param == "thrust_factor") && isNumber(value))
       m_model.setThrustFactor(dval);
     else if(param == "thrust_map")
@@ -365,21 +369,39 @@ bool USM_MOOSApp::OnStartUp()
       handled = m_model.handleFullThrustMapFan(value);
     else if((param == "turn_rate") && isNumber(value))
       handled = m_model.setParam("turn_rate", dval);
+    else if((param == "turn_loss") && isNumber(value))
+      handled = m_model.setParam("turn_loss", dval);
     else if((param == "default_water_depth") && isNumber(value))
       handled = m_model.setParam("water_depth", dval);
-    else if(param == "trim_tolerance") 
+    else if(param == "trim_tolerance")
       handled = setDoubleOnString(m_pitch_tolerance, value);
-    else if(param == "max_trim_delay") 
+    else if(param == "max_trim_delay")
       handled = setDoubleOnString(m_max_trim_delay, value);
-    else if(param == "wormhole") 
+    else if(param == "wormhole")
       handled = m_wormset.addWormHoleConfig(value);
+    else if((param == "wormhole_tunnel_time") && isNumber(value)) {
+      m_wormset.setTunnelTime(dval);
+      handled = true;
+    }
+    else if((param == "wormhole_min_clear_dist") && isNumber(value)) {
+      m_wormset.setMinClearDist(dval);
+      handled = true;
+    }
+    else if((param == "wormhole_safety_bound") && isNumber(value)) {
+      m_wormhole_safety_bound = dval;
+      handled = true;
+    }
+    else if((param == "wormhole_safety_period") && isNumber(value)) {
+      m_wormhole_safety_period = dval;
+      handled = true;
+    }
     else if((param == "post_des_thrust") && (value != "DESIRED_THRUST"))
       handled = setNonWhiteVarOnString(m_post_des_thrust, value);
     else if((param == "post_des_rudder") && (value != "DESIRED_RUDDER"))
       handled = setNonWhiteVarOnString(m_post_des_rudder, value);
     else if(param == "depth_info_acast")
       handled = setBooleanOnString(m_depth_info_acast, value);
-    
+
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
@@ -397,10 +419,10 @@ bool USM_MOOSApp::OnStartUp()
     else
       m_model.setGeodesy(geodesy);
   }
-  
+
   // Note Geodesy best set (as above) before building cache
   m_model.cacheStartingInfo();
- 
+
   registerVariables();
   MOOSTrace("uSimMarine started \n");
   return(true);
@@ -408,13 +430,13 @@ bool USM_MOOSApp::OnStartUp()
 
 //------------------------------------------------------------------------
 // Procedure: OnConnectToServer
-//      Note: 
+//      Note:
 
 bool USM_MOOSApp::OnConnectToServer()
 {
   registerVariables();
   MOOSTrace("Sim connected\n");
-  
+
   return(true);
 }
 
@@ -441,14 +463,14 @@ void USM_MOOSApp::registerVariables()
     // But when PID is embedded in this sim, NAV_* info
     // is contained in local state, e.g., curr_nav_x.
 #if 0
-    Register("NAV_HEADING", 0);   
+    Register("NAV_HEADING", 0);
     Register("NAV_SPEED", 0);
     Register("NAV_DEPTH", 0);
     Register("NAV_PITCH", 0);
     Register("NAV_YAW", 0);
 #endif
   }
-  
+
   //====================================================
   // Part II: Vehicle Simulator Registrations
   //====================================================
@@ -469,7 +491,7 @@ void USM_MOOSApp::registerVariables()
   Register("NAV_Y",0);
   Register("NAV_HEADING",0);
 
-  
+
   Register("USM_ENABLED",0);
   Register("USM_TURN_RATE",0);
 
@@ -484,7 +506,7 @@ void USM_MOOSApp::registerVariables()
   Register("DRIFT_VECTOR_ADD", 0);
   Register("DRIFT_VECTOR_MULT", 0);
   Register("ROTATE_SPEED", 0);
-  Register("USM_SIM_PAUSED", 0); 
+  Register("USM_SIM_PAUSED", 0);
   Register("USM_RESET", 0);
   Register("OBSTACLE_HIT", 0);
   // Added buoyancy and trim control and sonar handshake
@@ -507,8 +529,8 @@ void USM_MOOSApp::handleMailBuoyancyControl(string sval)
     Notify("BUOYANCY_REPORT", buoyancy_status);
     m_buoyancy_requested = true;
     m_last_report = m_buoyancy_request_time;
-  } 
-}	    
+  }
+}
 
 //------------------------------------------------------------------------
 // Procedure: handleMailTrimControl()
@@ -531,7 +553,7 @@ void USM_MOOSApp::handleBuoyancyAndTrim(NodeRecord record)
 {
   if(!m_pengine.hasDepthControl())
     return;
-  
+
   // buoyancy and trim control
   if(m_buoyancy_requested) {
     if((m_curr_time - m_buoyancy_request_time) >= m_buoyancy_delay) {
@@ -542,14 +564,14 @@ void USM_MOOSApp::handleBuoyancyAndTrim(NodeRecord record)
     else if((m_curr_time - m_last_report) >= m_report_interval) {
       string buoyancy_status="status=1,error=0,progressing,buoyancy=0.0";
       Notify("BUOYANCY_REPORT", buoyancy_status);
-      m_last_report = m_curr_time; 
+      m_last_report = m_curr_time;
     }
   }
   if(m_trim_requested) {
     double pitch_degrees = record.getPitch()*180.0/M_PI;
-  
+
     if(((fabs(pitch_degrees) <= m_pitch_tolerance)
-	&& (m_curr_time-m_trim_request_time >= m_buoyancy_delay)) 
+	&& (m_curr_time-m_trim_request_time >= m_buoyancy_delay))
        || (m_curr_time-m_trim_request_time) >= m_max_trim_delay) {
       string trim_status="status=2,error=0,completed,trim_pitch="
 	+ doubleToString(pitch_degrees) + ",trim_roll=0.0";
@@ -560,20 +582,20 @@ void USM_MOOSApp::handleBuoyancyAndTrim(NodeRecord record)
       string trim_status="status=1,error=0,progressing,trim_pitch="
 	+ doubleToString(pitch_degrees) + ",trim_roll=0.0";
       Notify("TRIM_REPORT", trim_status);
-      m_last_report = m_curr_time; 
+      m_last_report = m_curr_time;
     }
   }
-}  
+}
 
 //------------------------------------------------------------------------
 // Procedure: postNodeRecordUpdate
 
-void USM_MOOSApp::postNodeRecordUpdate(string prefix, 
+void USM_MOOSApp::postNodeRecordUpdate(string prefix,
 				       const NodeRecord &record)
 {
   if((m_iteration % m_nav_modulo) != 0)
-    return; 
-  
+    return;
+
   double nav_x = record.getX();
   double nav_y = record.getY();
 
@@ -609,10 +631,10 @@ void USM_MOOSApp::postNodeRecordUpdate(string prefix,
 
   Notify(prefix+"_HEADING_OVER_GROUND", hog, m_curr_time);
   Notify(prefix+"_SPEED_OVER_GROUND", sog, m_curr_time);
-  
-  if(record.isSetAltitude()) 
+
+  if(record.isSetAltitude())
     Notify(prefix+"_ALTITUDE", record.getAltitude(), m_curr_time);
-  
+
 }
 
 //------------------------------------------------------------------------
@@ -632,10 +654,38 @@ void USM_MOOSApp::applyWormHoles()
   double newx = osx;
   double newy = osy;
   bool transported = m_wormset.apply(m_curr_time, osx,osy, newx,newy);
-  
+
   if(transported) {
     m_model.informX(newx);
     m_model.informY(newy);
+    Notify(m_sim_prefix+"_WORMHOLE_EVENT",
+	   "t="+doubleToStringX(m_curr_time,2)+
+	   ",from=("+doubleToStringX(osx,1)+","+doubleToStringX(osy,1)+")"+
+	   ",to=("+doubleToStringX(newx,1)+","+doubleToStringX(newy,1)+")");
+  }
+
+  // Safety-net backstop -- see the comment on m_wormhole_safety_bound in
+  // USM_MOOSApp.h for why this is needed even with the event-driven
+  // wormhole transport above working correctly. Re-reads position after
+  // the transport above (rather than reusing newx/newy) since transport
+  // may not have occurred this tick.
+  if(m_wormhole_safety_bound > 0) {
+    NodeRecord record2 = m_model.getNodeRecord();
+    double sx = record2.getX();
+    double sy = record2.getY();
+    bool clamped = false;
+    while(sx > m_wormhole_safety_bound)  { sx -= m_wormhole_safety_period; clamped = true; }
+    while(sx < -m_wormhole_safety_bound) { sx += m_wormhole_safety_period; clamped = true; }
+    while(sy > m_wormhole_safety_bound)  { sy -= m_wormhole_safety_period; clamped = true; }
+    while(sy < -m_wormhole_safety_bound) { sy += m_wormhole_safety_period; clamped = true; }
+    if(clamped) {
+      m_model.informX(sx);
+      m_model.informY(sy);
+      Notify(m_sim_prefix+"_WORMHOLE_SAFETY_CLAMP",
+	     "t="+doubleToStringX(m_curr_time,2)+
+	     ",from=("+doubleToStringX(record2.getX(),1)+","+doubleToStringX(record2.getY(),1)+")"+
+	     ",to=("+doubleToStringX(sx,1)+","+doubleToStringX(sy,1)+")");
+    }
   }
 }
 
@@ -649,9 +699,9 @@ void USM_MOOSApp::postWormHolePolys()
     return;
 
   Notify(m_sim_prefix+"_TRANSP", m_wormset.getTransparency());
-  
+
   if((m_iteration % 10) != 0)
-    return; 
+    return;
 
   for(unsigned int i=0; i<m_wormset.size(); i++) {
     WormHole worm_hole = m_wormset.getWormHole(i);
@@ -718,7 +768,7 @@ void USM_MOOSApp::postPolarPlot()
     return;
 
   std::string polar_str = m_model.getPolarPlotSpec();
-  
+
   Notify("POLAR_PLOT", polar_str);
 
   return;
@@ -734,13 +784,13 @@ void USM_MOOSApp::postWindModelVisuals()
     return;
 
   if((m_iteration % 50) != 0)
-    return; 
-  
+    return;
+
   string spec = m_model.getWindArrowSpec();
   if(spec == "")
     return;
 
-  Notify("VIEW_ARROW", spec);  
+  Notify("VIEW_ARROW", spec);
 }
 
 //------------------------------------------------------------
@@ -773,18 +823,18 @@ void USM_MOOSApp::postPengineResults()
   double desired_rudder   = m_pengine.getDesiredRudder();
   double desired_thrust   = m_pengine.getDesiredThrust();
   double desired_elevator = m_pengine.getDesiredElevator();
-  
+
   m_model.setRudder(desired_rudder, m_curr_time);
   m_model.setThrust(desired_thrust);
   m_model.setElevator(desired_elevator);
 
   cout << "post_des_thrust:" << m_post_des_thrust << endl;
-  
+
   if(m_post_des_thrust != "")
     Notify(m_post_des_thrust, desired_thrust);
   if(m_post_des_rudder != "")
     Notify(m_post_des_rudder, desired_rudder);
-  
+
 #if 0
   // This block is what would happen in stand-alone PID
   bool all_stop = true;
@@ -793,7 +843,7 @@ void USM_MOOSApp::postPengineResults()
 
   if(all_stop) {
     if(m_pid_allstop_posted)
-      return;    
+      return;
     Notify("DESIRED_RUDDER", 0.0);
     Notify("DESIRED_THRUST", 0.0);
     if(m_pengine.hasDepthControl())
@@ -815,8 +865,8 @@ void USM_MOOSApp::postPengineResults()
 
 //------------------------------------------------------------------------
 // Procedure: buildReport
-//      Note: A virtual function of the AppCastingMOOSApp superclass, 
-//            conditionally invoked if either a terminal or appcast 
+//      Note: A virtual function of the AppCastingMOOSApp superclass,
+//            conditionally invoked if either a terminal or appcast
 //            report is needed.
 //
 // Datum: 43.825300,  -71.087589, (MIT Sailing Pavilion)
@@ -825,19 +875,19 @@ void USM_MOOSApp::postPengineResults()
 //   -------- ----------         -------- -----------
 //   Heading: 180                Heading: 134.8
 //     Speed: 0                    Speed: 1.2
-//     Depth: 0                    Depth: 37.2  
+//     Depth: 0                    Depth: 37.2
 //  Altitude: 58                Altitude: 20.8
 //     (X,Y): 0,0                  (X,Y): -4.93,-96.05
-//       Lat: 43.8253                Lat: 43.82443465       
-//       Lon: -70.3304               Lon: -70.33044214      
+//       Lat: 43.8253                Lat: 43.82443465
+//       Lon: -70.3304               Lon: -70.33044214
 
-//  External Drift  X   Y   |  Mag  Ang  |  Rotate  |  Source(s)  
+//  External Drift  X   Y   |  Mag  Ang  |  Rotate  |  Source(s)
 //  --------------  --  --  |  ---  ---  |  ------  |  -----------
 //        Starting  0   0   |  0    0    |  0       |  init_config
-//         Present  0   0   |  0    0    |  0       |  n/a        
+//         Present  0   0   |  0    0    |  0       |  n/a
 //
 //   Dual state: true
-// 
+//
 //  DESIRED_THRUST=24 ==> Speed=1.2
 //  Using Thrust Factor: false
 //  Positive Thrust Map: 0:1, 20:2.4, 50:4.2, 80:4.8, 100:5.0
@@ -846,7 +896,7 @@ void USM_MOOSApp::postPengineResults()
 //     Max Deceleration: 0.5
 //
 //  DESIRED_ELEVATOR=-12 ==> Depth=37.2
-//        Max Depth Rate: 0.5 
+//        Max Depth Rate: 0.5
 //  Max Depth Rate Speed: 2.0
 //           Water depth: 58
 
@@ -882,12 +932,12 @@ bool USM_MOOSApp::buildReport()
 
   string datum_lat = m_model.getStartDatumLat();
   string datum_lon = m_model.getStartDatumLon();
- 
+
   string wmod_str  = m_model.getWindModelSpec();
   string polar_str = m_model.getPolarPlotSpec();
   string sailing_str = boolToString(m_model.sailingEnabled());
   string trate_str = doubleToStringX(m_model.getTurnRate(),2);
-  
+
   m_msgs << "Enabled:  " + boolToString(m_enabled) << endl;
   m_msgs << "TurnRate: " + trate_str << endl;
   m_msgs << "Datum: " + datum_lat + "," + datum_lon << endl;
@@ -895,7 +945,7 @@ bool USM_MOOSApp::buildReport()
   m_msgs << "  WindModel: " << wmod_str << endl;
   m_msgs << "  PolarPlot: " << polar_str << endl;
   m_msgs << "  Enabled:   " << sailing_str << endl;
- 
+
   m_msgs << endl << endl;
   // Part 1: Pose Information ===========================================
   ACTable actab(6,1);
@@ -928,7 +978,7 @@ bool USM_MOOSApp::buildReport()
       actab << "Depth:" << doubleToStringX(record_gt.getDepth(),1);
     else
       actab << " " << "-";
-    
+
     actab << "Alt:" << m_model.getStartNavAlt();
     actab << "Alt:" << doubleToStringX(nav_alt,1);
     if(dual_state)
@@ -936,11 +986,11 @@ bool USM_MOOSApp::buildReport()
     else
       actab << " " << "-";
   }
-  
+
   actab << "(X,Y):" << m_model.getStartNavX() +","+ m_model.getStartNavY();
-  actab << "(X,Y):" << doubleToStringX(nav_x,2) + "," + doubleToStringX(nav_y,2); 
+  actab << "(X,Y):" << doubleToStringX(nav_x,2) + "," + doubleToStringX(nav_y,2);
   if(dual_state)
-    actab << "(X,Y):" << doubleToStringX(nav_x_gt,2) +","+ doubleToStringX(nav_y_gt,2); 
+    actab << "(X,Y):" << doubleToStringX(nav_x_gt,2) +","+ doubleToStringX(nav_y_gt,2);
   else
     actab << " " << "-";
 
@@ -982,7 +1032,7 @@ bool USM_MOOSApp::buildReport()
   actab << m_model.getStartDriftMag();
   actab << m_model.getStartDriftAng();
   actab << m_model.getStartRotateSpd() << "init_config";
-  
+
   string drift_x   = doubleToStringX(m_model.getDriftX(),3);
   string drift_y   = doubleToStringX(m_model.getDriftY(),3);
   string drift_mag = doubleToStringX(m_model.getDriftMag(),4);
@@ -1011,10 +1061,10 @@ bool USM_MOOSApp::buildReport()
   m_msgs << endl;
 
   bool using_sailing = m_model.sailingEnabled();
-  m_msgs << "           Using Sailing: " << boolToString(using_sailing); 
+  m_msgs << "           Using Sailing: " << boolToString(using_sailing);
   m_msgs << endl;
 
-  
+
   string max_acceleration = doubleToStringX(m_model.getMaxAcceleration(),6);
   string max_deceleration = doubleToStringX(m_model.getMaxDeceleration(),6);
   string posmap = m_model.getThrustMapPos();
@@ -1031,7 +1081,7 @@ bool USM_MOOSApp::buildReport()
   string thrust_mode_reverse = boolToString(m_model.getThrustModeReverse());
 
   m_msgs << "    PID Coupled: " << boolToString(m_pid_coupled) << endl;
-  
+
   if(posmap == "")
     posmap = "n/a";
   if(negmap == "")
@@ -1071,12 +1121,6 @@ bool USM_MOOSApp::buildReport()
     }
   }
 
-  
+
   return(true);
 }
-
-
-
-
-
-

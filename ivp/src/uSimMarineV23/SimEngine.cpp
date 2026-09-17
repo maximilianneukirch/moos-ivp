@@ -194,11 +194,12 @@ void SimEngine::propagateSpeedSailing(NodeRecord& record,
 				      double delta_time,
 				      double thrust,
 				      double rudder,
-				      double max_accel, 
+				      double max_accel,
 				      double max_decel,
 				      const ThrustMap& tmap_fan,
 				      double thrust_fan,
-				      double max_sail_spd)
+				      double max_sail_spd,
+				      double turn_loss)
 {
   if(delta_time <= 0)
     return;
@@ -218,7 +219,7 @@ void SimEngine::propagateSpeedSailing(NodeRecord& record,
     next_speed = max_sail_spd;
 
   next_speed += fan_speed;
-  
+
   if(m_verbose) {
     cout << "rudder: " << rudder << endl;
     cout << "thrust: " << thrust << endl;
@@ -226,11 +227,16 @@ void SimEngine::propagateSpeedSailing(NodeRecord& record,
     cout << "prev_speed:" << prev_speed << endl;
     cout << "next_speedA:" << next_speed << endl;
   }
-  
-  // Apply a slowing penalty proportional to the rudder/turn
+
+  // Apply a slowing penalty proportional to the rudder/turn. turn_loss
+  // is the mission-configurable coefficient (mission param "turn_loss",
+  // e.g. present in visflocking_optimize's targ files but previously
+  // unread by this app -- the penalty was silently hardcoded at 0.85
+  // regardless of that setting).
   rudder = vclip(rudder, -100, 100);
+  turn_loss = vclip(turn_loss, 0.0, 1.0);
   double rudder_magnitude = fabs(rudder);
-  double vpct = (rudder_magnitude / 100) * 0.85;
+  double vpct = (rudder_magnitude / 100) * turn_loss;
   next_speed *= (1.0 - vpct);
   if(m_verbose) {
     cout << "rudder:" << doubleToStringX(rudder,4) << endl;
@@ -287,8 +293,13 @@ void SimEngine::propagateHeading(NodeRecord& record,
   }
 
   // Added Feb 4th, 2022 mikerb
+  // Note: full_speed is intentionally NOT set here -- USM_Model::
+  // cacheStartingInfo() syncs the user-configured TurnSpeedMap (incl.
+  // full_speed, via turn_spd_map_full_speed) into m_turn_speed_map once at
+  // startup; overwriting full_speed here on every tick silently discarded
+  // that config and pinned the "reaches full turn rate" threshold at a
+  // hardcoded 5 m/s regardless of mission config.
   m_turn_speed_map.setFullRate(turn_rate);
-  m_turn_speed_map.setFullSpeed(5);
   turn_rate = m_turn_speed_map.getTurnRate(speed);
   
   // Even if speed is zero, need to continue on in case the 

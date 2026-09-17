@@ -30,6 +30,7 @@ BHV_WindManeuverability::BHV_WindManeuverability(IvPDomain domain) :
   m_hysteresis_deg = 30.0;
   m_hysteresis_bonus = 10.0;
 
+  addInfoVars("NAV_WIND_DIR_TRUE");
   addInfoVars("NAV_WIND_DIR_APP");
   addInfoVars("NAV_HEADING");
   addInfoVars("POLAR_PLOT");
@@ -188,7 +189,17 @@ IvPFunction* BHV_WindManeuverability::onRunState()
   }
 
   bool ok = false;
-  m_app_wind_dir = getBufferDoubleVal("NAV_WIND_DIR_APP", ok);
+  // True wind first, apparent as the fallback. The boat's sailing logic
+  // (no-go refusal, beating) decides on TRUE wind, so the helm's sailability
+  // vote must use the same quantity or the two no-go zones disagree exactly
+  // when it matters (low speed, mid-tack). m_app_wind_dir keeps its name: it
+  // is the wind reference direction this behavior votes with, whatever its
+  // provenance. Platforms that never publish NAV_WIND_DIR_TRUE keep the old
+  // behavior unchanged.
+  double wdir = getBufferDoubleVal("NAV_WIND_DIR_TRUE", ok);
+  if(!ok)
+    wdir = getBufferDoubleVal("NAV_WIND_DIR_APP", ok);
+  m_app_wind_dir = wdir;
   m_wind_valid = ok;
 
   if(!m_wind_valid)

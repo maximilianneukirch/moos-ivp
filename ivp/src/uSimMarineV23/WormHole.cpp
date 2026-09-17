@@ -147,15 +147,52 @@ void WormHole::getCrossPosition(XYPolygon polya, XYPolygon polyb,
 {
   if(!polya.is_convex() || !polyb.is_convex())
     return;
-  
+
   double centroid_ax = polya.get_centroid_x();
   double centroid_ay = polya.get_centroid_y();
-
-  double range_a  = hypot(ax-centroid_ax, ay-centroid_ay);
-  double relang_a = relAng(centroid_ax, centroid_ay, ax, ay); 
-
   double centroid_bx = polyb.get_centroid_x();
   double centroid_by = polyb.get_centroid_y();
+
+  // Our wormhole bands are long, thin rectangles straddling one boundary
+  // line -- the thinner of polya's two bounding-box dimensions is always
+  // the wrap (boundary-normal) axis, the other is the lateral
+  // (along-boundary) axis. A naive range/angle-preserving translation
+  // (the original implementation below) preserves exactly how deep into
+  // the band ownship penetrated before detection -- for a band wide
+  // enough that a fast vehicle can't skip over it undetected between
+  // ticks (see wormhole_min_clear_dist), that means landing can be
+  // arbitrarily deep in the *outer* half of the destination band, i.e.
+  // still standing inside another wormhole's own trigger zone with a
+  // variable (and sometimes large) distance left to travel before
+  // clearing it -- which is exactly what let some vehicles re-trigger a
+  // reverse transport and escape despite the cooldown (reproduced before
+  // this fix; not fully fixed by the cooldown alone). Preserving the
+  // lateral coordinate exactly but always landing on the destination
+  // band's centerline (regardless of entry depth) makes the remaining
+  // distance to clear the destination band constant and minimal (half
+  // the band width) every time, instead of depending on entry depth.
+  double a_dx = polya.get_max_x() - polya.get_min_x();
+  double a_dy = polya.get_max_y() - polya.get_min_y();
+
+  if((a_dx > 0) && (a_dy > 0)) {
+    if(a_dy <= a_dx) {
+      // Band is long in x, thin in y -- y is the wrap axis.
+      bx = ax;
+      by = centroid_by;
+    }
+    else {
+      // Band is long in y, thin in x -- x is the wrap axis.
+      bx = centroid_bx;
+      by = ay;
+    }
+    if(polyb.contains(bx, by))
+      return;
+  }
+
+  // Fallback for degenerate/non-rectangular polys: original range/angle-
+  // preserving translation.
+  double range_a  = hypot(ax-centroid_ax, ay-centroid_ay);
+  double relang_a = relAng(centroid_ax, centroid_ay, ax, ay);
 
   projectPoint(relang_a, range_a, centroid_bx, centroid_by, bx, by);
 
@@ -165,8 +202,8 @@ void WormHole::getCrossPosition(XYPolygon polya, XYPolygon polyb,
     return;
 
   // If the new point is not in the b polygon, then find the point that
-  // is closest. 
-  
+  // is closest.
+
   double modx, mody;
   bool mod_ok = polyb.closest_point_on_poly(bx, by, modx, mody);
   if(mod_ok) {

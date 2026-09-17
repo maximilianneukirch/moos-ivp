@@ -40,6 +40,7 @@ USM_Model::USM_Model()
   m_dual_state           = false;
   m_paused               = false;
   m_turn_rate            = 70;
+  m_turn_loss            = 0.85;   // matches the previously-hardcoded default
   m_max_acceleration     = 0;
   m_max_deceleration     = 0.5;
   m_buoyancy_rate        = 0.025;  // positively buoyant
@@ -262,6 +263,8 @@ bool USM_Model::setParam(string param, double value)
     m_buoyancy_rate = value;
   else if(param == "turn_rate")
     m_turn_rate = vclip(value, 0, 100);
+  else if(param == "turn_loss")
+    m_turn_loss = vclip(value, 0, 1);
   else if(param == "rotate_speed")
     m_rotate_speed = value;
   else if(param == "max_acceleration") {
@@ -759,7 +762,7 @@ void USM_Model::propagateNodeRecord(NodeRecord& record,
 				       delta_time, m_thrust, m_rudder,
 				       m_max_acceleration, m_max_deceleration,
 				       m_thrust_map_fan, m_thrust_fan,
-				       max_sail_spd);
+				       max_sail_spd, m_turn_loss);
 
     m_sim_engine.propagateHeading(record, delta_time, m_rudder, 
 				  m_thrust, m_turn_rate, 

@@ -166,7 +166,7 @@ void MarinePID::postPengineResults()
     double des_thrust = m_pengine.getDesiredThrust();
     if(des_thrust > m_thrust_cap)
       des_thrust = m_thrust_cap;
-    Notify("DESIRED_THRUST", m_pengine.getDesiredThrust());
+    Notify("DESIRED_THRUST", des_thrust);
 
     if(m_pengine.hasDepthControl())
       Notify("DESIRED_ELEVATOR", m_pengine.getDesiredElevator());

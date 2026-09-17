@@ -21,15 +21,16 @@ protected:
     void         postViewPolygon();
 
 private:
-    //std::vector<std::pair<double, double>> m_boundary_polygon; // List of (x,y) points of polygon
     XYPolygon    m_boundary_polygon;
-    double       m_max_range;       // Max distance at where repulsion begins
-    double       m_min_range;       // Min distance at where repulsion is biggest
-    double       m_peak_width;      // (legacy) ZAIC peak width
-    double       m_curve_power;     // Course-preference curve exponent (1=linear, 2=quadratic, higher=softer/flatter top)
+    double       m_max_range;       // Distance from boundary where the behavior starts to act
+    double       m_min_range;       // Distance from boundary where the corrective delta is at its max
+    double       m_max_delta;       // Max corrective heading delta (deg); 91 deg keeps the boat gliding alongside the boundary
+    double       m_curve_power;     // Proximity-ramp exponent (1=linear, 2=quadratic, higher=gentler until close)
+    double       m_peak_width;      // ZAIC_PEAK flat-top width (deg)
+    double       m_base_width;      // ZAIC_PEAK base width (deg)
+    double       m_summit_delta;    // ZAIC_PEAK rise from base to summit
     std::string  m_boundary_var;    // MOOS-variable for polygon definition
     double       m_min_speed;       // Minimum speed required to get any steering effect through rudder
-    double       m_lookahead_dist;
 };
 
 #ifdef WIN32

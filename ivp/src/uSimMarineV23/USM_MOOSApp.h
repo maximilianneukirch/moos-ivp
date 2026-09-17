@@ -80,6 +80,25 @@ protected: // Utility function(s)
 
   WormHoleSet  m_wormset;
 
+  // Safety net independent of m_wormset's own event-driven crossing
+  // detection: a real vehicle's heading can change (wind tacking,
+  // flocking behavior reacting to the sudden post-teleport visual
+  // discontinuity, etc.) *during* the wormhole's post-landing
+  // distance-based cooldown, before it's moved clear of the landing
+  // band -- if that new heading carries it back out through the *outer*
+  // edge of the very band it just landed in, that crossing is never
+  // detected (checks are suppressed for the whole cooldown) and it's
+  // gone, permanently drifting with nothing left to catch it (observed
+  // directly: repeatable vehicle escapes at MOOSTimeWarp=20 despite the
+  // event-driven wormhole logic working correctly on its own terms).
+  // This unconditionally wraps ownship's position back into
+  // [-m_wormhole_safety_bound, m_wormhole_safety_bound] every tick via
+  // modulo m_wormhole_safety_period, regardless of m_wormset's internal
+  // state -- a hard backstop, not a replacement for the smoother
+  // mid-band wormhole transport above.
+  double m_wormhole_safety_bound;
+  double m_wormhole_safety_period;
+
   bool m_depth_info_acast;
   
   // PID variables

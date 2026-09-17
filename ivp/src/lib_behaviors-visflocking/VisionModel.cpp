@@ -66,11 +66,25 @@ void VisionModel::compute(double vel_now, const std::vector<int>& V_now, double&
 
     if (n < 2) return;
 
+    // At FOV=360 the domain is periodic: phi=-pi and phi=+pi are the same
+    // physical direction (straight behind the agent). pSimVisionServer lays
+    // its VPF bins out accordingly -- n bins of width fov/n tiling
+    // [-fov/2, +fov/2) once, with bin 0 and bin n-1 *adjacent* across the
+    // wrap, never identical (see SimVisionServer.cpp's degrees_per_bin).
+    // Use the same threshold as dPhi_V_of() below so both treat "full FOV"
+    // consistently.
+    bool full_fov = (m_fov >= 359.9);
+
     std::vector<double> Phi(n);
     double fov_rad = m_fov * M_PI / 180.0;
     double start_phi = -fov_rad / 2.0;            // start at -FOV/2
-    double d_phi = fov_rad / (n - 1);             // resolution (deg/bin) set automatically,
-                                                  // depending on the length of the generated VPF (therefor a parameter of pSimVisionServer)
+    // Partial FOV: n points fenceposting [-FOV/2, +FOV/2] inclusive (both
+    // edges are genuine, distinct directions bounding a blind spot).
+    // Full FOV: n points tiling the circle once, fov/n apart, *not*
+    // reaching +FOV/2 (which would duplicate the -FOV/2 sample at index 0
+    // and give the "behind" direction double weight in the integrals
+    // below).
+    double d_phi = full_fov ? (fov_rad / n) : (fov_rad / (n - 1));
 
     for (int i = 0; i < n; i++) {
         // Current angle of the bin
@@ -107,14 +121,25 @@ void VisionModel::compute(double vel_now, const std::vector<int>& V_now, double&
         sum_vel_spike += std::cos(Phi[i]) * G_vel_spike[i];
     }
 
-    for (int i = 0; i < n - 1; i++) {
-        double y_psi_i      = std::sin(Phi[i]) * G_psi[i];
-        double y_psi_next   = std::sin(Phi[i+1]) * G_psi[i+1];
-        trapz_psi += ((y_psi_i + y_psi_next) / 2.0) * d_phi;
+    if (full_fov) {
+        // Periodic domain: the trapezoidal rule over equally spaced samples
+        // of a periodic function collapses exactly to a plain Riemann sum
+        // with uniform weight d_phi per sample -- no endpoints to special-
+        // case (there are none; see the d_phi/Phi construction above).
+        for (int i = 0; i < n; i++) {
+            trapz_psi += std::sin(Phi[i]) * G_psi[i] * d_phi;
+            trapz_vel += std::cos(Phi[i]) * G_vel[i] * d_phi;
+        }
+    } else {
+        for (int i = 0; i < n - 1; i++) {
+            double y_psi_i      = std::sin(Phi[i]) * G_psi[i];
+            double y_psi_next   = std::sin(Phi[i+1]) * G_psi[i+1];
+            trapz_psi += ((y_psi_i + y_psi_next) / 2.0) * d_phi;
 
-        double y_vel_i      = std::cos(Phi[i]) * G_vel[i];
-        double y_vel_next   = std::cos(Phi[i+1]) * G_vel[i+1];
-        trapz_vel += ((y_vel_i + y_vel_next) / 2.0) * d_phi;
+            double y_vel_i      = std::cos(Phi[i]) * G_vel[i];
+            double y_vel_next   = std::cos(Phi[i+1]) * G_vel[i+1];
+            trapz_vel += ((y_vel_i + y_vel_next) / 2.0) * d_phi;
+        }
     }
 
     dpsi = m_b0 * trapz_psi + m_b0 * m_b1 * sum_psi_spike;
