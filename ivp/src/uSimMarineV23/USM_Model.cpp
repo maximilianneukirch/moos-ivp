@@ -70,6 +70,7 @@ USM_Model::USM_Model()
   m_thrust_rgt   = 0;
 
   m_thrust_mode_reverse = false;
+  m_holonomic_turn = false;
 
   m_geo_ok = false;
   m_obstacle_hit = false;
@@ -262,7 +263,10 @@ bool USM_Model::setParam(string param, double value)
   else if(param == "buoyancy_rate")
     m_buoyancy_rate = value;
   else if(param == "turn_rate")
-    m_turn_rate = vclip(value, 0, 100);
+    // Upper bound kept generous: SimEngine still clips to 100 in the normal
+    // (rudder/thrust-coupled) path, but holonomic_turn mode uses the raw value
+    // so a point-agent sim can turn faster than a hull ever could.
+    m_turn_rate = vclip(value, 0, 10000);
   else if(param == "turn_loss")
     m_turn_loss = vclip(value, 0, 1);
   else if(param == "rotate_speed")
@@ -303,7 +307,9 @@ bool USM_Model::setParam(string param, double value)
 bool USM_Model::setParam(string param, string value)
 {
   param = stripBlankEnds(tolower(param));
-  if(param == "wind_conditions") {
+  if(param == "holonomic_turn")
+    return(setBooleanOnString(m_holonomic_turn, value));
+  else if(param == "wind_conditions") {
     bool ok = m_wind_model.setConditions(value);
     if(!ok)
       return(false);
@@ -751,6 +757,7 @@ void USM_Model::propagateNodeRecord(NodeRecord& record,
   double prior_hdg = record.getHeading();
 
   m_sim_engine.setThrustModeReverse(m_thrust_mode_reverse);
+  m_sim_engine.setHolonomicTurn(m_holonomic_turn);
   
   // Switch depending on thrust mode
   if(m_thrust_mode == "sailing") {

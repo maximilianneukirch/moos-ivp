@@ -32,10 +32,12 @@ BHV_VisFlocking::BHV_VisFlocking(IvPDomain domain) :
   m_gam = 0.1;
   fov = 175.0;
 
-  // Phase 0.2/0.3: overridable from the .bhv
-  m_turn_lookahead = 2.5;    // s; reproduces the old turn_gain=10.0 * dt at AppTick=4 (dt=0.25 s)
-  m_max_speed_error = 1.0;   // m/s; max |internal - actual| speed gap (anti-windup)
-  m_speed_cap_factor = 2.0;  // speed command cap = factor * v0
+  // Overridable from the .bhv
+  m_time_scale = 1.0;        // model timesteps per second (1.0 = "1 ts == 1 s")
+  m_mask_sigmoid = false;    // cos/sin masks unless the mission asks otherwise
+  m_max_speed_error = 0.0;   // m/s; anti-windup clamp, 0 = off (see onRunState)
+  m_speed_cap_factor = 3.0;  // speed command cap = factor * v0
+  m_max_heading_error = 0.0; // deg; model-vs-hull heading cap, 0 = off
 
   m_current_speed = 0.0;
   m_current_heading = 0.0;
@@ -46,8 +48,8 @@ BHV_VisFlocking::BHV_VisFlocking(IvPDomain domain) :
   m_internal_speed = 0.0;
   m_is_initialized = false;
 
-  m_last_desired_heading = 0.0;
-  m_have_last_desired_heading = false;
+  m_internal_heading = 0.0;
+  m_have_internal_heading = false;
 
   m_max_polar_speed = 0.0;
   m_last_polar_str = "";
@@ -99,7 +101,27 @@ bool BHV_VisFlocking::setParam(string param, string val)
     return true;
   }
   else if(param == "turn_lookahead"){
-    m_turn_lookahead = atof(val.c_str());
+    // Deprecated no-op, accepted so older mission files (visflocking_test)
+    // still load. The behavior now integrates dpsi into its own heading state
+    // scaled by time_scale, instead of projecting a target heading a fixed
+    // horizon ahead of the hull's current one.
+    postWMessage("turn_lookahead is deprecated and ignored; use time_scale");
+    return true;
+  }
+  else if(param == "mask_shape"){
+    // "sigmoid" = the masks the paper's simulator actually uses; "trig" = the
+    // cos/sin of the published equations. See VisionModel::setMaskSigmoid.
+    string v = tolower(val);
+    if(v == "sigmoid")   { m_mask_sigmoid = true;  return true; }
+    if(v == "trig" || v == "cos_sin") { m_mask_sigmoid = false; return true; }
+    return false;
+  }
+  else if(param == "time_scale"){
+    m_time_scale = atof(val.c_str());
+    return true;
+  }
+  else if(param == "max_heading_error"){
+    m_max_heading_error = atof(val.c_str());
     return true;
   }
   else if(param == "max_speed_error"){
@@ -254,10 +276,10 @@ IvPFunction *BHV_VisFlocking::onRunState()
 
   m_last_time = curr_time;
 
-  // If dt is too big (helm was in idle too long or stalled), cap dt
-  if (dt > 1.0) {
-    dt = 0.0;
-  }
+  // If dt is too big (helm was idle or stalled), clamp it rather than zeroing
+  // it: zeroing froze both integrators on every hiccup.
+  if (dt > 0.5) dt = 0.5;
+  if (dt <= 0.0) return(0);   // first tick of a run; no time has passed yet
 
   // Part 2: String to VPF-Array
   vector<string> s_tokens = parseString(s_vpf, ',');
@@ -272,58 +294,64 @@ IvPFunction *BHV_VisFlocking::onRunState()
   double dv = 0.0;
   double dpsi = 0.0;
 
-  // No visual information: keep the last desired heading so the boat holds a
-  // straight course instead of integrating tiny turn noise.
-  bool all_zero_vpf = (!vpf.empty() &&
-                       std::all_of(vpf.begin(), vpf.end(),
-                                   [](int x){return x == 0;}));
-
   // Phase 0.1: always compute. An all-zero VPF already yields
   // dv = gam*(v0 - v) and dpsi = 0, i.e. the paper's "no visual input"
   // relaxation back to v0. Skipping it here used to let a boat that lost the
   // flock coast at its current speed forever.
-  // set params order: a0, a1, b0, b1, fov
+  // set params order: a0, a1, b0, b1, v0, gam, fov
+  m_vision_model.setMaskSigmoid(m_mask_sigmoid);
   m_vision_model.setParams(a0, a1, b0, b1, m_v0, m_gam, fov);
   m_vision_model.compute(m_current_speed, vpf, dv, dpsi);
 
-  // Raw model output, before the turn_lookahead scaling below turns it
-  // into a target heading -- useful to check whether a weak/flat response
-  // to some parameter is the model itself vs. downstream steering/PID
-  // (see turn_lookahead's comment in meta_vehicle.bhv for a worked example).
+  // Raw model output (per model timestep) before the time-scale conversion
+  // below -- useful to check whether a weak/flat response to some parameter is
+  // the model itself vs. downstream steering/PID.
   postMessage("DEBUG_DPSI", dpsi);
   postMessage("DEBUG_DV", dv);
 
-  // TODO: DIFFERENTIATE BETWEEN FULL VPF and PARTIAL VPF (edge-wrapping)
+  // ---------------------------------------------------------------
+  // Model time base.
+  //
+  // The paper's model is written in simulation timesteps, not seconds: an
+  // agent advances v0 = 1 px per timestep, and gam, a0 and b0 are rates per
+  // timestep (ABM vf_agent.update_agent_position: orientation += dphi,
+  // velocity += dv, position += velocity). Mapping it onto a MOOS boat needs
+  // to say how long one timestep is. One px is R_A/5.5 (the paper's agents
+  // are 5.5 px in radius), so with this mission's 0.55 m agent radius one px
+  // is 0.1 m, and a boat cruising at v0 = 1 m/s covers it in 0.1 s: one model
+  // timestep = 0.1 s, i.e. time_scale = 10 model timesteps per second.
+  //
+  // Feeding the paper's parameters in without this conversion (what this
+  // behavior used to do, via a fixed turn_lookahead and a hardcoded 2.5 on the
+  // speed integrator) leaves every response an order of magnitude too weak
+  // relative to how far the boat travels while responding.
+  double model_dt = dt * m_time_scale;   // model timesteps elapsed this tick
 
-  // Convert dpsi from rad/s to deg/s
-  ////double dpsi_deg = dpsi * (180.0 / M_PI);
+  // Heading: integrate the model's own heading state, exactly as the paper's
+  // agents do. An all-zero VPF gives dpsi = 0 and the state simply holds, so
+  // no "freeze the last target" special case is needed.
+  if(!m_have_internal_heading) {
+    m_internal_heading = m_current_heading;
+    m_have_internal_heading = true;
+  }
+  m_internal_heading = angle360(m_internal_heading + radToDegrees(dpsi * model_dt));
 
-  // 2. Größeren Hebel für den Regler nutzen (z.B. 3 Sekunden in die Zukunft)
-  //double lookahead_time = 0.5;
-
-  // 3. Vorzeichen umkehren (MOOS-Kompass-Logik)
-  ////double desired_heading = m_current_heading - (dpsi_deg * dt);
-
-  // 4. Calculate desired values
-  // Heading
-  //double desired_heading = m_current_heading + (dpsi_deg * dt);
-
-  double desired_heading = m_current_heading;
-
-  if(all_zero_vpf) {
-    if(m_have_last_desired_heading)
-      desired_heading = m_last_desired_heading;
-  } else {
-    // Phase 0.2: dpsi is a rate (rad/s), so a fixed lookahead horizon in
-    // seconds keeps the turn authority independent of the helm tick rate.
-    double raw_heading = m_current_heading + radToDegrees(dpsi * m_turn_lookahead);
-    desired_heading = angle360(raw_heading);
+  // Optional guard for a hull that physically cannot keep up: don't let the
+  // model state run arbitrarily far ahead of the boat (0 = disabled).
+  if(m_max_heading_error > 0.0) {
+    double hdg_err = angle180(m_internal_heading - m_current_heading);
+    if(hdg_err >  m_max_heading_error)
+      m_internal_heading = angle360(m_current_heading + m_max_heading_error);
+    if(hdg_err < -m_max_heading_error)
+      m_internal_heading = angle360(m_current_heading - m_max_heading_error);
   }
 
-  while(desired_heading >= 360.0) desired_heading -= 360.0;
-  while(desired_heading < 0.0)    desired_heading += 360.0;
-  m_last_desired_heading = desired_heading;
-  m_have_last_desired_heading = true;
+  double desired_heading = m_internal_heading;
+
+  // Turn-rate demand and tracking error, for checking whether the vehicle can
+  // actually fly the model's commanded turn rate.
+  postMessage("DEBUG_DPSI_DEGPS", radToDegrees(dpsi * m_time_scale));
+  postMessage("DEBUG_HDG_ERR", angle180(m_internal_heading - m_current_heading));
 
   // Speed
   if (!m_is_initialized) {
@@ -331,22 +359,29 @@ IvPFunction *BHV_VisFlocking::onRunState()
     m_is_initialized = true;
   }
 
-  //m_internal_speed += (dv * dt);
-  m_internal_speed += (dv * 2.5);
+  m_internal_speed += (dv * model_dt);
 
-  // Desired speed clamped to [0, speed_cap_factor * v0]
+  // Safety clamp only -- the paper's agents run unclamped (ABM's
+  // VF_LIMIT_MOVEMENT defaults to 0); this just keeps a runaway out of the
+  // helm's speed domain.
   if(m_internal_speed > (m_speed_cap_factor * m_v0)) m_internal_speed = (m_speed_cap_factor * m_v0);
   if(m_internal_speed < 0.0) m_internal_speed = 0.0;
 
-  // Phase 0.3 anti-windup: keep the integrator near the hull's actual speed.
-  // External forces (sail, motor, current) push actual speed around; without
-  // this clamp the integral drifts away and the command saturates at the cap
-  // even though the boat is nowhere near it.
-  double speed_err = m_internal_speed - m_current_speed;
-  if(speed_err > m_max_speed_error)
-    m_internal_speed = m_current_speed + m_max_speed_error;
-  if(speed_err < -m_max_speed_error)
-    m_internal_speed = m_current_speed - m_max_speed_error;
+  // Optional anti-windup, OFF by default (max_speed_error = 0). It used to be
+  // on at 1.0 m/s and was the reason alpha0 had no effect at all: with the
+  // vehicle's speed loop under-geared (pMarinePIDV22 speed_factor vs the
+  // thrust_map), NAV_SPEED never reached v0, so gam*(v0 - v) stayed positive,
+  // the integrator ramped every tick and this clamp pinned the command at
+  // NAV_SPEED + 1.0 regardless of the social terms. Only enable it if the
+  // hull genuinely cannot follow the commanded speed.
+  if(m_max_speed_error > 0.0) {
+    double speed_err = m_internal_speed - m_current_speed;
+    if(speed_err > m_max_speed_error)
+      m_internal_speed = m_current_speed + m_max_speed_error;
+    if(speed_err < -m_max_speed_error)
+      m_internal_speed = m_current_speed - m_max_speed_error;
+    if(m_internal_speed < 0.0) m_internal_speed = 0.0;
+  }
 
   double desired_speed = m_internal_speed;
 

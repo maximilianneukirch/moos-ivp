@@ -52,9 +52,15 @@ protected:
   double fov;
 
   // Phase 0.2/0.3: overridable from the .bhv
-  double m_turn_lookahead;   // s; heading += dpsi * lookahead (tick-rate independent)
-  double m_max_speed_error;  // m/s; anti-windup clamp on |internal - actual| speed
+  // Seconds per model timestep, inverted: the paper's model is written in
+  // timesteps (v0 = 1 px/ts, gam/a0/b0 are rates per ts), so dv and dpsi must
+  // be scaled by dt/second_per_ts to be integrated in real seconds. See the
+  // long note in onRunState().
+  double m_time_scale;       // 1/s; model timesteps per real second
+  bool   m_mask_sigmoid;     // sigmoid vs cos/sin angular masks
+  double m_max_speed_error;  // m/s; anti-windup clamp on |internal - actual| speed, 0 = off
   double m_speed_cap_factor; // speed command cap = factor * v0
+  double m_max_heading_error;// deg; cap on |model heading - actual heading|, 0 = off
 
   // States
   double m_current_speed;
@@ -65,8 +71,12 @@ protected:
   bool m_is_initialized;
 
   // Hold the last commanded heading while visual input is all zeros.
-  double m_last_desired_heading;
-  bool m_have_last_desired_heading;
+  // The model's own heading state, integrated from dpsi. The paper's agents
+  // carry psi as a state variable (ABM vf_agent.update_agent_position:
+  // orientation += dphi), so the behavior does too, rather than re-deriving a
+  // target from the hull's current heading every tick.
+  double m_internal_heading;
+  bool m_have_internal_heading;
 
   // To measure time difference between iterations
   double m_last_time;

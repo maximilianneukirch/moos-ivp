@@ -54,6 +54,13 @@ private:
     // so a stray RETURN afterwards doesn't blank out already-collected data.
     bool m_deployed;
 
+    // Metrics are accumulated only after the group has had time to settle:
+    // the paper's summary metrics describe the emergent state, not the
+    // dispersal transient from the initial random placement. WARMUP_SECONDS
+    // (sim time after DEPLOY) is discarded; 0 keeps the old behavior.
+    double m_deploy_time;
+    double m_warmup_secs;
+
     // Overlap threshold: defaults to AGENT_DIAMETER (i.e. two agents'
     // circular bodies actually touching, matching ABM's
     // calculate_collision_time's 2*RADIUS_AGENT criterion). An explicit

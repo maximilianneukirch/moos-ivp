@@ -31,11 +31,17 @@
 class SimEngine
 {
 public:
-  SimEngine() {}
+  SimEngine() {m_holonomic_turn=false;}
   ~SimEngine() {}
 
 public:
   void setThrustModeReverse(bool v)        {m_thrust_mode_reverse=v;}
+  // Holonomic turning: heading rate is rudder/100 * turn_rate, with no
+  // clipping of turn_rate to 100 deg/s, no thrust scaling and no
+  // speed-dependent TurnSpeedMap. For simulating point-like agents (e.g.
+  // reproducing an agent-based model whose agents turn instantly) rather than
+  // a rudder-steered hull.
+  void setHolonomicTurn(bool v)            {m_holonomic_turn=v;}
   void setTurnSpeedMap(TurnSpeedMap tsmap) {m_turn_speed_map=tsmap;}
 
   void setVerbose(bool v=true) {m_verbose=v;}
@@ -75,6 +81,7 @@ public:
 
 protected:
   bool m_thrust_mode_reverse;
+  bool m_holonomic_turn;
   
   TurnSpeedMap m_turn_speed_map;
 

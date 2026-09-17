@@ -31,6 +31,8 @@ FlockEvaluator::FlockEvaluator() {
     m_run_id = "run_default";
 
     m_deployed = false;
+    m_deploy_time = 0.0;
+    m_warmup_secs = 0.0;
 }
 
 FlockEvaluator::~FlockEvaluator() {
@@ -43,7 +45,13 @@ bool FlockEvaluator::OnStartUp() {
     m_log_file.open("flock_evaluation.csv", ios::app);
     if(m_log_file.tellp() == 0) {
         // Updated Header matching Python analysis script
-        m_log_file << "RunID,PolarizationOrder,MeanDistance,MaxClusterSize,AreaToCircleRatio,OverlapRatio,Iterations\n";
+        // The first five metric columns are running averages over the
+        // post-warmup run; the *_inst columns are this tick's instantaneous
+        // values, so any averaging window can be re-derived afterwards (and
+        // convergence can be seen at all). Appended at the end so existing
+        // readers that select by column name are unaffected.
+        m_log_file << "RunID,PolarizationOrder,MeanDistance,MaxClusterSize,AreaToCircleRatio,OverlapRatio,Iterations,"
+                   << "P_inst,Dist_inst,Cluster_inst,RCA_inst\n";
         m_log_file.flush(); 
     }
 
@@ -54,6 +62,7 @@ bool FlockEvaluator::OnStartUp() {
     m_MissionReader.GetConfigurationParam("ARENA_HEIGHT", m_arena_height);
     m_MissionReader.GetConfigurationParam("AGENT_DIAMETER", m_agent_diameter);
     m_MissionReader.GetConfigurationParam("CLUSTER_THRESHOLD", m_cluster_threshold);
+    m_MissionReader.GetConfigurationParam("WARMUP_SECONDS", m_warmup_secs);
 
     // OVERLAP_DISTANCE, if explicitly set in the mission file, still wins
     // over the AGENT_DIAMETER-derived default (2*radius).
@@ -106,7 +115,10 @@ bool FlockEvaluator::OnNewMail(MOOSMSG_LIST &NewMail) {
             if(msg.IsString()) val = (tolower(msg.GetString()) == "true");
             else if(msg.IsDouble()) val = (msg.GetDouble() != 0.0);
 
-            if(val) m_deployed = true; // latches -- a later RETURN shouldn't blank collected data
+            if(val && !m_deployed) {
+                m_deployed = true; // latches -- a later RETURN shouldn't blank collected data
+                m_deploy_time = MOOSTime();
+            }
         }
     }
     return true;
@@ -114,6 +126,10 @@ bool FlockEvaluator::OnNewMail(MOOSMSG_LIST &NewMail) {
 
 bool FlockEvaluator::Iterate() {
     if(!m_deployed) return true; // fleet hasn't been deployed yet -- ignore stationary pre-deploy ticks
+
+    // Discard the post-deploy transient (MOOS time is warped consistently, so
+    // this is sim seconds).
+    if((MOOSTime() - m_deploy_time) < m_warmup_secs) return true;
 
     int n = m_vehicles.size();
     if(n < 3) return true; // Wait for vehicles to deploy
@@ -200,7 +216,11 @@ bool FlockEvaluator::Iterate() {
                << avg_cluster << "," 
                << avg_rca << ","
                << overlap_ratio << ","
-               << m_iterations_count << "\n";
+               << m_iterations_count << ","
+               << current_polarization << ","
+               << current_mean_dist << ","
+               << current_max_cluster << ","
+               << current_rca << "\n";
     m_log_file.flush();
 
     return true;

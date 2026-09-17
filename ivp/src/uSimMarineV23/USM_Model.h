@@ -195,6 +195,8 @@ public:
   std::set<std::string> m_drift_sources;
   
   bool       m_thrust_mode_reverse;
+  // Point-agent turning: no 100 deg/s clip, no thrust/speed coupling.
+  bool       m_holonomic_turn;
   unsigned int m_reset_count;
 
   MBTimer    m_pause_timer;

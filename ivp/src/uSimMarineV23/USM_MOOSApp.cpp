@@ -319,6 +319,20 @@ bool USM_MOOSApp::OnStartUp()
     else if((param == "drift_y") && isNumber(value))
       handled = m_model.setDriftY(dval, "");
 
+    // nav_modulo: publish NAV_* every Nth iteration (default 2, i.e. half the
+    // AppTick rate). Missions whose control loop needs fresh state every tick
+    // -- e.g. a behavior integrating its own heading ODE, where a stale
+    // NAV_HEADING is pure loop delay and shows up as heading oscillation --
+    // can set nav_modulo = 1.
+    else if((param == "nav_modulo") && isNumber(value)) {
+      int ival = atoi(value.c_str());
+      if(ival >= 1) {
+        m_nav_modulo = (unsigned int)(ival);
+        handled = true;
+      }
+    }
+    else if(param == "holonomic_turn")
+      handled = m_model.setParam("holonomic_turn", value);
     else if(param == "wind_conditions")
       handled = m_model.setParam("wind_conditions", value);
     else if(param == "polar_plot")

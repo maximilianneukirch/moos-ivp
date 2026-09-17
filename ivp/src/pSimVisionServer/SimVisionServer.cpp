@@ -28,6 +28,10 @@ SimVisionServer::SimVisionServer()
     m_len = 5.0;   // e.g. 5 meters length
     m_beam = 1.5;  // e.g. 1.5 meters width
 
+    m_toroidal = false;    // flat, unbounded world unless told otherwise
+    m_arena_width = 0.0;
+    m_arena_height = 0.0;
+
     // Optional FOV-cone visualization (off by default)
     m_post_fov_cones = false;
     m_fov_cone_radius = 50.0;      // meters
@@ -61,6 +65,15 @@ bool SimVisionServer::OnStartUp()
             }
             else if(param == "boat_beam") {
                 m_beam = atof(value.c_str());
+            }
+            else if(param == "toroidal") {
+                setBooleanOnString(m_toroidal, value);
+            }
+            else if(param == "arena_width") {
+                m_arena_width = atof(value.c_str());
+            }
+            else if(param == "arena_height") {
+                m_arena_height = atof(value.c_str());
             }
             else if(param == "real_boat_prefix") {
                 m_real_boat_prefix = value.c_str();
@@ -151,7 +164,13 @@ bool SimVisionServer::OnNewMail(MOOSMSG_LIST &NewMail)
 // Calculation of one (boat specific) 1D Visual Projection Field (VPF) for every boat
 bool SimVisionServer::Iterate()
 {
-    double degrees_per_bin = m_fov / (double)m_resolution;
+    // Bin ray directions must match VisionModel::compute()'s Phi grid exactly
+    // (see VisionModel.cpp): a full circle tiles n bins of width fov/n with no
+    // duplicated endpoint, a partial FOV fenceposts n samples inclusive of
+    // both edges. Bin i looks along phi_i = -fov/2 + i*degrees_per_bin.
+    bool   full_fov = (m_fov >= 359.9);
+    double degrees_per_bin = full_fov ? (m_fov / (double)m_resolution)
+                                      : (m_fov / (double)(m_resolution - 1));
     double current_time = MOOSTime();
     
     // OUTER LOOP; loop observer's positions
@@ -203,12 +222,24 @@ bool SimVisionServer::Iterate()
             double tx = target.x + target.speed * std::sin(thr) * age;
             double ty = target.y + target.speed * std::cos(thr) * age;
 
-            // Get distance and bearing from observer to (extrapolated) target
+            // Get distance and bearing from observer to (extrapolated) target.
+            // On a torus, take the minimum-image displacement: of the nine
+            // periodic copies of the target, only the nearest one is visible
+            // (same rule as the paper's simulator, ABM vf_supcalc.py's
+            // boundary_cond=="infinite" branch). Dead reckoning above happens
+            // in absolute coordinates and is wrapped here, which is correct.
             double dx = tx - observer.x;
             double dy = ty - observer.y;
+            if(m_toroidal && (m_arena_width > 0.0) && (m_arena_height > 0.0)) {
+                dx -= m_arena_width  * std::floor(dx / m_arena_width  + 0.5);
+                dy -= m_arena_height * std::floor(dy / m_arena_height + 0.5);
+            }
             double dist = std::max(0.1, std::sqrt(dx*dx + dy*dy));
 
-            double bearing = relAng(observer.x, observer.y, tx, ty);
+            // Nav convention (0 = North, 90 = East) from the wrapped delta.
+            // relAng() would re-derive it from absolute coordinates and undo
+            // the wrap above, so it must not be used on this path.
+            double bearing = angle360(90.0 - radToDeg(std::atan2(dy, dx)));
 
             // Relative angle in own VPF (0 = straight ahead, positive = right)
             double rel_bearing = angle360(bearing - observer.heading);
@@ -219,27 +250,73 @@ bool SimVisionServer::Iterate()
 
             // Apparent width (Boat Profile)
             // Width = L * |sin(gamma)| + Beam * |cos(gamma)|
-            double w_app = m_len * std::abs(std::sin(gamma)) + m_beam * std::abs(std::cos(gamma));
+            // Special case L == Beam: the agent is a disc, whose silhouette is
+            // the same width from every aspect. The rectangle formula would
+            // still swing it by up to 41% (|sin|+|cos| in [1, sqrt(2)]) and
+            // inject a spurious aspect dependence the paper's disc-shaped
+            // agents do not have.
+            double w_app = (m_len == m_beam)
+                           ? m_len
+                           : m_len * std::abs(std::sin(gamma)) + m_beam * std::abs(std::cos(gamma));
         
             // Angle width (alpha), of the Blob in VPF
             double alpha = 2.0 * radToDeg(std::atan2(w_app / 2.0, dist));
 
             // 3. Mapping Angle to 1D-array (Bins)
-            // Test if contact is (partially) inside FoV
-            if(std::abs(rel_bearing) < (m_fov / 2.0 + alpha / 2.0)) {
-                
-                // Find center-bin (0 is moved to the left border of the FoV)
-                // FoV goes from - FOV/2 to FOV/2
-                // Bin 0 => -FOV/2, Bin 'resolution-1' => FOV/2
-                int center_bin = (int)((rel_bearing + m_fov / 2.0) / degrees_per_bin);
-                int bins_span = (int)((alpha / degrees_per_bin) / 2.0);
-        
-                for(int i = center_bin - bins_span; i <= center_bin + bins_span; ++i) {
-                    if(i >= 0 && i < m_resolution) {
-                        vpf[i] += 1; // 1 = Boat visible (occlusions are implicitly correct)
-                        // Adding boat-blobs onto each other (+=), resulting in a density-VPF
-                    }
+            //
+            // Per-bin ray test: bin i is lit iff its ray direction phi_i falls
+            // inside the target's angular extent [rel_bearing +/- alpha/2].
+            // Three properties of the paper's model follow from doing it this
+            // way rather than painting a fixed span around a centre bin:
+            //
+            //  * Vision range. A target narrower than one bin can fall between
+            //    two rays and is then simply not seen -- the paper's "only
+            //    blobs wider than a single retinal pixel are considered" rule,
+            //    which is what defines the range of vision (ABM's
+            //    projection_field produces an empty slice in the same case).
+            //    At 1.125 deg/bin and R_A = 0.55m that is ~56m = 102 agent
+            //    radii, matching the paper's 560px/5.5px ratio. The old code
+            //    floored the half-span to 0 and then painted the centre bin
+            //    anyway, so every agent stayed visible at every distance and
+            //    the edge (long-range attraction) term carried no distance
+            //    information at all.
+            //  * Occlusion. Writing 1 (not += 1) makes the field binary, i.e.
+            //    the union of the silhouettes, which for equal-size agents is
+            //    the occluded view. The paper's simulator does the same
+            //    (ABM vf_agent.calc_soc_v_proj: svfield[svfield > 0] = 1), and
+            //    it is what lets VisionModel use the paper's (dV/dphi)^2.
+            //  * Seam. With a full FOV the retina is periodic, so bin indices
+            //    wrap instead of being clipped; a blob straddling +/-180 deg
+            //    used to be truncated into two half-blobs with spurious edges.
+            // Reference rasterization (ABM vf_supcalc.projection_field):
+            //   proj_size = vis_angle / (2*pi) * resolution        [bins]
+            //   half      = floor(proj_size / 2)
+            //   paint 2*half bins centred on the target's bin; half == 0 means
+            //   the target is NOT rendered at all.
+            // That last clause is the paper's "only blobs wider than a single
+            // retinal pixel are considered" rule, and it is what bounds the
+            // range of vision: a blob needs 2 bins, i.e. 2*atan(R_A/d) >=
+            // 2*(2*pi/resolution), so d <= R_A/tan(2*pi/resolution/2) -- 51
+            // agent radii at 320 bins over a full circle (28 m here). Lighting
+            // a single bin instead, or any bin a ray happens to cross, doubles
+            // the range to 102 R_A: every agent in the arena stays visible, the
+            // group collapses into one clump and polarization never emerges.
+            double proj_size = alpha / degrees_per_bin;
+            int half = (int)std::floor(proj_size / 2.0);
+            if(half < 1)
+                continue; // sub-2-bin blob: below the retina's resolution
+
+            int centre_bin = (int)std::floor((rel_bearing + m_fov / 2.0) / degrees_per_bin + 0.5);
+            for(int i = centre_bin - half; i < centre_bin + half; ++i) {
+                int k = i;
+                if(full_fov) {
+                    k %= m_resolution;
+                    if(k < 0) k += m_resolution;
                 }
+                else if(k < 0 || k >= m_resolution) {
+                    continue; // genuine blind spot outside a limited FOV
+                }
+                vpf[k] = 1;
             }
         }
         

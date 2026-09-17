@@ -59,6 +59,16 @@ private:
     double m_len;        // Length of boat in meters
     double m_beam;       // Width of boat in meters
 
+    // Periodic (toroidal) arena. When set, ranges and bearings to other
+    // agents use the minimum-image displacement, i.e. the nearest of the
+    // nine periodic copies of the target -- the same rule the paper's own
+    // simulator uses on a torus (ABM vf_supcalc.projection_field, the
+    // boundary_cond=="infinite" branch). Without it, a neighbour that has
+    // just wrapped is rendered a whole arena away in the opposite direction.
+    bool   m_toroidal;
+    double m_arena_width;
+    double m_arena_height;
+
     // Optional FOV-cone visualization (VIEW_WEDGE for pMarineViewer).
     // The cone angle always matches m_fov (the simulated camera's FOV).
     bool        m_post_fov_cones;

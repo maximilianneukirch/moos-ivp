@@ -299,6 +299,17 @@ void SimEngine::propagateHeading(NodeRecord& record,
   // startup; overwriting full_speed here on every tick silently discarded
   // that config and pinned the "reaches full turn rate" threshold at a
   // hardcoded 5 m/s regardless of mission config.
+  double delta_deg = 0;
+  if(m_holonomic_turn) {
+    // Point-agent mode: turn rate is purely rudder-proportional, uncapped by
+    // the 100 deg/s clip and independent of speed and thrust. A rudder-steered
+    // hull loses nearly all turn authority exactly when the controller asks it
+    // to slow down (the thrust factor below goes to 0 with thrust), which a
+    // point-agent model has no counterpart for.
+    rudder = vclip(rudder, -100, 100);
+    delta_deg = rudder * (turn_rate/100) * delta_time;
+  }
+  else {
   m_turn_speed_map.setFullRate(turn_rate);
   turn_rate = m_turn_speed_map.getTurnRate(speed);
   
@@ -308,10 +319,11 @@ void SimEngine::propagateHeading(NodeRecord& record,
   turn_rate = vclip(turn_rate, 0, 100);
   
   // Step 1: Calculate raw delta change in heading
-  double delta_deg = rudder * (turn_rate/100) * delta_time;
+  delta_deg = rudder * (turn_rate/100) * delta_time;
 
   // Step 2: Calculate change in heading factoring thrust
   delta_deg = (1 + ((thrust-50)/50)) * delta_deg;
+  }
 
   // Step 3: Calculate change in heading factoring external drift
   delta_deg += (delta_time * rotate_speed);
