@@ -5,9 +5,16 @@
 ServerHost   = localhost
 ServerPort   = $(MOOS_PORT)
 Community    = $(VNAME)
-// Higher than sim/ (=1) on purpose: this mission runs unattended, batched
-// sweeps and needs each run to finish in well under a minute of wall time.
-MOOSTimeWarp = 20
+// 10, NOT higher. This mission's flocking state is sensitive to how many model
+// timesteps of latency the MOOS pipeline adds: one timestep is 1/3 s here, and
+// the paper's own model loses the flocking state (P 0.85 -> 0.39) once
+// perception is ~5 timesteps stale. At warp 10 this machine sustains the
+// configured rates (helm/sim 10 Hz, VPF 20 Hz). Measured at warp 20 it does
+// not -- helm 7.7 Hz, NAV 8.5 Hz, VPF 15 Hz -- and the F anchor (a0=0.5,
+// b0=0.1) falls from P = 0.82 to P = 0.28. If you raise the warp, re-measure
+// the achieved rates from an alog and re-run the F anchor before trusting a
+// sweep.
+MOOSTimeWarp = 10
 
 // Lake of Constance
 LatOrigin   = 47.695803
@@ -20,7 +27,12 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB          @ NewConsole = false
-  //Run = pLogger         @ NewConsole = false
+// Per-vehicle logging for verification runs only (LOGGING=yes ./launch.sh ...):
+// this is where the model's own DEBUG_* signals (DPSI/DV/HDG_ERR) and the
+// DESIRED_* vs NAV_* tracking live.
+#ifdef LOGGING yes
+  Run = pLogger         @ NewConsole = false
+#endif
   Run = uSimMarineV23   @ NewConsole = false
   Run = pMarinePIDV22   @ NewConsole = false
   Run = pHelmIvP        @ NewConsole = false
@@ -60,8 +72,15 @@ ProcessConfig = pLogger
 // pShare config block - Sends vehicle data to Shoreside (Port 9000)
 ProcessConfig = pShare
 {
-  AppTick    = 4
-  CommsTick  = 2
+  // 20 Hz, not 4: this is the path the visual field travels (vehicle pShare ->
+  // shoreside pEchoVar -> pSimVisionServer -> shoreside pShare -> vehicle), and
+  // every hop quantizes it. At the mission's time_scale one model timestep is
+  // 0.1 s, so a 4 Hz hop is 2.5 timesteps of staleness and the full path was
+  // ~5 timesteps -- at which point the flocking state does not survive (the
+  // paper's own model, re-run with 5 timesteps of perception lag, drops from
+  // P = 0.85 to P = 0.39, which is exactly what this mission was producing).
+  AppTick    = 20
+  CommsTick  = 20
 
   // Vehicle pShare listens on a dynamically assigned port
   Input = route = localhost:$(PSHARE_PORT)
@@ -95,28 +114,96 @@ ProcessConfig = uProcessWatch
 
 ProcessConfig = uSimMarineV23
 {
-  AppTick  	= 4
-  CommsTick	= 4
+  // 10 Hz: one paper timestep is 0.1 s at this mission's scale (see
+  // BHV_VisFlocking's time_scale), so the sim must advance at least that
+  // fast for the model's ODE integration to be meaningful.
+  AppTick  	= 10
+  CommsTick	= 10
 
   start_pos     = $(START_POS)
   prefix        = NAV
+
+  // Publish NAV_* every iteration (the app's default is every 2nd). The
+  // behavior integrates its own heading and the helm/PID run at this same
+  // rate, so a half-rate NAV_HEADING is 0.1-0.2 s of pure loop delay -- enough
+  // to put the heading loop into a visible limit cycle at usable PID gains.
+  nav_modulo    = 1
+  // Two hull configurations, selected with DYNAMICS=baseline|boat (launch.sh):
+  //
+  // baseline -- the paper's agents are holonomic points. When several
+  //   neighbours are visible the model asks for turn rates of tens of deg/s,
+  //   and it turns just as readily when it has commanded itself to slow down.
+  //   A rudder-steered hull can do neither: uSimMarineV23 clips the turn rate
+  //   at 100 deg/s, scales it by speed (TurnSpeedMap) and again by thrust, so
+  //   turn authority collapses exactly when the model brakes. holonomic_turn
+  //   removes those three couplings; it is the right baseline for asking
+  //   whether the *model* reproduces the paper.
+  // boat -- the hull as configured for the real boats, to measure what the
+  //   vehicle's dynamics cost the collective behaviour.
+#ifdef DYNAMICS boat
   turn_rate     = 95
+  holonomic_turn = false
+#else
+  turn_rate     = 600
+  holonomic_turn = true
+#endif
+  // 0.0 for the baseline: the paper's agents carry their speed through turns,
+  // and speed is a model state (dv/dt) that must not be silently drained by
+  // the hull model. NOTE: keep wind_conditions/polar_plot below -- together
+  // they put USM_Model in "sailing" thrust mode, which is the only path that
+  // honors this parameter; the non-sailing path hardcodes a 0.85 turn loss
+  // (SimEngine.cpp).
+#ifdef DYNAMICS boat
   turn_loss     = 0.3
+#else
+  turn_loss     = 0.0
+#endif
 
   // See visflocking_test/meta_vehicle.moos for why this is needed:
   // uSimMarineV23 previously hardcoded the "reaches full turn_rate" speed
   // threshold at 5 m/s regardless of mission config, well above this
   // mission's actual sailing speeds (wind_conditions spd=2).
-  turn_spd_map_full_speed = 1.5
+  // Full turn authority at the model's cruise speed v0 = 1 m/s (was 1.5,
+  // which left the boat at 2/3 of turn_rate at cruise).
+  turn_spd_map_full_speed = 1.0
 
-  thrust_map    = 0:0, 50:1, 100:2
-  wind_conditions = spd=3, dir=225
+  // Linear in commanded speed up to the behavior's 3 x v0 cap: with
+  // pMarinePIDV22's speed_factor = 33.34, thrust = 33.34 x desired_speed and
+  // this map turns that straight back into desired_speed m/s. The old
+  // 0:0, 50:1, 100:2 pair with speed_factor 50 topped out at 2 m/s, so the
+  // model's faster commands were silently truncated.
+  thrust_map    = 0:0, 100:3
+
+  // BASELINE: no acceleration/deceleration limits. uSimMarineV23 defaults to
+  // max_deceleration = 0.5 m/s^2 with unlimited acceleration, i.e. the hull
+  // speeds up instantly but takes seconds to slow down. The model's speed
+  // channel (alpha0) is symmetric -- accelerate towards a neighbour ahead,
+  // brake when one is too close -- and it is that braking half that produces
+  // the front-back ordering behind flocking, so the asymmetry alone biased the
+  // fleet ~0.6 m/s fast and lagged the commanded speed by ~0.8 s (8 model
+  // timesteps). 0 = unlimited, matching the paper's velocity += dv update.
+#ifdef DYNAMICS boat
+  max_acceleration = 0
+  max_deceleration = 0.5
+#else
+  max_acceleration = 0
+  max_deceleration = 0
+#endif
+  // Isotropic polar (launch.sh) so wind direction does not matter; the speed
+  // just needs headroom above the model's 3 m/s ceiling.
+  wind_conditions = spd=6, dir=225
   //polar_plot = 0,25: 20,25: 45,25: 90,100: 110,100: 135,25: 150,25: 160,25: 180,25
   //polar_plot = 0,100: 90,100: 180,100
   polar_plot = $(POLAR_PLOT)
 
-  // Torus arena (Supp. Fig. 3 reproduction): wrap ownship across a 164m
-  // (2x82) square boundary instead of the open/soft-bounded square
+  // Torus arena (Supp. Fig. 3 reproduction): wrap ownship across a 90.2m
+  // (2x45.1) square boundary. 90.2 = 164 x R_A with R_A = 0.55m (boats are
+  // boat_length = boat_beam = 1.1m in pSimVisionServer): the paper's arena is
+  // 900px wide with 5.5px agents, i.e. 164 agent radii, and it is that ratio
+  // -- not the absolute size -- that sets the visual angles the model runs on.
+  // The whole geometry below is the previously verified 164m band layout
+  // scaled by 90.2/164 = 0.55, so every relation between band width, landing
+  // centerline and clearance distance is preserved. instead of the open/soft-bounded square
   // BHV_SoftBoundary used to enforce (now disabled in the .bhv file -- its
   // inward nudge starting well inside the domain would otherwise stop boats
   // from ever reaching these edges). 82 must stay in sync with
@@ -126,9 +213,9 @@ ProcessConfig = uSimMarineV23
   // connection=both -- see WormHoleSet.cpp -- so a true two-way wrap needs
   // two directional wormholes per axis, not one bidirectional one).
   //
-  // Each poly is a 20m band straddling its boundary line so its centroid
-  // sits exactly on the line. The bands extend to +/-132 (beyond the
-  // +/-82 corners) on the perpendicular axis so a corner-crossing boat is
+  // Each poly is an 11m band straddling its boundary line so its centroid
+  // sits exactly on the line. The bands extend to +/-72.6 (beyond the
+  // +/-45.1 corners) on the perpendicular axis so a corner-crossing boat is
   // always caught by one axis's band and, on the next tick, the other.
   // (Widened from an original 10m -- see wormhole_min_clear_dist below for
   // why 10m wasn't reliable.) Ported from visflocking_test, where this
@@ -153,8 +240,8 @@ ProcessConfig = uSimMarineV23
   // reproducing the failure in isolation, at a range of speeds -- the
   // sim's own WormHoleSet::apply() had no protection against it at all).
   // This gates re-entry on *distance traveled since landing* rather than
-  // elapsed time (which has the same per-speed-aliasing problem) -- 25m is
-  // 2.5x the 20m band width above, big enough to guarantee clearing the
+  // elapsed time (which has the same per-speed-aliasing problem) -- 13.75m is
+  // 2.5x the 11m band width above, big enough to guarantee clearing the
   // overlap regardless of vehicle speed for any speed this mission's boats
   // realistically reach (BHV_VisFlocking caps desired speed at 2x v0=2.0
   // m/s by default; verified reliable up to 8 m/s at this mission's
@@ -176,7 +263,7 @@ ProcessConfig = uSimMarineV23
   // This is a shared-binary fix (uSimMarineV23 is the same executable
   // across missions), not something this mission's config controls, but
   // noted here since it's essential to this arena actually working.
-  wormhole_min_clear_dist = 25
+  wormhole_min_clear_dist = 13.75
 
   // Hard safety-net backstop, independent of the event-driven wormhole
   // logic above: a real vehicle's heading can change (wind tacking,
@@ -188,14 +275,14 @@ ProcessConfig = uSimMarineV23
   // it's gone, drifting with nothing left to catch it. Observed directly:
   // repeatable escapes at this mission's MOOSTimeWarp=20 despite the
   // event-driven logic behaving correctly on its own terms in isolation.
-  // This unconditionally wraps position back into [-100,100] via modulo
-  // 164 (the arena's full wrap period) every tick, regardless of the
-  // wormhole's internal state -- 100 gives 8m of headroom past the
-  // band's 92m outer edge before the clamp fires, so it doesn't fight
+  // This unconditionally wraps position back into [-55,55] via modulo
+  // 90.2 (the arena's full wrap period) every tick, regardless of the
+  // wormhole's internal state -- 55 gives 4.4m of headroom past the
+  // band's 50.6m outer edge before the clamp fires, so it doesn't fight
   // with (or mask bugs in) the normal transport for genuinely
   // well-behaved crossings.
-  wormhole_safety_bound = 100
-  wormhole_safety_period = 164
+  wormhole_safety_bound = 55
+  wormhole_safety_period = 90.2
 
   // Each wormhole's madrid_poly/weber_poly are split across two lines
   // (merged by matching `tag`, see WormHoleSet::addWormHoleConfig) --
@@ -224,14 +311,14 @@ ProcessConfig = uSimMarineV23
   // wraparound to correct for. Verified by reproducing both the failure
   // and the fix in isolation against the compiled WormHoleSet/XYPolygon
   // code before changing this file; re-sweep after this fix.
-  wormhole = tag=x_pos, connection=from_madrid, id_change=false, madrid_poly={72,-132:92,-132:92,132:72,132}
-  wormhole = tag=x_pos, weber_poly={-92,-132:-72,-132:-72,132:-92,132}
-  wormhole = tag=x_neg, connection=from_madrid, id_change=false, madrid_poly={-92,-132:-72,-132:-72,132:-92,132}
-  wormhole = tag=x_neg, weber_poly={72,-132:92,-132:92,132:72,132}
-  wormhole = tag=y_pos, connection=from_madrid, id_change=false, madrid_poly={-132,72:132,72:132,92:-132,92}
-  wormhole = tag=y_pos, weber_poly={-132,-92:132,-92:132,-72:-132,-72}
-  wormhole = tag=y_neg, connection=from_madrid, id_change=false, madrid_poly={-132,-92:132,-92:132,-72:-132,-72}
-  wormhole = tag=y_neg, weber_poly={-132,72:132,72:132,92:-132,92}
+  wormhole = tag=x_pos, connection=from_madrid, id_change=false, madrid_poly={39.6,-72.6:50.6,-72.6:50.6,72.6:39.6,72.6}
+  wormhole = tag=x_pos, weber_poly={-50.6,-72.6:-39.6,-72.6:-39.6,72.6:-50.6,72.6}
+  wormhole = tag=x_neg, connection=from_madrid, id_change=false, madrid_poly={-50.6,-72.6:-39.6,-72.6:-39.6,72.6:-50.6,72.6}
+  wormhole = tag=x_neg, weber_poly={39.6,-72.6:50.6,-72.6:50.6,72.6:39.6,72.6}
+  wormhole = tag=y_pos, connection=from_madrid, id_change=false, madrid_poly={-72.6,39.6:72.6,39.6:72.6,50.6:-72.6,50.6}
+  wormhole = tag=y_pos, weber_poly={-72.6,-50.6:72.6,-50.6:72.6,-39.6:-72.6,-39.6}
+  wormhole = tag=y_neg, connection=from_madrid, id_change=false, madrid_poly={-72.6,-50.6:72.6,-50.6:72.6,-39.6:-72.6,-39.6}
+  wormhole = tag=y_neg, weber_poly={-72.6,39.6:72.6,39.6:72.6,50.6:-72.6,50.6}
 }
 
 //------------------------------------------
@@ -239,12 +326,14 @@ ProcessConfig = uSimMarineV23
 
 ProcessConfig = pHelmIvP
 {
-  AppTick    = 4
-  CommsTick  = 4
+  AppTick    = 10
+  CommsTick  = 10
   //ivp_behavior_dir = /home/mneu/PROJECT/moos-ivp/lib
   behaviors  = targ_$(VNAME).bhv
   domain     = course:0:359:360
-  domain     = speed:0:4:41
+  // 0.05 m/s resolution (was 0.1): alpha0's speed modulation is a fraction of
+  // v0 = 1 m/s and was being quantized away by the coarser domain.
+  domain     = speed:0:3:61
 }
 
 //------------------------------------------
@@ -252,16 +341,29 @@ ProcessConfig = pHelmIvP
 
 ProcessConfig = pMarinePIDV22
 {
-  AppTick    = 20
-  CommsTick  = 20
+  // Matched to uSimMarineV23's 10 Hz: running the PID faster than the sim
+  // publishes NAV_HEADING means the derivative term differentiates a
+  // zero-order hold, i.e. alternating zero / large steps, which showed up as
+  // a self-sustaining +/-30 rudder oscillation around a constant setpoint.
+  AppTick    = 10
+  CommsTick  = 10
 
   verbose       = true
   depth_control = false
 
   // Yaw PID controller
-  yaw_pid_kp		 = 0.9
-  yaw_pid_kd		 = 0.3
-  yaw_pid_ki		 = 0.3
+  // Retuned for the flocking reproduction: the model commands a continuously
+  // moving heading setpoint, so kp must be high enough to realize the model's
+  // turn rate at a small tracking error, and ki only adds lag/overshoot. The
+  // product kp * (turn_rate/100) sets both the closed-loop time constant and
+  // the discrete-time stability margin at a 10 Hz tick -- keep it near 5 /s.
+#ifdef DYNAMICS boat
+  yaw_pid_kp		 = 4.0
+#else
+  yaw_pid_kp		 = 0.85
+#endif
+  yaw_pid_kd		 = 0.0
+  yaw_pid_ki		 = 0.0
   yaw_pid_integral_limit = 0.07
 
   // Speed PID controller
@@ -276,7 +378,12 @@ ProcessConfig = pMarinePIDV22
 
   // A non-zero SPEED_FACTOR overrides use of SPEED_PID
   // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
-  speed_factor = 20
+  // 50, not 20: DESIRED_THRUST = DESIRED_SPEED * speed_factor, and
+  // thrust_map = 0:0, 50:1 means thrust 50 -> 1 m/s. At 20 the speed loop had
+  // a gain of 0.4, so NAV_SPEED never reached v0, gam*(v0-v) stayed positive
+  // forever and the behavior's speed integrator sat on its anti-windup clamp
+  // regardless of alpha0 (the flat alpha0 axis in Run001).
+  speed_factor = 33.34
 }
 
 //------------------------------------------
@@ -284,8 +391,10 @@ ProcessConfig = pMarinePIDV22
 
 ProcessConfig = pNodeReporter
 {
-  AppTick    = 2
-  CommsTick	 = 2
+  // 10 Hz: pSimVisionServer dead-reckons contacts between reports, and at 2 Hz
+  // that was up to 0.5 s (0.9 agent radii) of stale position per neighbour.
+  AppTick    = 10
+  CommsTick	 = 10
   platform_type   = kayak
   platform_color  = yellow
   platform_length = 1.1

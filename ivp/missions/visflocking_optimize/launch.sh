@@ -19,6 +19,25 @@ RUN_ID_VAL=${7:-fov_${FOV_VAL}_a0_${A0_VAL}_a1_${A1_VAL}_b0_${B0_VAL}_b1_${B1_VA
 # Empty (the default) keeps the original fixed staggered-line start below.
 START_POSES_VAL=${8:-}
 
+# Retina resolution, derived from the FOV so the angular resolution is always
+# 1.125 deg/bin (Supp. Table 1's Nret = 320 over a full 360 deg circle). The
+# vision range follows from the minimum-blob-width rule at that bin size, so a
+# fixed resolution across FOV columns would silently change how far the agents
+# can see (see meta_shoreside.moos's pSimVisionServer block).
+RES_VAL=$(python3 -c "print(int(round(320 * $FOV_VAL / 360.0)))")
+
+# Verification logging: LOGGING=yes ./launch.sh ... launches pLogger on the
+# shoreside (whole-fleet NODE_REPORTs, for plot_trajectories.py) and on each
+# vehicle (DEBUG_*/DESIRED_*/NAV_*). Off by default -- sweeps don't need it.
+LOGGING_VAL=${LOGGING:-no}
+
+# Hull dynamics: "baseline" (default) makes the boats near-holonomic so the
+# vision model itself is what the run measures; "boat" restores the rudder-
+# steered hull (turn-rate clip, speed/thrust-coupled turning, deceleration
+# limit, stiffer heading PID) to measure what the vehicle costs the collective
+# behaviour. DYNAMICS=boat ./launch.sh ...
+DYNAMICS_VAL=${DYNAMICS:-baseline}
+
 # --- Kill previous processes before starting ---
 # NOTE: the MOOS app name registered by uFlockEvaluator's binary is
 # "pFlockEvaluator" (see ProcessConfig block), but the actual OS process
@@ -30,8 +49,9 @@ killall -q -9 pAntler MOOSDB pMarineViewer pShare uSimMarineV23 pHelmIvP pMarine
 sleep 1
 # ----------------------------------------------------
 
-# Number of vehicles
-VEHICLE_COUNT=10
+# Number of vehicles (override for small diagnostic runs, e.g.
+# VEHICLE_COUNT=2 ./launch.sh ... with a two-element START_POSES list)
+VEHICLE_COUNT=${VEHICLE_COUNT:-10}
 
 echo "Generating dynamic pShare routes for shoreside..."
 > plug_pshare_outputs.moos # Clear or create the file
@@ -56,7 +76,7 @@ for ((i=1; i<=$VEHICLE_COUNT; i++)); do
 done
 
 # Generate the final shoreside file (nsplug will automatically absorb the #include file)
-nsplug meta_shoreside.moos targ_shoreside.moos -f RUN_ID="$RUN_ID_VAL" FOV_VAL="$FOV_VAL"
+nsplug meta_shoreside.moos targ_shoreside.moos -f RUN_ID="$RUN_ID_VAL" FOV_VAL="$FOV_VAL" RES_VAL="$RES_VAL" LOGGING="$LOGGING_VAL"
 
 echo "Assembling MOOS and BHV files for vehicles..."
 
@@ -80,7 +100,7 @@ for ((i=1; i<=$VEHICLE_COUNT; i++)); do
   fi
 
   # Generate .moos and .bhv files
-  nsplug meta_vehicle.moos "targ_${VNAME}.moos" -f VNAME="$VNAME" MOOS_PORT="$MOOS_PORT" PSHARE_PORT="$PSHARE_PORT" POLAR_PLOT="$POLAR_PLOT_STR" START_POS="$START_POS_STR"
+  nsplug meta_vehicle.moos "targ_${VNAME}.moos" -f VNAME="$VNAME" MOOS_PORT="$MOOS_PORT" PSHARE_PORT="$PSHARE_PORT" POLAR_PLOT="$POLAR_PLOT_STR" START_POS="$START_POS_STR" LOGGING="$LOGGING_VAL" DYNAMICS="$DYNAMICS_VAL"
   
   # Inject the A0, A1, B0, B1, GAM and FOV variables into the behavior file generation
   nsplug meta_vehicle.bhv "targ_${VNAME}.bhv" -f VNAME="$VNAME" POLAR_PLOT="$POLAR_PLOT_STR" RETURN_POS="0,-20" A0_VAL="$A0_VAL" A1_VAL="$A1_VAL" B0_VAL="$B0_VAL" B1_VAL="$B1_VAL" GAM_VAL="$GAM_VAL" FOV_VAL="$FOV_VAL"

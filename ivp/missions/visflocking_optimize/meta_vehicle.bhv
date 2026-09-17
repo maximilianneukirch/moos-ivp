@@ -30,27 +30,45 @@ Behavior = BHV_VisFlocking
   b0 = $(B0_VAL)  // social turning strength
   b1 = $(B1_VAL)  // equilibrium psi
 
-  v0 = 1.0
+  // 0.3 m/s, with time_scale = 3 below: together they put one model timestep
+  // at 1/3 s and one step of travel at 0.1 m = 0.18 agent radii, which is the
+  // paper's v0 = 1 px/ts with 5.5 px agents. (v0 = 1 m/s with time_scale = 10
+  // has the same dimensionless physics on paper, but it runs the model at 10
+  // timesteps per second -- faster than the MOOS pipeline can deliver a fresh
+  // visual field, and a perception lag of a few timesteps destroys the
+  // flocking state in the paper's own model too.)
+  v0 = 0.3
   gam = $(GAM_VAL)
 
-  // Default is 2.5s. Raised after finding that low-to-moderate b0 (0-1)
-  // barely moved PolarizationOrder/MeanDistance at all in a fixed-a0 sweep,
-  // while b0=2-4 changed them a lot -- a much later "onset" than the paper's
-  // own heatmaps. Investigation (see chat/commit history) ruled out
-  // pMarinePIDV22: it tracks DESIRED_HEADING tightly (checked live via
-  // uXMS) even for the larger swings turn_lookahead=6.0 now commands, no
-  // oscillation. The raw model signal (dpsi, temporarily exposed as
-  // DEBUG_DPSI in BHV_VisFlocking.cpp) also already scales close to
-  // linearly with b0. The actual bottleneck was this constant: with a0=0
-  // (no cohesion), a brief visual encounter with a weak b0 only nudges the
-  // target heading by a few degrees before contact is lost and the target
-  // freezes (see the all_zero_vpf branch) -- too small a course change to
-  // show up in the flock's spatial statistics over one run. A larger
-  // lookahead makes even a brief, weak encounter commit to a bigger,
-  // longer-lasting heading change, which is what actually moved the needle
-  // in a re-test (b0=0.25 already visibly different from b0=0, vs needing
-  // b0>=2 before). Retune if you change run duration/MOOSTimeWarp/turn_rate.
-  turn_lookahead = 6.0
+  // Model time base. The paper's model is written in simulation timesteps
+  // (v0 = 1 px/ts; gam, a0, b0 are rates per timestep), so the behavior needs
+  // to know how many timesteps pass per second. One px is R_A/5.5 = 0.1 m for
+  // this mission's 0.55 m agent radius, and a boat at v0 = 1 m/s covers that
+  // in 0.1 s -> 1 timestep = 0.1 s -> 10 timesteps per second. a0/b0/gam below
+  // therefore stay at the paper's literal values and the heatmap axes remain
+  // directly comparable with Supp. Fig. 3.
+  //
+  // (This replaces the old turn_lookahead kludge. That parameter existed
+  // because low b0 barely moved the flock statistics -- which was this missing
+  // time-base conversion, compounded by an under-geared speed loop and a hull
+  // that could only turn at ~2 deg/s; see meta_vehicle.moos's speed_factor and
+  // yaw_pid_kp comments. The behavior now integrates dpsi into its own heading
+  // state instead of nudging a target relative to the hull's heading.)
+  time_scale = 3.0
+
+  // Angular masks. The paper prints cos/sin (Eqs. 4-7), but its own simulator
+  // runs sigmoid (boxcar-like) masks on the code path used for the published
+  // sweeps -- ABM vf_supcalc.VSWRM_flocking_state_variables' non-verbose
+  // branch, which vf_agent always takes (verbose_supcalc = False), hardcodes
+  // cos_sigmoid/sin_sigmoid at steepness 3*pi. Same symmetry, but a neighbour
+  // off to the side or behind keeps full weight instead of being tapered to
+  // zero at +/-90 deg. Set "trig" to run the published equations instead.
+  mask_shape = sigmoid
+
+  // Anti-windup off (it pinned desired speed to NAV_SPEED + 1 regardless of
+  // a0); heading guard on, as a diagnostic backstop if the hull can't keep up.
+  max_speed_error = 0.0
+  max_heading_error = 60.0
 }
 
 //----------------------------------------------
@@ -220,21 +238,29 @@ Behavior = BHV_VisFlocking
 
 //----------------------------------------------
 // Wind Maneuverability behavior
-
-Behavior = BHV_WindManeuverability
-{
-  name = wind_maneuverability
-  pwt = 100
-  condition = DEPLOY = true
-
-  //polar_plot = $(POLAR_PLOT)
-
-  // No-go handling/tack stability
-  nogo_speed_frac = 0.15
-  nogo_penalty = -1000
-  hysteresis_deg = 30
-  hysteresis_bonus = 10
-}
+//
+// Disabled for the Supp. Fig. 3 reproduction. The mission's polar plot is
+// isotropic (launch.sh: 0,100: 90,100: 180,100), so getPolarUtility is
+// constant and the only structure left in this behavior's IvP function is
+// hysteresis_bonus -- i.e. a pure "hold your current heading" vote, at the
+// same pwt as BHV_VisFlocking, fighting every turn the model commands.
+// Nothing in the paper's model corresponds to it. Re-enable only for
+// sailing scenarios, not for paper reproductions.
+//
+//Behavior = BHV_WindManeuverability
+//{
+//  name = wind_maneuverability
+//  pwt = 100
+//  condition = DEPLOY = true
+//
+//  //polar_plot = $(POLAR_PLOT)
+//
+//  // No-go handling/tack stability
+//  nogo_speed_frac = 0.15
+//  nogo_penalty = -1000
+//  hysteresis_deg = 30
+//  hysteresis_bonus = 10
+//}
 
 
 

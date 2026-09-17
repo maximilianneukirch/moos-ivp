@@ -80,8 +80,12 @@ FOV_SPACE_PCT = [100, 75, 50, 25]
 # Must match launch.sh's VEHICLE_COUNT and meta_shoreside.moos's ARENA_WIDTH
 # (the torus's full wrap period, i.e. 2x the wormhole half-width in
 # meta_vehicle.moos) -- both are currently fixed, not CLI-configurable.
+#
+# 90.2 m = 164 x the 0.55 m agent radius, the same arena-to-agent ratio the
+# paper uses (900 px arena, 5.5 px agents). That ratio -- not the absolute
+# size -- is what the vision-based model actually runs on.
 VEHICLE_COUNT = 10
-ARENA_WIDTH = 164.0
+ARENA_WIDTH = 90.2
 
 EVAL_CSV = os.path.join(MISSION_DIR, "flock_evaluation.csv")
 
@@ -219,7 +223,7 @@ def run_one(fov_pct, a0, a1, b0, b1, gam, run_seconds, use_random_poses=False, s
         "RunID": run_id,
         "PolarizationOrder": float(last["PolarizationOrder"]),
         "MeanDistance": float(last["MeanDistance"]),
-        "MaxClusterSize": int(last["MaxClusterSize"]),
+        "MaxClusterSize": float(last["MaxClusterSize"]),  # a run-average, not an integer
         "AreaToCircleRatio": float(last["AreaToCircleRatio"]),
         "OverlapRatio": float(last["OverlapRatio"]),
         "Iterations": int(last["Iterations"]),
@@ -243,9 +247,17 @@ def main():
     ap.add_argument("--fov", type=str, default=None,
                      help="comma-separated FOV percentages (of 360deg), overrides FOV_SPACE_PCT "
                           "(default: 100,75,50,25)")
-    ap.add_argument("--run-seconds", type=int, default=60,
-                     help="real-world seconds per combo (with MOOSTimeWarp=20 in "
-                          "meta_vehicle.moos, ~20x that in sim-time); default 60")
+    ap.add_argument("--run-seconds", type=int, default=720,
+                     help="real-world seconds per combo. One model timestep is "
+                          "1/3 s (meta_vehicle.bhv: v0 = 0.3, time_scale = 3), so the "
+                          "paper's 20000 timesteps are 6667 s of sim time = 667 real s "
+                          "at MOOSTimeWarp = 10, plus the 300 s (30 real s) pre-deploy "
+                          "settle. uFlockEvaluator's WARMUP_SECONDS discards the first "
+                          "2000 s, so shortening this eats into the measured window; "
+                          "--run-seconds 400 (10000 timesteps) roughly halves sweep cost "
+                          "and still lands on the same anchors. Do NOT raise MOOSTimeWarp "
+                          "to buy speed without re-checking the achieved tick rates and "
+                          "the F anchor -- see the note in meta_vehicle.moos.")
     ap.add_argument("--quick", action="store_true",
                      help="tiny 2x2 a0/b0 grid at 2 FOVs with a short run, to sanity-check the pipeline")
     ap.add_argument("--resume", action="store_true",

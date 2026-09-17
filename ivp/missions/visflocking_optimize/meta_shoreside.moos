@@ -4,7 +4,7 @@
 ServerHost   = localhost
 ServerPort   = 9000
 Community    = shoreside
-MOOSTimeWarp = 20
+MOOSTimeWarp = 10  // must match meta_vehicle.moos -- see the note there
 
 // Lake of Constance
 LatOrigin   = 47.695803
@@ -24,6 +24,35 @@ ProcessConfig = ANTLER
   Run = pEchoVar        @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
   Run = uFlockEvaluator @ NewConsole = false
+
+// Verification/trajectory logging, off by default (LOGGING=yes ./launch.sh ...).
+// The shoreside DB sees every vehicle's NODE_REPORT, so this one log covers
+// the whole fleet and is what plot_trajectories.py reads. Left off for sweeps,
+// where 144 runs x 10 boats of alog is pure I/O.
+#ifdef LOGGING yes
+  Run = pLogger         @ NewConsole = false
+#endif
+}
+
+//------------------------------------------
+// pLogger config block (only launched when LOGGING=yes)
+
+ProcessConfig = pLogger
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  AsyncLog = true
+  PATH = ./
+  FILETIMESTAMP = true
+
+  Log = NODE_REPORT @ 0 NOSYNC
+  Log = DEPLOY_ALL @ 0 NOSYNC
+  // The synthesized visual fields, logged next to the very NODE_REPORTs they
+  // were built from -- lets a VPF be checked against its own input geometry
+  // with no transport asymmetry in between.
+  Log = VPF_ALPHA_001 @ 0 NOSYNC
+  Log = VPF_ALPHA_002 @ 0 NOSYNC
 }
 
 //------------------------------------------
@@ -32,8 +61,15 @@ ProcessConfig = ANTLER
 
 ProcessConfig = pShare
 {
-  AppTick    = 4
-  CommsTick  = 2
+  // 20 Hz, not 4: this is the path the visual field travels (vehicle pShare ->
+  // shoreside pEchoVar -> pSimVisionServer -> shoreside pShare -> vehicle), and
+  // every hop quantizes it. At the mission's time_scale one model timestep is
+  // 0.1 s, so a 4 Hz hop is 2.5 timesteps of staleness and the full path was
+  // ~5 timesteps -- at which point the flocking state does not survive (the
+  // paper's own model, re-run with 5 timesteps of perception lag, drops from
+  // P = 0.85 to P = 0.39, which is exactly what this mission was producing).
+  AppTick    = 20
+  CommsTick  = 20
 
   Input = route = localhost:9200
 
@@ -92,15 +128,33 @@ ProcessConfig = pMarineViewer
 
 ProcessConfig = pSimVisionServer
 {
-  AppTick   = 12
-  CommsTick = 12
+  // 20 Hz: 2 ticks per model timestep, so the VPF is never more than half a
+  // timestep old (see the pShare note above).
+  AppTick   = 20
+  CommsTick = 20
 
   // Must match BHV_VisFlocking's fov in meta_vehicle.bhv -- see the note
   // there. Plugged in by launch.sh together with the vehicle .bhv files.
   fov         = $(FOV_VAL)
-  resolution  = 320
+
+  // Retina resolution, scaled with the FOV by launch.sh so that the angular
+  // resolution stays 1.125 deg/bin (= 360/320, Supp. Table 1's Nret = 320
+  // over a full circle) in every FOV column. This matters because the
+  // minimum-blob-width rule -- a target narrower than one bin is invisible,
+  // exactly as in the paper's ABM -- is what sets the vision range:
+  // R_A/tan(half a bin) = 0.55/tan(0.5625deg) = 56m = 102 agent radii, the
+  // same 0.62 x arena the paper has. A fixed 320 across a shrinking FOV
+  // would have silently given the 25% FOV column 4x the vision range.
+  resolution  = $(RES_VAL)
   boat_length = 1.1
   boat_beam   = 1.1
+
+  // Torus: bearings/ranges must use the minimum-image displacement, or a
+  // neighbour that has wrapped is rendered on the far side of the arena in
+  // the wrong direction. Must match meta_vehicle.moos's wormhole period.
+  toroidal     = true
+  arena_width  = 90.2
+  arena_height = 90.2
 
   real_boat_prefix = real
 }
@@ -126,8 +180,15 @@ ProcessConfig = pSimVisionServer
 // pEchoVar config block
 ProcessConfig = pEchoVar
 {
-  AppTick   = 4
-  CommsTick = 4
+  // 20 Hz, not 4: this is the path the visual field travels (vehicle pShare ->
+  // shoreside pEchoVar -> pSimVisionServer -> shoreside pShare -> vehicle), and
+  // every hop quantizes it. At the mission's time_scale one model timestep is
+  // 0.1 s, so a 4 Hz hop is 2.5 timesteps of staleness and the full path was
+  // ~5 timesteps -- at which point the flocking state does not survive (the
+  // paper's own model, re-run with 5 timesteps of perception lag, drops from
+  // P = 0.85 to P = 0.39, which is exactly what this mission was producing).
+  AppTick   = 20
+  CommsTick = 20
 
   // Instantly duplicate the variable to bypass pShare's echo-filter
   Echo = NODE_REPORT -> NODE_REPORT_ALL
@@ -176,12 +237,10 @@ ProcessConfig = pFlockEvaluator
   // flock_evaluation.csv instead of trusting "last line of file".
   RUN_ID = $(RUN_ID)
 
-  // Kept explicit at the old library default rather than switching to the
-  // AGENT_DIAMETER-derived 2*radius overlap threshold -- this sim mission's
-  // "boats" aren't modeled at real physical scale, so an explicit
-  // OVERLAP_DISTANCE still wins over AGENT_DIAMETER here (see
-  // FlockEvaluator.h's m_overlap_distance_explicit).
-  OVERLAP_DISTANCE = 0.9
+  // Overlap = hulls touching, i.e. 2 x R_A = boat_length = 1.1m, now that the
+  // arena is scaled to the paper's 164 agent-radii ratio and the agents are
+  // modeled at their true size in pSimVisionServer.
+  OVERLAP_DISTANCE = 1.1
 
   // MaxClusterSize now uses Ward hierarchical clustering on a composite
   // position+heading distance (see FlockEvaluator::computeLargestCluster),
@@ -189,15 +248,23 @@ ProcessConfig = pFlockEvaluator
   // the metric is normalized by the arena diagonal and thus scale-invariant).
   CLUSTER_THRESHOLD = 0.275
 
-  // This mission wraps ownship across a 164m (2x82) torus via
+  // Sim seconds after DEPLOY_ALL that are excluded from the averages. The
+  // paper's summary metrics describe the settled collective state; averaging
+  // from the first tick folds in the dispersal transient out of the initial
+  // random placement, which alone can halve the reported polarization. 2000s
+  // of a 6667s run (= the paper's 20000 model timesteps at 1/3 s each; see
+  // meta_vehicle.bhv's v0/time_scale).
+  WARMUP_SECONDS = 2000
+
+  // This mission wraps ownship across a 90.2m (2x45.1) torus via
   // uSimMarineV23 wormholes (see meta_vehicle.moos) -- without these,
   // MeanDistance/MaxClusterSize/OverlapRatio/AreaToCircleRatio all use
   // plain unwrapped Euclidean distance and spike/break for any pair
   // straddling a wormhole seam. ARENA_WIDTH must match the wormhole
-  // spacing's full period (82*2), not the 82 half-width itself.
+  // spacing's full period (45.1*2), not the 45.1 half-width itself.
   // ARENA_WIDTH/ARENA_HEIGHT also set the arena-diagonal normalization used
   // by CLUSTER_THRESHOLD's distance metric, independent of TOROIDAL.
   TOROIDAL = true
-  ARENA_WIDTH = 164.0
-  ARENA_HEIGHT = 164.0
+  ARENA_WIDTH = 90.2
+  ARENA_HEIGHT = 90.2
 }
