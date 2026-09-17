@@ -5,7 +5,7 @@
 ServerHost   = localhost
 ServerPort   = $(MOOS_PORT)
 Community    = $(VNAME)
-MOOSTimeWarp = 1
+MOOSTimeWarp = 10
 
 // Lake of Constance
 LatOrigin   = 47.696170
@@ -39,7 +39,7 @@ ProcessConfig = pLogger
 
   AsyncLog = true
 
-  // For variables that are published in a bundle on their 
+  // For variables that are published in a bundle on their
   // first post, explicitly declare their logging request
   Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
   Log = REPORT @ 0 NOSYNC
@@ -60,15 +60,15 @@ ProcessConfig = pShare
 {
   AppTick    = 4
   CommsTick  = 2
-  
+
   // Vehicle pShare listens on a dynamically assigned port
   Input = route = localhost:$(PSHARE_PORT)
-  
+
   Output = src_name=NODE_REPORT_LOCAL, dest_name=NODE_REPORT, route=localhost:9200
   Output = src_name=VIEW_POLYGON, route=localhost:9200
   Output = src_name=VIEW_POINT, route=localhost:9200
   Output = src_name=VIEW_SEGLIST, route=localhost:9200
-  
+
   // Send AppCast data back to shoreside viewer
   Output = src_name=APPCAST, route=localhost:9200
 }
@@ -99,12 +99,127 @@ ProcessConfig = uSimMarineV23
   start_pos     = $(START_POS)
   prefix        = NAV
   turn_rate     = 95
+
+  // turn_spd_map_full_speed -- the boat only reaches its full turn_rate
+  // (95 deg/s) once NAV_SPEED >= this value (TurnSpeedMap.cpp linearly
+  // interpolates from 0 deg/s at 0 speed up to turn_rate at this value).
+  // SimEngine::propagateHeading() previously hardcoded this at 5 m/s
+  // regardless of mission config, silently discarding whatever
+  // USM_Model::cacheStartingInfo() had synced in from here -- at this
+  // mission's actual sailing speeds (wind_conditions spd=3, well under 5
+  // m/s boatspeed under the polar plot below), turn authority was capped
+  // well below nominal turn_rate no matter how hard the flocking behavior
+  // tried to turn. Set near the boat's typical sailing speed so full
+  // turn_rate is actually reachable.
+  turn_spd_map_full_speed = 1.5
+
+  // turn_loss -- fraction of speed lost at full rudder deflection
+  // (0=no loss, 1=full stop while turning hard). Previously silently
+  // ignored by uSimMarineV23 (hardcoded at 0.85 regardless of this
+  // param); now actually applied.
+  turn_loss     = 0.3
+
   thrust_map    = 0:0, 50:1, 100:2
-  turn_spd_loss = 0.4
-  wind_conditions = spd=3, dir=225                  
+  wind_conditions = spd=3, dir=225
   //polar_plot = 0,25: 20,25: 45,25: 90,100: 110,100: 135,25: 150,25: 160,25: 180,25
   //polar_plot = 0,100: 90,100: 180,100
   polar_plot = $(POLAR_PLOT)
+
+  // Torus arena (ported from visflocking_optimize, Supp. Fig. 3
+  // reproduction): wrap ownship across a 164m (2x82) square boundary
+  // instead of the open/soft-bounded square BHV_SoftBoundary used to
+  // enforce (now disabled below -- its inward nudge starting well inside
+  // the domain would otherwise stop boats from ever reaching these edges).
+  // Each pair below is one-way (uSimMarineV23's WormHoleSet::findWormHoleEntry
+  // never checks connection=both -- see WormHoleSet.cpp -- so a true
+  // two-way wrap needs two directional wormholes per axis, not one
+  // bidirectional one).
+  //
+  // Each poly is a 20m band straddling its boundary line so its centroid
+  // sits exactly on the line -- since WormHole::getCrossPosition reapplies
+  // the entry point's (range, angle) relative to its own poly's centroid
+  // around the destination poly's centroid, this makes the transport an
+  // exact translation by 164m along one axis, i.e. true modulo wraparound,
+  // not a jump to some arbitrary point on the far poly. The bands extend
+  // to +/-132 (beyond the +/-82 corners) on the perpendicular axis so a
+  // corner-crossing boat is always caught by one axis's band and, on the
+  // next tick, the other.
+  //
+  // wormhole_tunnel_time overrides WormHoleSet's hardcoded 10s fade/
+  // re-emerge -- 0 makes WormHoleSet::apply() transport in the same tick
+  // it detects entry (the paper's torus has no transition at all).
+  wormhole_tunnel_time = 0
+
+  // wormhole_min_clear_dist -- fix for "some vehicles wrap reliably,
+  // others sail straight through": a wormhole's landing (weber/madrid)
+  // poly necessarily sits inside the *other* wormhole's own trigger poly
+  // (they're mirror images spaced by the arena width, unavoidable for an
+  // exact modulo translation), so right after landing, ownship is
+  // standing inside another trigger zone. Position-only containment
+  // checks don't know about heading, so without a cooldown this
+  // immediately re-triggers a reverse transport; whether that resolves
+  // into a stable "double-jump" or an outright escape into open space
+  // depends on the vehicle's exact speed vs. the tick rate (confirmed by
+  // reproducing the failure in isolation, at a range of speeds, before
+  // this fix existed -- the sim's own WormHoleSet::apply() had no
+  // protection against it at all). This gates re-entry on *distance
+  // traveled since landing* rather than elapsed time (which has the same
+  // per-speed-aliasing problem the bug already had) -- 25m is 2.5x the
+  // 20m band width below, big enough to guarantee clearing the overlap
+  // regardless of vehicle speed for any speed this mission's boats
+  // realistically reach (BHV_VisFlocking caps desired speed at 2x v0=2.0
+  // m/s by default; verified reliable up to 8 m/s at this mission's
+  // AppTick/MOOSTimeWarp in a standalone speed sweep).
+  wormhole_min_clear_dist = 25
+
+  // Hard safety-net backstop, independent of the event-driven wormhole
+  // logic above: a real vehicle's heading can change (wind tacking,
+  // flocking reacting to the sudden post-teleport visual discontinuity,
+  // etc.) *during* the post-landing cooldown, before it's moved clear of
+  // the landing band -- if that new heading carries it back out through
+  // the *outer* edge of the band it just landed in, that crossing is
+  // never detected (checks are suppressed for the whole cooldown) and
+  // it's gone, drifting with nothing left to catch it. Observed directly:
+  // repeatable escapes in visflocking_optimize's MOOSTimeWarp=20 runs
+  // despite the event-driven logic behaving correctly on its own terms
+  // in isolation. This unconditionally wraps position back into
+  // [-100,100] via modulo 164 (the arena's full wrap period) every tick,
+  // regardless of the wormhole's internal state -- 100 gives 8m of
+  // headroom past the band's 92m outer edge before the clamp fires, so
+  // it doesn't fight with (or mask bugs in) the normal transport for
+  // genuinely well-behaved crossings.
+  wormhole_safety_bound = 100
+  wormhole_safety_period = 164
+
+  // Each wormhole's madrid_poly/weber_poly are split across two lines
+  // (merged by matching `tag`) -- MOOSMissionReader silently drops
+  // everything after the first brace-matched {...} on a config line, so
+  // putting both polys on one line truncates weber_poly and the wormhole
+  // never fires.
+  //
+  // IMPORTANT: madrid_poly/weber_poly must be a BARE point list in a
+  // single pair of braces, e.g. {72,-132:92,-132:...} -- NOT
+  // {pts=72,-132:...}. WormHoleSet::addWormHoleConfig() strips exactly
+  // one layer of braces before handing the contents to string2Poly(),
+  // which itself expects "pts={...}" -- so wrapping the point list in a
+  // *second*, already-"pts="-prefixed layer (as an earlier version of
+  // this file did) leaves string2Poly() with a bare "pts=x,y:..." string
+  // with no braces around the points at all. It fails to parse, the
+  // resulting polygon has 0 vertices, is_convex() is therefore false, and
+  // addWormHoleConfig() silently rejects the *entire* wormhole line --
+  // visible only as "Unhandled config line" in this app's appcast/config
+  // warnings, never as a runtime error. The net effect was a wormhole
+  // that was configured but never actually fired at all. Verified by
+  // reproducing both the failure and the fix in isolation against the
+  // compiled WormHoleSet/XYPolygon code before changing this file.
+  wormhole = tag=x_pos, connection=from_madrid, id_change=false, madrid_poly={72,-132:92,-132:92,132:72,132}
+  wormhole = tag=x_pos, weber_poly={-92,-132:-72,-132:-72,132:-92,132}
+  wormhole = tag=x_neg, connection=from_madrid, id_change=false, madrid_poly={-92,-132:-72,-132:-72,132:-92,132}
+  wormhole = tag=x_neg, weber_poly={72,-132:92,-132:92,132:72,132}
+  wormhole = tag=y_pos, connection=from_madrid, id_change=false, madrid_poly={-132,72:132,72:132,92:-132,92}
+  wormhole = tag=y_pos, weber_poly={-132,-92:132,-92:132,-72:-132,-72}
+  wormhole = tag=y_neg, connection=from_madrid, id_change=false, madrid_poly={-132,-92:132,-92:132,-72:-132,-72}
+  wormhole = tag=y_neg, weber_poly={-132,72:132,72:132,92:-132,92}
 }
 
 //------------------------------------------
@@ -131,7 +246,7 @@ ProcessConfig = pMarinePIDV22
   verbose       = true
   depth_control = false
 
-  // Yaw PID controller 
+  // Yaw PID controller
   yaw_pid_kp		 = 0.9
   yaw_pid_kd		 = 0.3
   yaw_pid_ki		 = 0.3

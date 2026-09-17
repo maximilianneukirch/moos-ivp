@@ -40,6 +40,7 @@ ivp/missions/visflocking_optimize/debug_moos.txt
 /ivp/missions/visflocking_optimize/Test*
 
 Run*/
+__pycache__/
 
 # graft's local graph cache — regenerable, not committed (run `graft build`).
 /graft/

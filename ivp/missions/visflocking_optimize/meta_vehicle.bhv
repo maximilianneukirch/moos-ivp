@@ -5,29 +5,52 @@
 
 initialize   DEPLOY = false
 initialize   RETURN = false
-	
+
 //----------------------------------------------
 // Pureley vision-based flocking behavior from Mezey et. al.
 
 Behavior = BHV_VisFlocking
 {
   name      = vision_swarm_$(VNAME)
-  pwt       = 70
+  pwt       = 100
   condition = DEPLOY = true
   condition = RETURN = false
 
   // Shore pShare strips the suffix, so this is just VPF
   vpf_variable = VPF
-  
-  fov          = 120.0
+
+  // Must match pSimVisionServer's fov in meta_shoreside.moos -- the VPF
+  // array is only meaningful to VisionModel if both agree on how many
+  // degrees it spans (see launch.sh, which plugs the same FOV_VAL into
+  // both files).
+  fov          = $(FOV_VAL)
 
   a0 = $(A0_VAL)  // social acceleration strength
   a1 = $(A1_VAL)  // equilibrium speed
-  b0 = $(B0_VAL)   // social turning strength
-  b1 = $(B1_VAL)   // equilibrium psi
+  b0 = $(B0_VAL)  // social turning strength
+  b1 = $(B1_VAL)  // equilibrium psi
 
   v0 = 1.0
   gam = $(GAM_VAL)
+
+  // Default is 2.5s. Raised after finding that low-to-moderate b0 (0-1)
+  // barely moved PolarizationOrder/MeanDistance at all in a fixed-a0 sweep,
+  // while b0=2-4 changed them a lot -- a much later "onset" than the paper's
+  // own heatmaps. Investigation (see chat/commit history) ruled out
+  // pMarinePIDV22: it tracks DESIRED_HEADING tightly (checked live via
+  // uXMS) even for the larger swings turn_lookahead=6.0 now commands, no
+  // oscillation. The raw model signal (dpsi, temporarily exposed as
+  // DEBUG_DPSI in BHV_VisFlocking.cpp) also already scales close to
+  // linearly with b0. The actual bottleneck was this constant: with a0=0
+  // (no cohesion), a brief visual encounter with a weak b0 only nudges the
+  // target heading by a few degrees before contact is lost and the target
+  // freezes (see the all_zero_vpf branch) -- too small a course change to
+  // show up in the flock's spatial statistics over one run. A larger
+  // lookahead makes even a brief, weak encounter commit to a bigger,
+  // longer-lasting heading change, which is what actually moved the needle
+  // in a re-test (b0=0.25 already visibly different from b0=0, vs needing
+  // b0>=2 before). Retune if you change run duration/MOOSTimeWarp/turn_rate.
+  turn_lookahead = 6.0
 }
 
 //----------------------------------------------
@@ -67,24 +90,76 @@ Behavior = BHV_VisFlocking
 //  visual_hints = edge_size = 1 // default
 //}
 
+// Loose "remixing" boundary, NOT a Supp. Fig. 4 confined arena and not a
+// pure infinite safety fence either -- see the long comment below for why
+// both of those were tried and replaced. Sized for this mission's ~10-boat
+// swarm (not the real-lake polygon used in sim/, which is specific to
+// Lake-of-Constance geo-coordinates).
+// Disabled for the torus arena (Supp. Fig. 3 reproduction): a true torus has
+// no boundary force at all, and this behavior's max_range=100 inward nudge
+// starts 50m inside the wrap edges set up in meta_vehicle.moos's uSimMarineV23
+// `wormhole` config -- left enabled, it would keep boats from ever reaching
+// those edges, so wraparound would never fire. Re-enable this (and remove
+// the wormhole config) to go back to the open/soft-bounded-square arena.
 //Behavior = BHV_SoftBoundary
 //{
-//  // General Behavior parameters
-//  // ---------------------------
+  // General Behavior parameters
+  // ---------------------------
 //
 //  name = soft_boundary
-//  pwt = 100
+  // Below BHV_VisFlocking's pwt (100), not above it. BHV_SoftBoundary always
+  // claims its *full* pwt the moment it's active at all (see
+  // BHV_SoftBoundary.cpp: crs_ipf->setPWT(getPriorityWt()) is unconditional
+  // -- only the *delta* it asks for is proximity-scaled, not its vote). At
+  // pwt=201 (more than double VisFlocking's) it didn't perturb the flock,
+  // it silently overrode it outright -- the original bug this whole
+  // Behavior block's history is about.
+//  pwt = 90
 //  updates = VIEW_POINT
 //
-//  // Params specific to this behavior
-//  // --------------------------------
-//  max_range = 10.0
-//  min_range = 2.0
-//  peak_width = 5.0  //in deg!
-//  polygon = pts={-25,50:29,50:29,-50:-25,-50}
-//  //polygon = pts={-8.75,9.25:0.25,9.25:0.25,3.25:-8.75,3.25}
-//  min_speed = 2.0
-//  lookahead_dist = 5.0
+  // Params specific to this behavior
+  // --------------------------------
+  // History: pwt=201 + 90m half-width + max_range=85/min_range=70 meant a
+  // boat was "in range" within a couple of real seconds of deploying and
+  // then, since BHV_SoftBoundary's target heading is tangent-to-the-wall
+  // rather than back-to-center, stayed pinned there -- BHV_VisFlocking was
+  // being outvoted by the wall the whole run, not by weak a0/b0 dynamics.
+  // The fix after that (pwt=90, half-width 20000m i.e. a pure safety fence
+  // no boat could reach in a normal run) *did* let a0/b0 differentiate the
+  // flock -- but going effectively unbounded traded one problem for
+  // another: with nothing to ever bring separated boats back within
+  // interaction range, a flock that fragments (which -- unlike on the
+  // paper's toroidal arena, where wraparound keeps giving subgroups new
+  // chances to re-encounter each other -- happens *permanently* here) just
+  // keeps drifting apart for the rest of the run. That's why MaxClusterSize
+  // was capped at whatever a typical sub-flock size happens to be (mostly
+  // 3, out of 10 boats) regardless of a0/b0, and why OverlapRatio was
+  // mostly noise: with inter-boat distances commonly in the tens-to-
+  // hundreds of meters, a near-collision became a rare, high-variance
+  // event instead of a real measurement of flocking density.
+  //
+  // This version aims for a middle ground: a real, boat-scale arena (300m
+  // across -- roughly 10-25x the ~12-30m mean inter-boat distance seen in
+  // the tightest-flocking a0/b0 combos) with a full max_range=100m free
+  // interior (BHV_SoftBoundary returns null / zero vote entirely outside
+  // that), so cohesive flocking is essentially undisturbed, but a
+  // fragmenting/wandering subgroup will actually hit the wall and get
+  // nudged back within a run's duration, giving separated subgroups
+  // repeated chances to re-encounter each other -- an open-arena
+  // approximation of what the paper's torus wraparound provides "for
+  // free". It is still not a real Supp. Fig. 4 (confined arena) or Supp.
+  // Fig. 3 (torus) reproduction -- both would need a real instantaneous
+  // edge-reflection/wraparound behavior instead of this continuous soft
+  // nudge -- but it's a large step closer than either previous extreme.
+//  max_range = 100.0
+//  min_range = 30.0
+//  peak_width = 5.0  //in deg! (legacy, no longer used by the course curve)
+  // Course-preference curve exponent: 1 = linear (old, snappy), 2 = quadratic
+  // (soft - the boat is drawn gently toward the escape heading), higher = softer.
+//  curve_power = 1.0
+//  polygon = pts={-150,-150:150,-150:150,150:-150,150}
+  //min_speed = 2.0
+  //lookahead_dist = 5.0
 //}
 
 //----------------------------------------------
@@ -95,7 +170,7 @@ Behavior = BHV_VisFlocking
 //  name      = ac_
 //  //pwt       = 100
 //  condition = DEPLOY = true
-//  
+//
 //  // 1. DYNAMIC SPAWNING (Crucial)
 //  updates   = COLLISION_CONTACT
 //  templating   = spawn
@@ -143,42 +218,23 @@ Behavior = BHV_VisFlocking
 //  bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
 //}
 
-//Behavior = BHV_AvoidCollisionSail
-//{
-//  name         = ac_
-//  //pwt          = 200
-//  condition    = DEPLOY = true
-//  updates      = COLLISION_CONTACT
-//  templating   = spawn
-//
-//  contact   = to-be-set
-//  on_no_contact_ok = true
-//  extrapolate  = true
-//  decay        = 30,60
-//
-//  // 2. ENGAGEMENT RANGES (Required for your scale)
-//  pwt_outer_dist = 4.0
-//  pwt_inner_dist = 3.5
-//
-//  // 3. CPA DISTANCES
-//  min_util_cpa_dist = 3.5
-//  max_util_cpa_dist = 4.0
-//  //completed_dist = 2
-//  pwt_grade = linear
-//  bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
-//}
-
 //----------------------------------------------
 // Wind Maneuverability behavior
 
-//Behavior = BHV_WindManeuverability
-//{
-//  name = wind_maneuverability
-//  pwt = 50
-//  condition = DEPLOY = true
-//
-//  polar_plot = $(POLAR_PLOT)
-//}
+Behavior = BHV_WindManeuverability
+{
+  name = wind_maneuverability
+  pwt = 100
+  condition = DEPLOY = true
+
+  //polar_plot = $(POLAR_PLOT)
+
+  // No-go handling/tack stability
+  nogo_speed_frac = 0.15
+  nogo_penalty = -1000
+  hysteresis_deg = 30
+  hysteresis_bonus = 10
+}
 
 
 
@@ -196,11 +252,11 @@ Behavior = BHV_Waypoint
   endflag   = RETURN = false
   endflag   = DEPLOY = false
   endflag   = MISSION = complete
-	
+
   speed = 2.0
   capture_radius = 2.0
   slip_radius = 8.0
-  
+
   // MACRO FOR RETURN POSITION
   points = $(RETURN_POS)
 }
@@ -208,17 +264,17 @@ Behavior = BHV_Waypoint
 //----------------------------------------------
 //Backup bahavior (drive straight)
 
-//Behavior = BHV_ConstantSpeed
-//{
-//  name      = const_speed
-//  pwt       = 100
-//  condition = SPD=true
-//  condition = DEPLOY = true
-//  perpetual = true
-//  updates   = SPEED_UPDATE
-//  endflag   = SPD = false
-//  
-//  speed = 0.5
-//  duration = 10
-//  duration_reset = CONST_SPD_RESET=true
-//}
+Behavior = BHV_ConstantSpeed
+{
+  name      = const_speed
+  pwt       = 100
+  condition = SPD=true
+  condition = DEPLOY = true
+  perpetual = true
+  updates   = SPEED_UPDATE
+  endflag   = SPD = false
+
+  speed = 0.5
+  duration = 10
+  duration_reset = CONST_SPD_RESET=true
+}
