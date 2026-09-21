@@ -52,8 +52,10 @@ starts). Run --quick first to confirm the pipeline works end to end.
 """
 
 import argparse
+import concurrent.futures
 import itertools
 import os
+import queue
 import random
 import subprocess
 import time
@@ -87,14 +89,6 @@ FOV_SPACE_PCT = [100, 75, 50, 25]
 VEHICLE_COUNT = 10
 ARENA_WIDTH = 90.2
 
-EVAL_CSV = os.path.join(MISSION_DIR, "flock_evaluation.csv")
-
-KILL_PROCS = (
-    "pAntler MOOSDB pMarineViewer pShare uSimMarineV23 pHelmIvP "
-    "pMarinePIDV22 pNodeReporter pSimVisionServer uProcessWatch pLogger "
-    "uTimerScript uFlockEvaluator"
-)
-
 
 def fov_deg(pct):
     return pct / 100.0 * 360.0
@@ -104,21 +98,44 @@ def results_csv_for(fov_pct):
     return os.path.join(MISSION_DIR, f"hyperparameter_results_fov{fov_pct}.csv")
 
 
-def cleanup():
-    """Kill every process the mission can spawn and wait for ports to free up.
+def slot_dir_for(slot):
+    return os.path.join(MISSION_DIR, ".slots", f"slot{slot}")
 
-    Mirrors launch.sh's own pre-cleanup. Done twice with `ktm` (moos-ivp's
-    "kill the MOOS" helper) interleaved, same as the previous version of
-    this script -- pAntler's children don't always die on the first signal.
+
+def eval_csv_for(slot):
+    return os.path.join(slot_dir_for(slot), "flock_evaluation.csv")
+
+
+def cleanup(slot):
+    """Kill only this slot's processes and wait for its ports to free up.
+
+    launch.sh launches every process in this slot with its own slot
+    directory's *absolute* targ_*.moos path as the mission-file argument;
+    pAntler forwards that argv straight through to each child it spawns
+    (Antler.cpp's DoNixOSLaunch), so every process in this slot has that
+    path somewhere in its command line, and no other slot's does.
+    `pkill -f "<slot_dir>/"` matches exactly this slot's MOOS apps by their
+    real command line and kills them directly (no network involved),
+    unlike a bare `killall <procnames>` (which would kill every other
+    concurrently-running slot on the machine too). pAntler itself isn't
+    targeted directly -- it blocks in its own wait loop until every process
+    it spawned has exited, so once its children are gone it exits on its
+    own.
+
+    (An earlier version of this instead gave every process a pAntler
+    "~<App>..._s<slot>" alias and killed by matching that (first tried via
+    MOOS's own `ktm --name=<pattern>` broadcast, then via `pkill -f`).
+    Dropped because most MOOS-IvP apps' main.cpp treats that same alias as
+    their own GetAppName() -- used by OnStartUp() to find their "
+    ProcessConfig = <AppName>" block -- so aliasing silently broke every
+    aliased app's ability to find its own config (confirmed directly:
+    uTimerScript's DEPLOY_ALL event never fired while aliased). The slot
+    directory in the mission-file path gives the same kill scoping without
+    touching any app's identity or config lookup.)
     """
-    os.system(f"killall -q -9 {KILL_PROCS}")
+    slot_dir = slot_dir_for(slot)
+    os.system(f'pkill -9 -f "{slot_dir}/" 2>/dev/null')
     time.sleep(1)
-    os.system("ktm")
-    time.sleep(2)
-    os.system(f"killall -q -9 {KILL_PROCS}")
-    time.sleep(1)
-    os.system("ktm")
-    time.sleep(2)
 
 
 def run_id_for(fov_pct, a0, a1, b0, b1, gam, poses_tag="fixed"):
@@ -151,8 +168,13 @@ def already_done(fov_pct, run_id):
     return "RunID" in df.columns and (df["RunID"] == run_id).any()
 
 
-def run_one(fov_pct, a0, a1, b0, b1, gam, run_seconds, use_random_poses=False, seed=None):
-    """use_random_poses: paper-style random start poses (--random) instead of
+def run_one(fov_pct, a0, a1, b0, b1, gam, run_seconds, slot, use_random_poses=False, seed=None):
+    """slot: which concurrent worker (0..jobs-1) this run uses -- selects the
+    port block and working directory (see launch.sh) and the ktm --name tag
+    used to clean it up, so N runs with distinct slots can execute at once
+    without colliding.
+
+    use_random_poses: paper-style random start poses (--random) instead of
     launch.sh's default fixed staggered-line start.
 
     seed: if given, a *fresh* random.Random(seed) is created for this run
@@ -170,15 +192,16 @@ def run_one(fov_pct, a0, a1, b0, b1, gam, run_seconds, use_random_poses=False, s
     instead, so each run still gets its own independent random draw."""
     poses_tag = "fixed" if not use_random_poses else "random"
     run_id = run_id_for(fov_pct, a0, a1, b0, b1, gam, poses_tag)
+    eval_csv = eval_csv_for(slot)
 
-    cleanup()  # make sure nothing from a previous (possibly killed) run lingers
+    cleanup(slot)  # make sure nothing from a previous (possibly killed) run in this slot lingers
 
     # Start every run with a clean slate: flock_evaluation.csv is append-only
     # (uFlockEvaluator opens it with ios::app), so without this it would
     # grow across the *entire* sweep (all FOVs x all combos) instead of
     # holding just this run's rows.
-    if os.path.exists(EVAL_CSV):
-        os.remove(EVAL_CSV)
+    if os.path.exists(eval_csv):
+        os.remove(eval_csv)
 
     start_poses_arg = ""
     if use_random_poses:
@@ -188,21 +211,21 @@ def run_one(fov_pct, a0, a1, b0, b1, gam, run_seconds, use_random_poses=False, s
 
     subprocess.Popen(
         ["./launch.sh", str(a0), str(a1), str(b0), str(b1), str(gam), str(fov_deg(fov_pct)), run_id,
-         start_poses_arg],
+         start_poses_arg, str(slot)],
         cwd=MISSION_DIR,
     )
     time.sleep(run_seconds)
 
-    cleanup()
+    cleanup(slot)
 
-    if not os.path.exists(EVAL_CSV):
-        print("  !! flock_evaluation.csv not found after run -- skipping")
+    if not os.path.exists(eval_csv):
+        print(f"  !! [slot {slot}] flock_evaluation.csv not found after run -- skipping")
         return None
 
     try:
-        df = pd.read_csv(EVAL_CSV)
+        df = pd.read_csv(eval_csv)
     except pd.errors.EmptyDataError:
-        print("  !! flock_evaluation.csv has no data yet -- skipping")
+        print(f"  !! [slot {slot}] flock_evaluation.csv has no data yet -- skipping")
         return None
 
     run_rows = df[df["RunID"] == run_id]
@@ -271,6 +294,16 @@ def main():
                      help="freeze --random's start poses to the same seeded draw for every run "
                           "in the sweep (so a0/b0/fov comparisons are apples-to-apples); default "
                           "is a fresh, independently-random draw per run")
+    ap.add_argument("--jobs", type=int, default=1,
+                     help="run this many simulations concurrently (default: 1, i.e. today's "
+                          "sequential behaviour). Each concurrent run gets its own port block "
+                          "and working directory (.slots/slot<N>/, see launch.sh) and is torn "
+                          "down independently via a per-slot ktm --name tag, so jobs don't "
+                          "collide with each other -- but they DO compete for this machine's "
+                          "CPU, and this mission's flocking outcome is sensitive to the "
+                          "*achieved* MOOS tick rate, not just wall-clock run-seconds (see the "
+                          "note in meta_vehicle.moos). Test with --quick before trusting a real "
+                          "sweep at a given --jobs value.")
     args = ap.parse_args()
 
     def parse_list(s, default, cast=float):
@@ -293,12 +326,13 @@ def main():
     combinations = list(itertools.product(a0_space, a1_space, b0_space, b1_space, gam_space))
     n_per_fov = len(combinations)
     n = n_per_fov * len(fov_space)
-    cleanup_overhead = 6  # rough seconds per run spent in cleanup()
-    eta_min = n * (run_seconds + cleanup_overhead) / 60.0
+    jobs = max(1, args.jobs)
+    cleanup_overhead = 2  # rough seconds per run spent in cleanup() (2x ktm, 1s apart)
+    eta_min = n * (run_seconds + cleanup_overhead) / 60.0 / jobs
 
     print(f"Sweeping {n_per_fov} a0/b0/a1/b1/gam combinations x {len(fov_space)} "
-          f"FOVs ({fov_space}) = {n} runs, ~{run_seconds}s each (+cleanup) "
-          f"-> ETA ~{eta_min:.0f} min ({eta_min / 60:.1f} h)")
+          f"FOVs ({fov_space}) = {n} runs, ~{run_seconds}s each (+cleanup), "
+          f"--jobs {jobs} -> ETA ~{eta_min:.0f} min ({eta_min / 60:.1f} h)")
     if not args.quick and n > 20:
         print("This is a large sweep -- consider `--quick` first to confirm "
               "everything works, or `--resume` if you're continuing a previous run.")
@@ -307,36 +341,62 @@ def main():
 
     poses_tag = "random" if args.random else "fixed"
 
+    # One token per concurrent worker. A task holds a slot (a fixed port
+    # block + working directory + ktm --name tag, see launch.sh) only for
+    # the duration of its own run, then returns it -- so at most `jobs`
+    # simulations are ever alive at once, each on a distinct slot.
+    slot_pool = queue.Queue()
+    for s in range(jobs):
+        slot_pool.put(s)
+
+    def run_with_slot(fov_pct, a0, a1, b0, b1, gam):
+        slot = slot_pool.get()
+        try:
+            return run_one(fov_pct, a0, a1, b0, b1, gam, run_seconds, slot,
+                            use_random_poses=args.random, seed=args.seed)
+        finally:
+            slot_pool.put(slot)
+
     grand_total_done = 0
-    for fov_pct in fov_space:
-        results_csv = results_csv_for(fov_pct)
-        all_results = []
-        if args.resume and os.path.exists(results_csv):
-            try:
-                all_results = pd.read_csv(results_csv).to_dict("records")
-            except pd.errors.EmptyDataError:
-                pass
+    with concurrent.futures.ThreadPoolExecutor(max_workers=jobs) as executor:
+        for fov_pct in fov_space:
+            results_csv = results_csv_for(fov_pct)
+            all_results = []
+            if args.resume and os.path.exists(results_csv):
+                try:
+                    all_results = pd.read_csv(results_csv).to_dict("records")
+                except pd.errors.EmptyDataError:
+                    pass
 
-        print(f"\n=== FOV {fov_pct}% ({fov_deg(fov_pct):.0f} deg) -> {os.path.basename(results_csv)} ===")
+            print(f"\n=== FOV {fov_pct}% ({fov_deg(fov_pct):.0f} deg) -> {os.path.basename(results_csv)} ===")
 
-        for idx, (a0, a1, b0, b1, gam) in enumerate(combinations):
-            run_id = run_id_for(fov_pct, a0, a1, b0, b1, gam, poses_tag)
-            if args.resume and already_done(fov_pct, run_id):
-                print(f"[{idx + 1}/{n_per_fov}] skip (already done): {run_id}")
-                continue
+            futures = {}
+            for idx, (a0, a1, b0, b1, gam) in enumerate(combinations):
+                run_id = run_id_for(fov_pct, a0, a1, b0, b1, gam, poses_tag)
+                if args.resume and already_done(fov_pct, run_id):
+                    print(f"[{idx + 1}/{n_per_fov}] skip (already done): {run_id}")
+                    continue
 
-            print(f"\n--- FOV {fov_pct}% run {idx + 1}/{n_per_fov} --- a0={a0} a1={a1} b0={b0} b1={b1} gam={gam}")
-            result = run_one(fov_pct, a0, a1, b0, b1, gam, run_seconds,
-                              use_random_poses=args.random, seed=args.seed)
-            if result is not None:
-                all_results.append(result)
-                # Persist incrementally so a crash/interrupt mid-sweep doesn't
-                # lose everything before it.
-                pd.DataFrame(all_results).to_csv(results_csv, index=False)
+                fut = executor.submit(run_with_slot, fov_pct, a0, a1, b0, b1, gam)
+                futures[fut] = (idx, a0, a1, b0, b1, gam)
 
-        print(f"--- FOV {fov_pct}%: {len(all_results)}/{n_per_fov} combos produced data "
-              f"-> {results_csv} ---")
-        grand_total_done += len(all_results)
+            # Results are written to this FOV's CSV, one row at a time, only
+            # from this (main) thread as each run finishes -- so no lock is
+            # needed even though `jobs` runs are completing concurrently.
+            for fut in concurrent.futures.as_completed(futures):
+                idx, a0, a1, b0, b1, gam = futures[fut]
+                print(f"\n--- FOV {fov_pct}% run {idx + 1}/{n_per_fov} done --- "
+                      f"a0={a0} a1={a1} b0={b0} b1={b1} gam={gam}")
+                result = fut.result()
+                if result is not None:
+                    all_results.append(result)
+                    # Persist incrementally so a crash/interrupt mid-sweep doesn't
+                    # lose everything before it.
+                    pd.DataFrame(all_results).to_csv(results_csv, index=False)
+
+            print(f"--- FOV {fov_pct}%: {len(all_results)}/{n_per_fov} combos produced data "
+                  f"-> {results_csv} ---")
+            grand_total_done += len(all_results)
 
     print(f"\n=== Sweep complete: {grand_total_done}/{n} runs produced data ===")
     print("Run analyze_results.py to render the Fig. 3/4-style heatmaps (one PNG per FOV).")
