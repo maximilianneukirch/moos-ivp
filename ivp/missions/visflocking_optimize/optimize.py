@@ -74,7 +74,7 @@ GAM_SPACE = [0.1]
 # alpha0; 0, 0.01, 0.05, 0.1, 0.5, ... for beta0). Widen/narrow freely --
 # more points = a smoother heatmap but a longer sweep.
 A0_SPACE = [0.0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 0.75, 1.0, 1.25, 2.0, 4.0]
-B0_SPACE = [0.0, 0.01, 0.02, 0.03, 0.05, 0.1, 0.2, 0.5, 0.75, 1.0, 1.25, 2.0, 4.0]
+B0_SPACE = [0.0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 0.75, 1.0, 1.25, 2.0, 4.0]
 
 # --- The four FOV columns in Supp. Fig. 3/4, as % of 360 degrees ---
 FOV_SPACE_PCT = [100, 75, 50, 25]
