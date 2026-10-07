@@ -168,7 +168,7 @@ def already_done(fov_pct, run_id):
     return "RunID" in df.columns and (df["RunID"] == run_id).any()
 
 
-def run_one(fov_pct, a0, a1, b0, b1, gam, run_seconds, slot, use_random_poses=False, seed=None):
+def run_one(fov_pct, a0, a1, b0, b1, gam, run_seconds, slot, use_random_poses=False, seed=None, dynamics=None):
     """slot: which concurrent worker (0..jobs-1) this run uses -- selects the
     port block and working directory (see launch.sh) and the ktm --name tag
     used to clean it up, so N runs with distinct slots can execute at once
@@ -209,10 +209,16 @@ def run_one(fov_pct, a0, a1, b0, b1, gam, run_seconds, slot, use_random_poses=Fa
         poses = random_start_poses(VEHICLE_COUNT, ARENA_WIDTH, rng)
         start_poses_arg = ";".join(f"{x},{y},{h}" for x, y, h in poses)
 
+    env = None
+    if dynamics is not None:
+        env = os.environ.copy()
+        env["DYNAMICS"] = dynamics
+
     subprocess.Popen(
         ["./launch.sh", str(a0), str(a1), str(b0), str(b1), str(gam), str(fov_deg(fov_pct)), run_id,
          start_poses_arg, str(slot)],
         cwd=MISSION_DIR,
+        env=env,
     )
     time.sleep(run_seconds)
 
@@ -294,6 +300,11 @@ def main():
                      help="freeze --random's start poses to the same seeded draw for every run "
                           "in the sweep (so a0/b0/fov comparisons are apples-to-apples); default "
                           "is a fresh, independently-random draw per run")
+    ap.add_argument("--dynamics", choices=["baseline", "boat"], default=None,
+                     help="hull dynamics passed to launch.sh's DYNAMICS: 'baseline' (near-holonomic, "
+                          "launch.sh's own default) or 'boat' (rudder-steered hull, turn-rate clip, "
+                          "speed-coupled turning). If omitted, falls back to the DYNAMICS env var "
+                          "(e.g. DYNAMICS=boat ./optimize.py), or launch.sh's 'baseline' default.")
     ap.add_argument("--jobs", type=int, default=1,
                      help="run this many simulations concurrently (default: 1, i.e. today's "
                           "sequential behaviour). Each concurrent run gets its own port block "
@@ -353,7 +364,7 @@ def main():
         slot = slot_pool.get()
         try:
             return run_one(fov_pct, a0, a1, b0, b1, gam, run_seconds, slot,
-                            use_random_poses=args.random, seed=args.seed)
+                            use_random_poses=args.random, seed=args.seed, dynamics=args.dynamics)
         finally:
             slot_pool.put(slot)
 

@@ -50,6 +50,7 @@ achieved rates from an `.alog` and re-run the F anchor before trusting a sweep.
 ./launch.sh <a0> <a1> <b0> <b1> <gam> <fov_deg> <run_id> ["x,y,hdg;x,y,hdg;..."]
 ./optimize.py --fov 100 --random            # one Supp. Fig. 3 column
 ./analyze_results.py                        # heatmaps
+./analyze_results.py --patterns             # heatmaps + movement-pattern row
 ```
 
 Environment switches understood by `launch.sh`:
@@ -62,6 +63,19 @@ Environment switches understood by `launch.sh`:
 `plot_trajectories.py <MOOSLog dir> -o out.png` renders orientation-coloured trajectories,
 unwrapped across the torus — the view the paper's movement-pattern labels (X, LeFo, frLeFo, F,
 frF, L) are assigned from. No combination of the summary metrics separates LeFo from frLeFo.
+
+`analyze_results.py --patterns` adds the paper's top row (Supp. Fig. 3) — the movement pattern
+per (α0, β0) cell, smoothed into regions with dashed boundaries — and writes to
+`*_patterns.png` so the plain figures are left alone. Because the sweep keeps no trajectories,
+those labels are **classified heuristically from the five summary metrics**, not read off
+trajectories: thresholds live in `THRESHOLDS` in that script, tuned so the three verified
+anchors below come out as X / F / S. Milling (M) and stuck-in-place (SIP) have no metric
+signature at all and are never emitted automatically.
+
+Correct anything the classifier gets wrong (LeFo vs frLeFo above all) by hand: each run writes
+`patterns_fov<PCT>.auto.csv` (`a0,b0,label`); copy it to `patterns_fov<PCT>.csv`, edit the
+labels from the `plot_trajectories.py` view, and re-run — manual labels override the classifier
+and survive the region smoothing.
 
 ## Verified anchors (FOV 100 %)
 
